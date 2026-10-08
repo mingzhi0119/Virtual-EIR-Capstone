@@ -1,0 +1,67 @@
+import { describe, expect, it } from 'vitest'
+import { hydrateHistorySession, FILE_CONTEXT_REPLY } from '../utils/sessionHistory'
+
+describe('session history utils', () => {
+  it('hydrates normalized history details into visible and hidden chat rows', () => {
+    const messages = hydrateHistorySession({
+      id: 's1',
+      title: 'Chart run',
+      model: 'm',
+      schema_version: 1,
+      created_at: 'c',
+      updated_at: 'u',
+      owner_id: '',
+      persona_snapshot: null,
+      file_context: { prompt: '[User uploaded tabular data for analysis]\n\nCHART_DATA_CSV:\n```csv```' },
+      knowledge_documents: [],
+      workspace_outputs: [],
+      chart_spec: {
+        version: '2.0',
+        engine: 'echarts',
+        kind: 'bar',
+        title: 'Revenue',
+        description: '',
+        dataset: [],
+        option: {},
+        meta: {
+          row_count: 0,
+          truncated: false,
+          warnings: [],
+          source_columns: [],
+        },
+      },
+      chart_data_source: 'uploaded',
+      messages: [
+        { role: 'user', content: 'Please chart revenue.' },
+        {
+          role: 'assistant',
+          content: 'Done.',
+          artifacts: [
+            {
+              artifact_id: 'art-1',
+              filename: 'brief.md',
+              mime_type: 'text/markdown',
+              byte_size: 128,
+              download_url: '/api/artifacts/art-1',
+            },
+          ],
+        },
+      ],
+    })
+
+    expect(messages).toHaveLength(4)
+    expect(messages[0]).toMatchObject({ role: 'user', hidden: true, file_context: true })
+    expect(messages[1]).toMatchObject({
+      role: 'assistant',
+      content: FILE_CONTEXT_REPLY,
+      hidden: true,
+    })
+    expect(messages[2]).toMatchObject({ role: 'user', content: 'Please chart revenue.' })
+    expect(messages[3]).toMatchObject({
+      role: 'assistant',
+      content: 'Done.',
+      artifacts: [{ artifact_id: 'art-1', filename: 'brief.md' }],
+      chartSpec: { title: 'Revenue' },
+    })
+  })
+})

@@ -1,0 +1,845 @@
+from __future__ import annotations
+
+import tempfile
+import unittest
+from dataclasses import replace
+from pathlib import Path
+from unittest.mock import patch
+
+from backend.models.knowledge import KnowledgeCitation, KnowledgeSearchResponse
+from backend.services import log_service
+from backend.services.exceptions import KnowledgeDocumentNotFound
+from backend.services.workbench_execution_service import (
+    execute_workbench_task,
+    recover_workbench_tasks,
+)
+from backend.services.workbench_web_search import (
+    WorkbenchWebSearchError,
+    WorkbenchWebSearchHit,
+)
+from backend.services.workbench_runtime import (
+    SQLiteWorkbenchTaskRepository,
+    WorkbenchTaskCreatePayload,
+    WorkbenchWorkspaceOutputCreatePayload,
+)
+from backend.services.workbench_source_registry import WorkbenchSourceDescriptor
+from goat_ai.config.settings import Settings
+
+
+class _FakeLLM:
+    def list_model_names(self) -> list[str]:
+        return ["gemma4:26b"]
+
+    def generate_completion(self, model: str, prompt: str, **_: object) -> str:
+        _ = model
+        if "You are planning a bounded multi-step research task." in prompt:
+            return (
+                '{"queries":['
+                '{"query":"Investigate the docs","rationale":"Broad overview"},'
+                '{"query":"Investigate the docs risks evidence","rationale":"Risks"},'
+                '{"query":"Investigate the docs implementation constraints",'
+                '"rationale":"Constraints"}'
+                "]}"
+            )
+        if "You are synthesizing a bounded workbench research task." in prompt:
+            return ""
+        return f"## Goal\n{prompt[:40]}"
+
+
+def _settings(root: Path) -> Settings:
+    return Settings(
+        ollama_base_url="http://127.0.0.1:11434",
+        generate_timeout=120,
+        max_upload_mb=20,
+        max_upload_bytes=20 * 1024 * 1024,
+        max_dataframe_rows=50000,
+        use_chat_api=True,
+        system_prompt="test",
+        app_root=root,
+        logo_svg=root / "logo.svg",
+        log_db_path=root / "chat_logs.db",
+        data_dir=root / "data",
+        feature_agent_workbench_enabled=True,
+    )
+
+
+class WorkbenchExecutionServiceTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.tmpdir = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)
+        self.root = Path(self.tmpdir.name)
+        self.settings = _settings(self.root)
+        log_service.init_db(self.settings.log_db_path)
+        self.repository = SQLiteWorkbenchTaskRepository(self.settings.log_db_path)
+
+    def tearDown(self) -> None:
+        self.tmpdir.cleanup()
+
+    def _create_task(
+        self,
+        *,
+        task_id: str,
+        task_kind: str,
+        source_ids: list[str] | None = None,
+        knowledge_document_ids: list[str] | None = None,
+        project_id: str | None = None,
+        auth_scopes: list[str] | None = None,
+    ) -> None:
+        self.repository.create_task(
+            WorkbenchTaskCreatePayload(
+                task_id=task_id,
+                task_kind=task_kind,
+                prompt="Investigate the docs",
+                session_id=None,
+                project_id=project_id,
+                knowledge_document_ids=list(knowledge_document_ids or []),
+                connector_ids=[],
+                source_ids=list(source_ids or []),
+                created_at="2026-04-11T00:00:00+00:00",
+                updated_at="2026-04-11T00:00:00+00:00",
+                owner_id="owner-1",
+                tenant_id="tenant-1",
+                principal_id="principal-1",
+                auth_scopes=list(auth_scopes or ["workbench:read", "knowledge:read"]),
+                credential_id="cred-1",
+                auth_mode="api_key",
+            )
+        )
+
+    def test_browse_task_completes_with_deduped_citations(self) -> None:
+        self._create_task(
+            task_id="wb-browse", task_kind="browse", source_ids=["knowledge"]
+        )
+        knowledge_source = WorkbenchSourceDescriptor(
+            source_id="knowledge",
+            display_name="Knowledge Base",
+            kind="knowledge",
+            scope_kind="knowledge_documents",
+            capabilities=("search", "fetch", "citations"),
+            task_kinds=("plan", "browse", "deep_research"),
+            read_only=True,
+            runtime_ready=True,
+            deny_reason=None,
+            description="Knowledge source",
+            required_scope="knowledge:read",
+        )
+
+        with (
+            patch(
+                "backend.services.workbench_execution_service.resolve_requested_sources",
+                return_value=[knowledge_source],
+            ),
+            patch(
+                "backend.services.workbench_research_runtime.resolve_requested_sources",
+                return_value=[knowledge_source],
+            ),
+            patch(
+                "backend.services.workbench_execution_service.search_knowledge",
+                return_value=KnowledgeSearchResponse(
+                    query="Investigate the docs",
+                    hits=[
+                        KnowledgeCitation(
+                            document_id="doc-1",
+                            chunk_id="chunk-1",
+                            filename="notes.md",
+                            snippet="alpha",
+                            score=0.9,
+                        ),
+                        KnowledgeCitation(
+                            document_id="doc-1",
+                            chunk_id="chunk-1",
+                            filename="notes.md",
+                            snippet="alpha",
+                            score=0.8,
+                        ),
+                    ],
+                ),
+            ),
+            patch(
+                "backend.services.workbench_research_runtime.search_knowledge",
+                return_value=KnowledgeSearchResponse(
+                    query="Investigate the docs",
+                    hits=[
+                        KnowledgeCitation(
+                            document_id="doc-1",
+                            chunk_id="chunk-1",
+                            filename="notes.md",
+                            snippet="alpha",
+                            score=0.9,
+                        ),
+                        KnowledgeCitation(
+                            document_id="doc-1",
+                            chunk_id="chunk-1",
+                            filename="notes.md",
+                            snippet="alpha",
+                            score=0.8,
+                        ),
+                    ],
+                ),
+            ),
+        ):
+            execute_workbench_task(
+                task_id="wb-browse",
+                repository=self.repository,
+                llm=_FakeLLM(),
+                settings=self.settings,
+            )
+
+        stored = self.repository.get_task("wb-browse")
+        assert stored is not None
+        self.assertEqual("completed", stored.status)
+        self.assertEqual(1, len(stored.result_citations or []))
+        events = self.repository.list_task_events("wb-browse")
+        event_types = [event.event_type for event in events]
+        self.assertIn("retrieval.sources_resolved", event_types)
+        self.assertIn("research.plan.created", event_types)
+        self.assertIn("retrieval.step.started", event_types)
+        self.assertIn("retrieval.step.completed", event_types)
+        self.assertIn("research.follow_up.scheduled", event_types)
+        self.assertIn("research.synthesis.completed", event_types)
+
+    def test_retrieval_task_fails_when_no_runnable_sources_exist(self) -> None:
+        self._create_task(task_id="wb-empty", task_kind="browse", source_ids=["web"])
+        web_source = WorkbenchSourceDescriptor(
+            source_id="web",
+            display_name="Public Web",
+            kind="builtin",
+            scope_kind="global",
+            capabilities=("search",),
+            task_kinds=("browse",),
+            read_only=True,
+            runtime_ready=False,
+            deny_reason="not_implemented",
+            description="Web source",
+        )
+
+        with (
+            patch(
+                "backend.services.workbench_execution_service.resolve_requested_sources",
+                return_value=[web_source],
+            ),
+            patch(
+                "backend.services.workbench_research_runtime.resolve_requested_sources",
+                return_value=[web_source],
+            ),
+        ):
+            execute_workbench_task(
+                task_id="wb-empty",
+                repository=self.repository,
+                llm=_FakeLLM(),
+                settings=self.settings,
+            )
+
+        stored = self.repository.get_task("wb-empty")
+        assert stored is not None
+        self.assertEqual("failed", stored.status)
+        self.assertIn("No runnable retrieval sources", stored.error_detail or "")
+
+    def test_browse_task_completes_with_web_citations(self) -> None:
+        self._create_task(task_id="wb-web", task_kind="browse", source_ids=["web"])
+        web_source = WorkbenchSourceDescriptor(
+            source_id="web",
+            display_name="Public Web",
+            kind="builtin",
+            scope_kind="global",
+            capabilities=("search", "citations"),
+            task_kinds=("browse", "deep_research"),
+            read_only=True,
+            runtime_ready=True,
+            deny_reason=None,
+            description="Web source",
+        )
+
+        with (
+            patch(
+                "backend.services.workbench_execution_service.resolve_requested_sources",
+                return_value=[web_source],
+            ),
+            patch(
+                "backend.services.workbench_research_runtime.resolve_requested_sources",
+                return_value=[web_source],
+            ),
+            patch(
+                "backend.services.workbench_execution_service.search_public_web",
+                return_value=[
+                    WorkbenchWebSearchHit(
+                        title="Example result",
+                        url="https://example.com/report",
+                        snippet="Web evidence snippet",
+                        rank=1,
+                        provider="duckduckgo",
+                    )
+                ],
+            ),
+            patch(
+                "backend.services.workbench_research_runtime.search_public_web",
+                return_value=[
+                    WorkbenchWebSearchHit(
+                        title="Example result",
+                        url="https://example.com/report",
+                        snippet="Web evidence snippet",
+                        rank=1,
+                        provider="duckduckgo",
+                    )
+                ],
+            ),
+        ):
+            execute_workbench_task(
+                task_id="wb-web",
+                repository=self.repository,
+                llm=_FakeLLM(),
+                settings=self.settings,
+            )
+
+        stored = self.repository.get_task("wb-web")
+        assert stored is not None
+        self.assertEqual("completed", stored.status)
+        self.assertEqual(
+            "https://example.com/report", stored.result_citations[0]["document_id"]
+        )
+        self.assertIn(
+            "[Example result](https://example.com/report)", stored.result_text or ""
+        )
+        events = self.repository.list_task_events("wb-web")
+        web_events = [
+            event
+            for event in events
+            if event.event_type == "retrieval.step.completed"
+            and event.metadata["source_id"] == "web"
+        ]
+        self.assertGreaterEqual(len(web_events), 1)
+        self.assertTrue(
+            all(event.metadata["provider"] == "duckduckgo" for event in web_events)
+        )
+        self.assertIn(
+            "research.synthesis.completed", [event.event_type for event in events]
+        )
+
+    def test_browse_task_completes_with_project_memory_citations(self) -> None:
+        self._create_task(
+            task_id="wb-project-memory",
+            task_kind="browse",
+            source_ids=["project_memory"],
+            project_id="project-1",
+        )
+        self._create_task(
+            task_id="wb-project-seed",
+            task_kind="canvas",
+            project_id="project-1",
+        )
+        self.repository.create_workspace_output(
+            WorkbenchWorkspaceOutputCreatePayload(
+                output_id="wbo-project-1",
+                task_id="wb-project-seed",
+                output_kind="canvas_document",
+                title="Launch plan",
+                content_format="markdown",
+                content_text="Investigate the docs and timeline risks for the launch.",
+                created_at="2026-04-11T00:00:00+00:00",
+                updated_at="2026-04-11T00:00:00+00:00",
+                metadata={"project_id": "project-1"},
+                owner_id="owner-1",
+                tenant_id="tenant-1",
+                principal_id="principal-1",
+            )
+        )
+        project_memory_source = WorkbenchSourceDescriptor(
+            source_id="project_memory",
+            display_name="Project Memory",
+            kind="project_memory",
+            scope_kind="project_scope",
+            capabilities=("search", "citations"),
+            task_kinds=("browse", "deep_research"),
+            read_only=True,
+            runtime_ready=True,
+            deny_reason=None,
+            description="Project memory source",
+            requires_project_id=True,
+        )
+
+        with (
+            patch(
+                "backend.services.workbench_execution_service.resolve_requested_sources",
+                return_value=[project_memory_source],
+            ),
+            patch(
+                "backend.services.workbench_research_runtime.resolve_requested_sources",
+                return_value=[project_memory_source],
+            ),
+        ):
+            execute_workbench_task(
+                task_id="wb-project-memory",
+                repository=self.repository,
+                llm=_FakeLLM(),
+                settings=self.settings,
+            )
+
+        stored = self.repository.get_task("wb-project-memory")
+        assert stored is not None
+        self.assertEqual("completed", stored.status)
+        self.assertTrue(stored.result_citations)
+        self.assertEqual(
+            "workbench-output:wbo-project-1",
+            stored.result_citations[0]["document_id"],
+        )
+        events = self.repository.list_task_events("wb-project-memory")
+        project_memory_events = [
+            event
+            for event in events
+            if event.event_type == "retrieval.step.completed"
+            and event.metadata["source_id"] == "project_memory"
+        ]
+        self.assertGreaterEqual(len(project_memory_events), 1)
+
+    def test_browse_task_completes_with_connector_citations(self) -> None:
+        self.settings = replace(
+            self.settings,
+            workbench_connector_bindings_json="""
+            [
+              {
+                "source_id": "connector:ops-runbook",
+                "display_name": "Ops Runbook",
+                "documents": [
+                  {
+                    "document_id": "connector://ops/runbook",
+                    "title": "Ops Runbook",
+                    "content": "Investigate the docs with escalation and timeline guidance."
+                  }
+                ]
+              }
+            ]
+            """,
+        )
+        self._create_task(
+            task_id="wb-connector",
+            task_kind="browse",
+            source_ids=["connector:ops-runbook"],
+        )
+        connector_source = WorkbenchSourceDescriptor(
+            source_id="connector:ops-runbook",
+            display_name="Ops Runbook",
+            kind="connector",
+            scope_kind="connector_binding",
+            capabilities=("search", "citations"),
+            task_kinds=("browse", "deep_research"),
+            read_only=True,
+            runtime_ready=True,
+            deny_reason=None,
+            description="Connector source",
+        )
+
+        with (
+            patch(
+                "backend.services.workbench_execution_service.resolve_requested_sources",
+                return_value=[connector_source],
+            ),
+            patch(
+                "backend.services.workbench_research_runtime.resolve_requested_sources",
+                return_value=[connector_source],
+            ),
+        ):
+            execute_workbench_task(
+                task_id="wb-connector",
+                repository=self.repository,
+                llm=_FakeLLM(),
+                settings=self.settings,
+            )
+
+        stored = self.repository.get_task("wb-connector")
+        assert stored is not None
+        self.assertEqual("completed", stored.status)
+        self.assertTrue(stored.result_citations)
+        self.assertEqual(
+            "connector://ops/runbook",
+            stored.result_citations[0]["document_id"],
+        )
+        events = self.repository.list_task_events("wb-connector")
+        connector_events = [
+            event
+            for event in events
+            if event.event_type == "retrieval.step.completed"
+            and event.metadata["source_id"] == "connector:ops-runbook"
+        ]
+        self.assertGreaterEqual(len(connector_events), 1)
+
+    def test_retrieval_task_fails_when_web_provider_errors_without_fallback(
+        self,
+    ) -> None:
+        self._create_task(task_id="wb-web-fail", task_kind="browse", source_ids=["web"])
+        web_source = WorkbenchSourceDescriptor(
+            source_id="web",
+            display_name="Public Web",
+            kind="builtin",
+            scope_kind="global",
+            capabilities=("search", "citations"),
+            task_kinds=("browse", "deep_research"),
+            read_only=True,
+            runtime_ready=True,
+            deny_reason=None,
+            description="Web source",
+        )
+
+        with (
+            patch(
+                "backend.services.workbench_execution_service.resolve_requested_sources",
+                return_value=[web_source],
+            ),
+            patch(
+                "backend.services.workbench_research_runtime.resolve_requested_sources",
+                return_value=[web_source],
+            ),
+            patch(
+                "backend.services.workbench_execution_service.search_public_web",
+                side_effect=WorkbenchWebSearchError("boom"),
+            ),
+            patch(
+                "backend.services.workbench_research_runtime.search_public_web",
+                side_effect=WorkbenchWebSearchError("boom"),
+            ),
+        ):
+            execute_workbench_task(
+                task_id="wb-web-fail",
+                repository=self.repository,
+                llm=_FakeLLM(),
+                settings=self.settings,
+            )
+
+        stored = self.repository.get_task("wb-web-fail")
+        assert stored is not None
+        self.assertEqual("failed", stored.status)
+        self.assertEqual("Retrieval execution failed.", stored.error_detail)
+        events = self.repository.list_task_events("wb-web-fail")
+        provider_errors = [
+            event
+            for event in events
+            if event.event_type == "retrieval.step.skipped"
+            and event.metadata.get("deny_reason") == "provider_error"
+        ]
+        self.assertGreaterEqual(len(provider_errors), 1)
+        self.assertEqual("task.failed", events[-1].event_type)
+
+    def test_plan_task_marks_knowledge_not_found_when_context_resolution_fails(
+        self,
+    ) -> None:
+        self._create_task(
+            task_id="wb-plan",
+            task_kind="plan",
+            knowledge_document_ids=["doc-missing"],
+        )
+
+        with patch(
+            "backend.services.workbench_execution_service.build_chat_knowledge_context",
+            side_effect=KnowledgeDocumentNotFound("missing"),
+        ):
+            execute_workbench_task(
+                task_id="wb-plan",
+                repository=self.repository,
+                llm=_FakeLLM(),
+                settings=self.settings,
+            )
+
+        stored = self.repository.get_task("wb-plan")
+        assert stored is not None
+        self.assertEqual("failed", stored.status)
+        self.assertEqual("Knowledge document not found.", stored.error_detail)
+
+    def test_canvas_task_completes_with_workspace_output(self) -> None:
+        self._create_task(task_id="wb-canvas", task_kind="canvas")
+
+        execute_workbench_task(
+            task_id="wb-canvas",
+            repository=self.repository,
+            llm=_FakeLLM(),
+            settings=self.settings,
+        )
+
+        stored = self.repository.get_task("wb-canvas")
+        assert stored is not None
+        self.assertEqual("completed", stored.status)
+        self.assertTrue((stored.result_text or "").startswith("## Goal"))
+
+        outputs = self.repository.list_workspace_outputs("wb-canvas")
+        self.assertEqual(1, len(outputs))
+        self.assertEqual("canvas_document", outputs[0].output_kind)
+        self.assertEqual("markdown", outputs[0].content_format)
+        self.assertEqual(stored.result_text, outputs[0].content_text)
+
+        events = self.repository.list_task_events("wb-canvas")
+        self.assertEqual(
+            [
+                "task.queued",
+                "task.started",
+                "workspace_output.created",
+                "task.completed",
+            ],
+            [event.event_type for event in events],
+        )
+        self.assertEqual(1, events[-1].metadata["workspace_output_count"])
+
+    def test_recover_workbench_tasks_replays_queued_and_fails_interrupted_running(
+        self,
+    ) -> None:
+        self._create_task(task_id="wb-recover-queued", task_kind="plan")
+        self._create_task(task_id="wb-recover-running", task_kind="plan")
+        claimed = self.repository.claim_task_for_execution(
+            "wb-recover-running",
+            updated_at="2026-04-11T00:00:01+00:00",
+        )
+        assert claimed is not None
+
+        recovered = recover_workbench_tasks(
+            repository=self.repository,
+            llm=_FakeLLM(),
+            settings=self.settings,
+        )
+
+        self.assertEqual(["wb-recover-queued"], recovered.replayed_task_ids)
+        self.assertEqual(["wb-recover-running"], recovered.interrupted_task_ids)
+
+        queued = self.repository.get_task("wb-recover-queued")
+        running = self.repository.get_task("wb-recover-running")
+        assert queued is not None
+        assert running is not None
+        self.assertEqual("completed", queued.status)
+        self.assertEqual("failed", running.status)
+        self.assertEqual(
+            "Task execution was interrupted during a previous process lifetime.",
+            running.error_detail,
+        )
+
+    def test_recover_workbench_tasks_skips_cancelled_tasks(self) -> None:
+        self._create_task(task_id="wb-recover-cancelled", task_kind="plan")
+        self.repository.mark_task_cancelled(
+            "wb-recover-cancelled",
+            updated_at="2026-04-11T00:00:01+00:00",
+            error_detail="Task cancelled before execution.",
+        )
+
+        recovered = recover_workbench_tasks(
+            repository=self.repository,
+            llm=_FakeLLM(),
+            settings=self.settings,
+        )
+
+        self.assertEqual([], recovered.replayed_task_ids)
+        self.assertEqual([], recovered.interrupted_task_ids)
+        cancelled = self.repository.get_task("wb-recover-cancelled")
+        assert cancelled is not None
+        self.assertEqual("cancelled", cancelled.status)
+
+    def test_deep_research_executes_multiple_steps_and_records_follow_up_events(
+        self,
+    ) -> None:
+        self._create_task(
+            task_id="wb-research",
+            task_kind="deep_research",
+            source_ids=["knowledge"],
+        )
+        knowledge_source = WorkbenchSourceDescriptor(
+            source_id="knowledge",
+            display_name="Knowledge Base",
+            kind="knowledge",
+            scope_kind="knowledge_documents",
+            capabilities=("search", "fetch", "citations"),
+            task_kinds=("plan", "browse", "deep_research"),
+            read_only=True,
+            runtime_ready=True,
+            deny_reason=None,
+            description="Knowledge source",
+            required_scope="knowledge:read",
+        )
+
+        def _search_side_effect(*, request, **_: object) -> KnowledgeSearchResponse:
+            if "risks evidence" in request.query:
+                hits = [
+                    KnowledgeCitation(
+                        document_id="doc-2",
+                        chunk_id="chunk-2",
+                        filename="risks.md",
+                        snippet="risk-oriented evidence",
+                        score=0.88,
+                    )
+                ]
+            else:
+                hits = [
+                    KnowledgeCitation(
+                        document_id="doc-1",
+                        chunk_id="chunk-1",
+                        filename="overview.md",
+                        snippet="broad evidence",
+                        score=0.92,
+                    )
+                ]
+            return KnowledgeSearchResponse(query=request.query, hits=hits)
+
+        with (
+            patch(
+                "backend.services.workbench_execution_service.resolve_requested_sources",
+                return_value=[knowledge_source],
+            ),
+            patch(
+                "backend.services.workbench_research_runtime.resolve_requested_sources",
+                return_value=[knowledge_source],
+            ),
+            patch(
+                "backend.services.workbench_execution_service.search_knowledge",
+                side_effect=_search_side_effect,
+            ),
+            patch(
+                "backend.services.workbench_research_runtime.search_knowledge",
+                side_effect=_search_side_effect,
+            ),
+        ):
+            execute_workbench_task(
+                task_id="wb-research",
+                repository=self.repository,
+                llm=_FakeLLM(),
+                settings=self.settings,
+            )
+
+        stored = self.repository.get_task("wb-research")
+        assert stored is not None
+        self.assertEqual("completed", stored.status)
+        self.assertEqual(2, len(stored.result_citations or []))
+        events = self.repository.list_task_events("wb-research")
+        started_steps = [
+            event for event in events if event.event_type == "retrieval.step.started"
+        ]
+        self.assertGreaterEqual(len(started_steps), 2)
+        self.assertIn(
+            "research.follow_up.scheduled", [event.event_type for event in events]
+        )
+        self.assertIn(
+            "research.synthesis.completed", [event.event_type for event in events]
+        )
+
+    def test_browse_langgraph_obeys_step_limit(self) -> None:
+        self._create_task(
+            task_id="wb-browse-limit", task_kind="browse", source_ids=["knowledge"]
+        )
+        knowledge_source = WorkbenchSourceDescriptor(
+            source_id="knowledge",
+            display_name="Knowledge Base",
+            kind="knowledge",
+            scope_kind="knowledge_documents",
+            capabilities=("search", "fetch", "citations"),
+            task_kinds=("plan", "browse", "deep_research"),
+            read_only=True,
+            runtime_ready=True,
+            deny_reason=None,
+            description="Knowledge source",
+            required_scope="knowledge:read",
+        )
+        constrained_settings = replace(self.settings, workbench_browse_max_steps=1)
+
+        with (
+            patch(
+                "backend.services.workbench_execution_service.resolve_requested_sources",
+                return_value=[knowledge_source],
+            ),
+            patch(
+                "backend.services.workbench_research_runtime.resolve_requested_sources",
+                return_value=[knowledge_source],
+            ),
+            patch(
+                "backend.services.workbench_execution_service.search_knowledge",
+                return_value=KnowledgeSearchResponse(
+                    query="Investigate the docs",
+                    hits=[
+                        KnowledgeCitation(
+                            document_id="doc-limit",
+                            chunk_id="chunk-limit",
+                            filename="limit.md",
+                            snippet="limit evidence",
+                            score=0.91,
+                        )
+                    ],
+                ),
+            ),
+            patch(
+                "backend.services.workbench_research_runtime.search_knowledge",
+                return_value=KnowledgeSearchResponse(
+                    query="Investigate the docs",
+                    hits=[
+                        KnowledgeCitation(
+                            document_id="doc-limit",
+                            chunk_id="chunk-limit",
+                            filename="limit.md",
+                            snippet="limit evidence",
+                            score=0.91,
+                        )
+                    ],
+                ),
+            ),
+        ):
+            execute_workbench_task(
+                task_id="wb-browse-limit",
+                repository=self.repository,
+                llm=_FakeLLM(),
+                settings=constrained_settings,
+            )
+
+        events = self.repository.list_task_events("wb-browse-limit")
+        started_steps = [
+            event for event in events if event.event_type == "retrieval.step.started"
+        ]
+        self.assertEqual(1, len(started_steps))
+        self.assertNotIn(
+            "research.follow_up.scheduled", [event.event_type for event in events]
+        )
+
+    def test_browse_falls_back_to_legacy_runtime_when_langgraph_is_disabled(
+        self,
+    ) -> None:
+        self._create_task(
+            task_id="wb-legacy", task_kind="browse", source_ids=["knowledge"]
+        )
+        knowledge_source = WorkbenchSourceDescriptor(
+            source_id="knowledge",
+            display_name="Knowledge Base",
+            kind="knowledge",
+            scope_kind="knowledge_documents",
+            capabilities=("search", "fetch", "citations"),
+            task_kinds=("plan", "browse", "deep_research"),
+            read_only=True,
+            runtime_ready=True,
+            deny_reason=None,
+            description="Knowledge source",
+            required_scope="knowledge:read",
+        )
+        legacy_settings = replace(self.settings, workbench_langgraph_enabled=False)
+
+        with (
+            patch(
+                "backend.services.workbench_execution_service.resolve_requested_sources",
+                return_value=[knowledge_source],
+            ),
+            patch(
+                "backend.services.workbench_execution_service.search_knowledge",
+                return_value=KnowledgeSearchResponse(
+                    query="Investigate the docs",
+                    hits=[
+                        KnowledgeCitation(
+                            document_id="doc-legacy",
+                            chunk_id="chunk-legacy",
+                            filename="legacy.md",
+                            snippet="legacy evidence",
+                            score=0.93,
+                        )
+                    ],
+                ),
+            ),
+        ):
+            execute_workbench_task(
+                task_id="wb-legacy",
+                repository=self.repository,
+                llm=_FakeLLM(),
+                settings=legacy_settings,
+            )
+
+        stored = self.repository.get_task("wb-legacy")
+        assert stored is not None
+        self.assertEqual("completed", stored.status)
+        events = self.repository.list_task_events("wb-legacy")
+        event_types = [event.event_type for event in events]
+        self.assertIn("retrieval.sources_resolved", event_types)
+        self.assertNotIn("research.plan.created", event_types)

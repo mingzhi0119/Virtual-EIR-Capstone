@@ -1,0 +1,385 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      desktop_changed: ${{ steps.filter.outputs.desktop }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            desktop:
+              - 'frontend/index.html'
+              - 'frontend/postcss.config.cjs'
+              - 'frontend/public/**'
+              - 'frontend/src/**'
+              - 'frontend/src-tauri/**'
+              - 'frontend/scripts/run-tauri.mjs'
+              - 'frontend/scripts/run-python.mjs'
+              - 'frontend/package.json'
+              - 'frontend/package-lock.json'
+              - 'frontend/tailwind.config.cjs'
+              - 'frontend/tsconfig*.json'
+              - 'frontend/vite.config.ts'
+              - 'tools/desktop/**'
+              - '__tests__/desktop/**'
+              - '__tests__/ops/test_ops_asset_contracts.py'
+              - 'goat_ai/runtime/desktop_sidecar.py'
+              - 'requirements-desktop-build.txt'
+              - 'scripts/desktop/**'
+              - '.github/workflows/ci.yml'
+              - '.github/workflows/desktop-provenance.yml'
+              - '.github/workflows/fault-injection.yml'
+
+  backend-fast:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'workflow_dispatch' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/ruff-action@v3
+      - name: Ruff check
+        run: ruff check backend goat_ai scripts tools __tests__
+      - name: Ruff format check on changed Python files
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${GITHUB_EVENT_NAME}" == "pull_request" ]]; then
+            base_ref="origin/${GITHUB_BASE_REF}"
+          else
+            # push: GITHUB_EVENT_BEFORE may be unset (set -u) or all-zero for new branches
+            before="${GITHUB_EVENT_BEFORE:-}"
+            if [[ -n "${before}" && "${before}" != "0000000000000000000000000000000000000000" ]]; then
+              base_ref="${before}"
+            else
+              base_ref="$(git rev-parse HEAD^ 2>/dev/null || true)"
+            fi
+          fi
+          if [[ -z "${base_ref}" ]]; then
+            echo "No base ref for diff; skipping ruff format check on changed files."
+            exit 0
+          fi
+          mapfile -t changed_files < <(git diff --name-only --diff-filter=ACMRT "${base_ref}" "${GITHUB_SHA}" | grep -E '\.py$' || true)
+          if (( ${#changed_files[@]} )); then
+            ruff format --check "${changed_files[@]}"
+          fi
+
+  backend-heavy:
+    runs-on: ubuntu-latest
+    needs: backend-fast
+    if: ${{ github.event_name != 'workflow_dispatch' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          # Match local dev when using Python 3.14; docs/api/openapi.json must match app.openapi() for this interpreter.
+          python-version: "3.14"
+      - uses: astral-sh/setup-uv@v8.0.0
+        with:
+          enable-cache: true
+      - name: Install dependencies
+        run: uv pip install --system -r requirements-ci.txt
+      - name: Dependency audit
+        run: pip-audit -r requirements-ci.txt
+      - name: Import layer lint
+        run: lint-imports
+      - name: RAG eval regression (Phase 14.7)
+        run: python -m tools.quality.run_rag_eval
+      - name: API Contract Gate
+        run: python -m tools.contracts.check_api_contract_sync
+      - name: OTel enabled-path tests
+        run: python -m pytest __tests__/backend/platform/test_otel_tracing.py __tests__/backend/platform/test_backend_main_factory.py -q
+      - name: Observability asset contract
+        run: python -m pytest __tests__/ops/test_observability_asset_contract.py -q
+      - name: Pytest
+        run: python -m pytest __tests__/ -v --tb=short --cov=backend --cov=goat_ai --cov-report=term-missing --cov-fail-under=70
+      - name: PR latency gate
+        run: |
+          python -m tools.quality.run_pr_latency_gate \
+            --runs 8 \
+            --max-total-p95-ms 1200 \
+            --max-first-token-p95-ms 400 \
+            --json-output pr-latency-gate-summary.json
+
+  backend:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'workflow_dispatch' && always() }}
+    needs:
+      - backend-fast
+      - backend-heavy
+    steps:
+      - name: Enforce backend gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ needs['backend-fast'].result }}" != "success" ]]; then
+            echo "backend-fast concluded with ${{ needs['backend-fast'].result }}"
+            exit 1
+          fi
+          if [[ "${{ needs['backend-heavy'].result }}" != "success" ]]; then
+            echo "backend-heavy concluded with ${{ needs['backend-heavy'].result }}"
+            exit 1
+          fi
+
+  secrets-scan:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'workflow_dispatch' }}
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  frontend:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'workflow_dispatch' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24.14.1"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+      - name: Install Playwright browser
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium
+      - name: Frontend dependency audit
+        working-directory: frontend
+        run: npm audit --audit-level=high
+      - name: Frontend lint, dependency boundaries, contract, tests, and build
+        working-directory: frontend
+        run: npm run lint && npm run depcruise && npm run contract:check && npm run test:coverage && npm run build && npm run bundle:check && npm run test:e2e
+
+  desktop-supply-chain:
+    runs-on: ubuntu-latest
+    needs: changes
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && needs.changes.outputs.desktop_changed == 'true') }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: "pip"
+          cache-dependency-path: requirements-desktop-build.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24.14.1"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install Tauri Linux system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            curl \
+            file \
+            libayatana-appindicator3-dev \
+            libglib2.0-dev \
+            librsvg2-dev \
+            libssl-dev \
+            libwebkit2gtk-4.1-dev \
+            libxdo-dev \
+            wget
+      - name: Install desktop sidecar build dependencies
+        run: python -m pip install -r requirements-desktop-build.txt
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: frontend/src-tauri -> target
+      - name: Build Linux desktop sidecar
+        run: python -m tools.desktop.build_desktop_sidecar --target-triple x86_64-unknown-linux-gnu --clean
+      - name: Build Linux packaged desktop
+        working-directory: frontend
+        run: npm run desktop:build
+      - name: Desktop Rust tests
+        run: cargo test --manifest-path frontend/src-tauri/Cargo.toml
+      - name: Write Linux packaged desktop provenance
+        run: |
+          python -m tools.desktop.write_desktop_release_provenance \
+            --bundle-root frontend/src-tauri/target/release/bundle \
+            --pattern "appimage/*.AppImage" \
+            --pattern "deb/*.deb" \
+            --output desktop-linux-ci-provenance.json \
+            --release-ref "${{ github.ref_name }}" \
+            --resolved-sha "${{ github.sha }}" \
+            --platform linux-x64 \
+            --distribution-channel internal_test
+      - name: Upload Linux packaged desktop artifacts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-linux-ci-artifacts
+          path: |
+            frontend/src-tauri/target/release/bundle/appimage/*.AppImage
+            frontend/src-tauri/target/release/bundle/deb/*.deb
+            desktop-linux-ci-provenance.json
+      - name: Install cargo-audit
+        run: cargo install cargo-audit --locked
+      - name: Rust dependency audit
+        run: |
+          cargo audit --deny warnings --file frontend/src-tauri/Cargo.lock \
+            --ignore RUSTSEC-2024-0370 \
+            --ignore RUSTSEC-2024-0411 \
+            --ignore RUSTSEC-2024-0412 \
+            --ignore RUSTSEC-2024-0413 \
+            --ignore RUSTSEC-2024-0414 \
+            --ignore RUSTSEC-2024-0415 \
+            --ignore RUSTSEC-2024-0416 \
+            --ignore RUSTSEC-2024-0417 \
+            --ignore RUSTSEC-2024-0418 \
+            --ignore RUSTSEC-2024-0419 \
+            --ignore RUSTSEC-2024-0420 \
+            --ignore RUSTSEC-2024-0429 \
+            --ignore RUSTSEC-2025-0057 \
+            --ignore RUSTSEC-2025-0075 \
+            --ignore RUSTSEC-2025-0080 \
+            --ignore RUSTSEC-2025-0081 \
+            --ignore RUSTSEC-2025-0098 \
+            --ignore RUSTSEC-2025-0100 \
+            --ignore RUSTSEC-2026-0097
+
+  desktop-package-windows:
+    runs-on: windows-latest
+    needs: changes
+    if: ${{ github.event_name != 'workflow_dispatch' && (github.event_name != 'pull_request' || needs.changes.outputs.desktop_changed == 'true') }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: "pip"
+          cache-dependency-path: requirements-desktop-build.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24.14.1"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: frontend/src-tauri -> target
+      - name: Install desktop sidecar build dependencies
+        run: python -m pip install -r requirements-desktop-build.txt
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+      - name: Build Windows desktop package
+        shell: pwsh
+        working-directory: frontend
+        run: |
+          $diagnosticsDir = "..\desktop-fault-smoke"
+          New-Item -ItemType Directory -Force -Path $diagnosticsDir | Out-Null
+          $buildLog = Join-Path $diagnosticsDir "build.log"
+          & npm run desktop:build *>&1 | Tee-Object -FilePath $buildLog
+          if ($LASTEXITCODE -ne 0) {
+            throw "npm run desktop:build failed with exit code $LASTEXITCODE."
+          }
+      - name: Packaged-shell fault smoke
+        shell: pwsh
+        run: |
+          $smokeLog = "desktop-fault-smoke/packaged-shell-fault-smoke.log"
+          & python -m tools.desktop.packaged_shell_fault_smoke `
+            --desktop-exe frontend/src-tauri/target/release/goat-ai-desktop.exe `
+            --sidecar frontend/src-tauri/target/release/goat-backend.exe `
+            --artifact-dir desktop-fault-smoke `
+            --scenario missing_sidecar `
+            --scenario exit_before_ready `
+            --scenario hang_before_ready `
+            --startup-timeout-sec 20 `
+            --health-timeout-sec 2 `
+            --restart-limit 1 `
+            --backoff-ms 100 `
+            --hang-sec 5 *>&1 | Tee-Object -FilePath $smokeLog
+          if ($LASTEXITCODE -ne 0) {
+            throw "packaged_shell_fault_smoke failed with exit code $LASTEXITCODE."
+          }
+      - name: Summarize packaged desktop diagnostics
+        if: ${{ always() }}
+        shell: pwsh
+        run: |
+          Add-Content $env:GITHUB_STEP_SUMMARY "## desktop-package-windows"
+          if (Test-Path "desktop-fault-smoke/summary.json") {
+            $summary = Get-Content "desktop-fault-smoke/summary.json" -Raw | ConvertFrom-Json
+            Add-Content $env:GITHUB_STEP_SUMMARY ""
+            Add-Content $env:GITHUB_STEP_SUMMARY "- status: $($summary.status)"
+            Add-Content $env:GITHUB_STEP_SUMMARY "- phase: $($summary.phase)"
+            if ($summary.error) {
+              Add-Content $env:GITHUB_STEP_SUMMARY "- error: $($summary.error)"
+            }
+            if ($summary.results.Count -gt 0) {
+              foreach ($result in $summary.results) {
+                Add-Content $env:GITHUB_STEP_SUMMARY "- scenario $($result.scenario): $($result.status) stage=$($result.failure_stage)"
+              }
+            }
+          } else {
+            Add-Content $env:GITHUB_STEP_SUMMARY ""
+            Add-Content $env:GITHUB_STEP_SUMMARY "- packaged-shell fault smoke did not produce summary.json."
+          }
+          if (Test-Path "desktop-fault-smoke/build.log") {
+            Add-Content $env:GITHUB_STEP_SUMMARY "- retained build log: desktop-fault-smoke/build.log"
+          }
+          if (Test-Path "desktop-fault-smoke/packaged-shell-fault-smoke.log") {
+            Add-Content $env:GITHUB_STEP_SUMMARY "- retained smoke log: desktop-fault-smoke/packaged-shell-fault-smoke.log"
+          }
+      - name: Upload packaged-shell fault smoke artifacts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-windows-fault-smoke
+          path: desktop-fault-smoke
+      - name: Write packaged desktop provenance
+        if: ${{ always() && hashFiles('frontend/src-tauri/target/release/bundle/msi/*.msi') != '' && hashFiles('frontend/src-tauri/target/release/bundle/nsis/*-setup.exe') != '' }}
+        shell: pwsh
+        run: |
+          python -m tools.desktop.write_desktop_release_provenance `
+            --bundle-root frontend/src-tauri/target/release/bundle `
+            --pattern "msi/*.msi" `
+            --pattern "nsis/*-setup.exe" `
+            --output desktop-windows-ci-provenance.json `
+            --release-ref "${{ github.ref_name }}" `
+            --resolved-sha "${{ github.sha }}" `
+            --platform windows-x64 `
+            --distribution-channel internal_test
+      - name: Upload packaged desktop artifacts
+        if: ${{ always() && hashFiles('frontend/src-tauri/target/release/bundle/msi/*.msi') != '' && hashFiles('frontend/src-tauri/target/release/bundle/nsis/*-setup.exe') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-windows-ci-artifacts
+          path: |
+            frontend/src-tauri/target/release/bundle/msi/*.msi
+            frontend/src-tauri/target/release/bundle/nsis/*-setup.exe
+            desktop-windows-ci-provenance.json

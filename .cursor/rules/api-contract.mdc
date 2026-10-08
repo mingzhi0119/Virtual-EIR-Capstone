@@ -1,0 +1,34 @@
+---
+description: API contract first; OpenAPI and LLM YAML before implementation
+globs: __tests__/contracts/test_api_blackbox_contract.py,__tests__/contracts/test_api_authz.py,__tests__/backend/platform/test_feature_gates.py,__tests__/backend/platform/test_rate_limit_clock.py,docs/api/openapi.json,docs/api/api.llm.yaml,docs/api/API_REFERENCE.md
+alwaysApply: false
+---
+
+# GOAT AI - API contract rules
+
+## API working rule
+
+Treat the API surface as a black-box contract first, not a source-reading exercise.
+
+Prefer these artifacts before opening implementation:
+
+- `__tests__/contracts/test_api_blackbox_contract.py`
+- `__tests__/contracts/test_api_authz.py`
+- `__tests__/backend/platform/test_feature_gates.py`
+- `__tests__/backend/platform/test_rate_limit_clock.py`
+- `docs/api/openapi.json`
+- `docs/api/api.llm.yaml`
+
+Inspect implementation only when:
+
+- Changing API behavior
+- Contract tests or docs disagree with runtime
+- Debugging needs details not visible from the contract layer
+
+Goal: save tokens, avoid duplicate analysis, and rely on stable contracts.
+
+## API contract memory
+
+- Canonical machine-readable contract: `docs/api/openapi.json` (OpenAPI 3.2.0), must match the FastAPI app. Regenerate from `backend.main:app` after endpoint or schema changes so committed spec and runtime `/openapi.json` do not drift.
+- Canonical compact LLM-facing file: `docs/api/api.llm.yaml`. Regenerate from `docs/api/openapi.json` via `python -m tools.contracts.generate_llm_api_yaml` from the repository root; do not hand-maintain unless you are also updating the generator.
+- Canonical executable contract: black-box suite `__tests__/contracts/test_api_blackbox_contract.py`; keep it aligned with the authz and gate/rate-limit suites and use it as the first reference for API behavior.
