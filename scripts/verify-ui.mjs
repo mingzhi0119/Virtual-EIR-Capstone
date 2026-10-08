@@ -113,7 +113,7 @@ try {
   passed('Failed confirmation preserves edits and revision')
   await page.unroute('**/api/ventures/*/sessions/*/chat')
   const active = await (await page.request.get(`http://127.0.0.1:62607/api/ventures/${venture}/sessions/${session}`)).json()
-  const markdown = '**Mock saved reply stays visible**\n\nSample: $n=2$. An extra $$3$ or $$5$.\n\n<script>alert(1)</script>\n\n[bad](javascript:alert(1))\n\n![tracker](https://tracking.invalid/pixel)'
+  const markdown = '**Mock saved reply stays visible**\n\nSample: $n=2$. An extra $\\$3$ or $\\$5$. Also $$3$ or $$5$.\n\n<script>alert(1)</script>\n\n[bad](javascript:alert(1))\n\n![tracker](https://tracking.invalid/pixel)'
   await page.route('**/api/ventures/*/sessions/*/chat', async route => {
     await new Promise(resolve => setTimeout(resolve, 300))
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ session: { ...active, turns: [{ role: 'user', content: 'Mock question' }, { role: 'assistant', content: markdown }] }, reply: markdown, context_revision: 4, elapsed_seconds: 0.1, goat_session_id: `eir-${session}` }) })
@@ -128,6 +128,7 @@ try {
   assert.equal(await page.locator('#transcript img').count(), 0)
   assert.ok(await page.locator('#transcript .katex').count() > 0)
   assert.match(await page.locator('#transcript').textContent(), /An extra \$3 or \$5/)
+  assert.match(await page.locator('#transcript').textContent(), /Also \$3 or \$5/)
   assert.equal(await page.locator('#transcript .message-content strong').count(), 1)
   passed('Send locks drafts; saved reply survives refresh failure; Markdown is sanitized')
   await page.locator('#followup').click(); await feedback('New session created; list refresh failed')

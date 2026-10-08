@@ -1,5 +1,5 @@
 {
-  "run_at": "2026-10-08T21:07:06.353Z",
+  "run_at": "2026-10-08T21:12:27.502Z",
   "browser": "installed Edge / Playwright headless",
   "model_calls": "mocked; separate real-model evidence",
   "checks": [

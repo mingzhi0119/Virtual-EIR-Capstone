@@ -21,7 +21,7 @@ export function paintIcons(root: ParentNode = document): void {
 export function renderMarkdown(text: string): string {
   // React escapes content. Markdown raw HTML is skipped; default URL sanitization stays enabled.
   // Malformed dollar amounts from the model are currency, not an unclosed display equation.
-  const currencySafe = text.replace(/\$\$(\d+(?:\.\d{1,2})?)\$(?!\$)/g, (_, amount: string) => '\\$' + amount)
+  const currencySafe = text.replace(/\$(?:\\)?\$(\d+(?:\.\d{1,2})?)\$(?!\$)/g, (_, amount: string) => '\\$' + amount)
   return renderToStaticMarkup(React.createElement(ReactMarkdown, {
     remarkPlugins: [remarkGfm, remarkMath], rehypePlugins: [[rehypeKatex, { trust: false }]], skipHtml: true,
     children: normalizeDisplayMathMarkdown(buildMathRenderPlan(currencySafe, false).renderedMarkdownPrefix),
