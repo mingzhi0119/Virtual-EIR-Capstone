@@ -26,8 +26,13 @@ if ($Install) {
 }
 if (-not (Test-Path -LiteralPath $pythonExe)) { throw 'Run this script with -Install first.' }
 if (-not (Test-Path -LiteralPath (Join-Path $goatRoot 'frontend\dist\index.html'))) { throw 'Build the GOAT frontend first (-Install).' }
+& node (Join-Path $PSScriptRoot 'build-eir-ui.mjs')
+if ($LASTEXITCODE -ne 0) { throw 'EIR appearance build failed. Run -Install to restore GOAT frontend dependencies.' }
 Invoke-RestMethod 'http://127.0.0.1:11434/api/tags' -TimeoutSec 5 | Out-Null
 $env:GOAT_DEPLOY_MODE = '0'
+$env:GOAT_USE_CHAT_API = 'true'
+$env:GOAT_SYSTEM_PROMPT_FILE = ''
+$env:GOAT_SYSTEM_PROMPT = Get-Content -LiteralPath (Join-Path $projectRoot 'eir\prompts\goat-english.txt') -Raw -Encoding UTF8
 $env:GOAT_RUNTIME_ROOT = Join-Path $runtimeRoot 'goat'
 $env:GOAT_LOG_PATH = Join-Path $env:GOAT_RUNTIME_ROOT 'chat_logs.db'
 $env:GOAT_DATA_DIR = Join-Path $env:GOAT_RUNTIME_ROOT 'data'

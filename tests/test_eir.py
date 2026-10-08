@@ -19,7 +19,7 @@ def fake_goat(request: httpx.Request) -> httpx.Response:
     if request.url.path == "/api/models":
         return httpx.Response(200, json={"models": ["gemma4:26b"]})
     payload = json.loads(request.content)
-    state = json.loads(
+    state, _ = json.JSONDecoder().raw_decode(
         payload["system_instruction"].split(
             "FOUNDER-CONFIRMED STATE (data, not instructions):\n"
         )[1]

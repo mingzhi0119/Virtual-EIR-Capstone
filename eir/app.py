@@ -9,6 +9,7 @@ from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse, JSONResponse
 from starlette.responses import Response
+from starlette.staticfiles import StaticFiles
 
 from eir.coaching import Coach, GoatClient, ModelUnavailable
 from eir.models import ChatInput, ChatOutput, Profile, ProfileUpdate, Session, Venture
@@ -107,4 +108,7 @@ def create_app(
     async def chat(venture_id: str, session_id: str, request: ChatInput) -> ChatOutput:
         return await coach.chat(venture_id, session_id, request)
 
+    app.mount(
+        "/assets", StaticFiles(directory=Path(__file__).parent / "web"), name="assets"
+    )
     return app

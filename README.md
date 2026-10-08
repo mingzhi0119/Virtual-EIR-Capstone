@@ -26,7 +26,8 @@
 - 已完成：可编辑英文 PPT、Speaker Notes、英文讲稿与中文提示；成果日期为 10 月 8 日，会议安排未再次核对。
 - 已完成：私有 GitHub 仓库初始化、文档推送、main 跟踪及独立目录 clone 验证。组员邀请按安排暂缓。
 - 已完成：完整 GOAT 源码 subtree 导入、本地部署、Gemma 26B 真实两会话；确认式创业资料、5/2 访谈数量区分、重启恢复、修正与项目关联隔离。
-- 本地已验证：EIR 18 个确定性测试、14 项 headless UI 行为检查；GOAT 后端/契约 540 项与前端 217 项测试通过（另有 8 个后端跳过）。远程 CI 的首轮绿色状态曾掩盖三项 Windows 路径断言失败，已复现、修正并等待复测；不能把状态绿等同于全部检查通过。
+- 已完成：面向老师的英文输入模板、英文默认回复策略与英文两会话真实演示；Virtual EIR 直接复用 GOAT 主题、字体和图标，改为聊天优先布局、侧栏会话和档案弹窗。历史中文记录保留，不冒充已翻译。
+- 本地已验证：EIR 24 个确定性测试、21 组 headless UI 检查；GOAT 后端/契约 540 项通过（另有 8 个跳过）。基线前端 217 项通过；远程 fail-fast [run 37839067814](https://github.com/mingzhi0119/Virtual-EIR-Capstone/actions/runs/37839067814) 也已通过并核对日志。此前状态绿色掩盖失败的记录仍保留；本次英文/UI 增量的远程结果另记，不沿用基线成功。
 - 尚未完成：老师/EIR 审阅、Ain-specific 知识、多案例评价、依赖安全升级、登录/多人授权或公网部署。当前只用虚构数据。
 - 本轮模型/API：本机 Ollama + 已有 `gemma4:26b`；未调用付费模型 API，不需要老师 key。以后需要云 API 再提出具体申请。
 - 第一周启动负责人：Mingzhi。组员邀请和后续分工最早下周再讨论；文档中的角色是工作类别，不代表成员已经接受任务。
@@ -39,7 +40,7 @@
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start-local.ps1
 ```
 
-打开 [Virtual EIR](http://127.0.0.1:62607)；完整原平台在 [GOAT AI](http://127.0.0.1:62606)。新设备首次运行加 `-Install`，前置环境和数据恢复见 [本地说明](docs/LOCAL_RUN.md)。无登录，仅 loopback 本地使用。
+打开 [Virtual EIR](http://127.0.0.1:62607)；完整原平台在 [GOAT AI](http://127.0.0.1:62606)。若浏览器仍显示旧页面，刷新一次。老师演示请选择英文虚构项目，或点 `New fictional venture` 从头开始。新设备首次运行加 `-Install`，前置环境和数据恢复见 [本地说明](docs/LOCAL_RUN.md)。无登录，仅 loopback 本地使用。
 
 ## 时间口径
 

@@ -12,7 +12,7 @@ Set-Location Virtual-EIR-Capstone
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start-local.ps1 -Install
 ```
 
-`-Install` 创建 `apps/goat/.venv`、安装上游 CI 依赖、执行 npm ci 和前端构建。优先使用已有 uv，未安装 uv 时使用 venv pip。源码已完整 subtree 导入，不需要 `git submodule update` 或再克隆 GOAT。
+`-Install` 创建 `apps/goat/.venv`、安装上游 CI 依赖、执行 npm ci 和前端构建。每次启动都会用同一 lockfile 的现有依赖构建 EIR 外观模块；生成文件不进 Git，新设备必须有 Node 和前端依赖。优先使用已有 uv，未安装 uv 时使用 venv pip。源码已完整 subtree 导入，不需要 `git submodule update` 或再克隆 GOAT。
 
 本机已安装依赖，以后启动：
 
@@ -30,16 +30,20 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start-local.ps1
 
 ## 2. 本周两会话演示
 
-1. 打开 EIR，点击“新建虚构项目”，模型选 `gemma4:26b`。
-2. “填入首次咨询” → 发送。解释两个问题、五次访谈和为何记录实际经历。
-3. 阅读建议，再“填写五次访谈计划” → 审阅 JSON → “确认并保存资料”。这是人工确认，不是模型自动写库。
-4. “填写两次访谈结果” → 检查 target_count=5、completed_count=2、sample_size=2 → 确认保存。
-5. “新建跟进会话” → “填入复盘问题” → 发送。新会话没有旧对话，但服务端加载同一 venture_id 的确认资料。
+1. 打开 EIR，刷新旧页面，点击 `New fictional venture`，模型选 `gemma4:26b`。界面、资料和输入模板均为英文。
+2. `Start the first consultation` → `Send message`。问题模板只填入输入框，不自动发送；说明两个问题、五次访谈和为何记录实际经历。
+3. 阅读建议，打开右上 `Venture profile` → `Prepare five-interview plan` → 审阅字段/行动摘要 → `Confirm and save profile`。高级 JSON 收在折叠区；这是人工确认，不是模型自动写库。
+4. 在档案弹窗里点 `Prepare two interview results` → 检查 Planned: 5 / Completed: 2 / Sample: 2 → 确认保存，关闭弹窗。
+5. 清空或发送尚未发送的草稿，点击侧栏 `SESSIONS` 旁的 `+`（`New follow-up session`）→ `Review saved interview results` → 发送。新会话没有旧对话，但服务端加载同一 venture_id 的确认资料。
 6. 观察回复主动提及已做两次、剩余三次、价格/速度的新发现和样本局限。重载页面检查恢复，也可切回第一次会话。
 
 两次“填写”只是填入虚构演示模板；不做任何真实访谈的完成声明。资料可以自行修改，原始版本留在 revisions 表。模型无权确认 facts；调整行动仍需人工保存。草稿未保存时，发送、新建跟进和切换会话/项目会提示。
 
-本案例多轮实测约 15–21s 一次回复，不是 p95 或普遍承诺。界面等完整回复后显示；尚无中途取消。建议仍需 EIR 专家评估，不能用于真实法律、投资等决策。
+本轮英文两会话实测 13.5s / 8.84s，其他早期运行约 15–23s；不是 p95 或普遍承诺。界面等完整回复后显示；尚无中途取消。建议仍需 EIR 专家评估，不能用于真实法律、投资等决策。
+
+设置按钮支持和 GOAT 相同的三种主题与 System / Light / Dark；不同端口的浏览器偏好分别保存，不宣称自动同步。启动脚本通过现有 `GOAT_SYSTEM_PROMPT` 配置设定 English-only 提示并明确使用 chat API；不修改上游通用多语言默认值。更改提示后必须重启对应服务，单纯刷新浏览器不会刷新后端缓存。
+
+英文策略已经真实测试英文输入、中文请求、旧中文上下文及冲突偏好；这是模型指令，不是确定性的语言防火墙，不能保证所有模型/所有输入都服从。旧中文历史保留，不会自动变成英文；老师演示使用新英文虚构项目。课堂前先试发一次并检查回复。
 
 ## 3. 停止 / 重启
 
@@ -65,13 +69,16 @@ GitHub 同步源码、文档、测试和虚构测试证据，不同步 `.venv`�
 
 ```powershell
 apps/goat/.venv/Scripts/python.exe -m pytest tests -q
-apps/goat/.venv/Scripts/python.exe -m ruff check eir tests scripts/verify-demo.py
-apps/goat/.venv/Scripts/python.exe -m ruff format --check eir tests scripts/verify-demo.py
+apps/goat/.venv/Scripts/python.exe -m ruff check eir tests scripts/verify-demo.py scripts/verify-english.py
+apps/goat/.venv/Scripts/python.exe -m ruff format --check eir tests scripts/verify-demo.py scripts/verify-english.py
+node apps/goat/frontend/node_modules/typescript/bin/tsc -p eir/frontend/tsconfig.json
+node scripts/build-eir-ui.mjs
 node scripts/verify-ui.mjs
 apps/goat/.venv/Scripts/python.exe scripts/verify-demo.py
+apps/goat/.venv/Scripts/python.exe scripts/verify-english.py
 ```
 
-`verify-ui.mjs` 使用已安装 Edge + Playwright headless，不做手工截图审核；运行错误反馈时 mock 模型，其他资料写入本地虚构测试项目。`verify-demo.py` 真正调用本地模型、建立新的虚构项目、确认计划/结果、重启 EIR、测试隔离及修正，更新 `docs/archive/2026-10-08-real-demo.json`。测试脚本会增加虚构测试记录，不覆盖已有项目。完整测试日期记录可根据未来工作更新，不可把旧文件日期当新测量。
+`verify-ui.mjs` 使用已安装 Edge + Playwright headless，21 组行为/布局/主题检查；运行错误反馈时 mock 模型，其他资料写入本地虚构测试项目。自动测试不是人工视觉审核；本轮另外检查了实际浏览器界面。`verify-demo.py` 真正调用本地模型、建立新的英文虚构项目、确认计划/结果、重启 EIR、测试隔离及修正，更新 `docs/archive/2026-10-08-english-demo.json`；早期中文 `real-demo.json` 原样保留。`verify-english.py` 保存边界输入的真实输出和逐项通过/失败标记到 `language-proof.json`，不是只查提示词是否包含 English。脚本会增加虚构测试记录，不覆盖已有项目。
 
 GitHub 根工作流只覆盖 Windows 原型回归；不是上游全部 CI、浏览器/EIR 专家评估、依赖安全审计、Linux parity 或生产发布门禁。上游嵌套 `.github/workflows` 不会在 Capstone 自动运行。
 

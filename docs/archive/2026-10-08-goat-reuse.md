@@ -97,7 +97,20 @@
 - 已提交且已关联本任务的 PR #28/#29 见上节。此处打勾仅指完成修复、局部/本地回归、提交 PR；不代表已合并或 CI 门禁解除。
 - 路线图保留 R14 依赖整改，并新增 R19 上游 Ruff CI 基线修复。邀请组员仍按用户要求留到下周，尚未邀请。
 
-## 已确认的风险
+## R8 远程复测关闭；R20/R21 英文演示与 GOAT 外观（完成）
+
+- 已核实 fail-fast [run 37839067814](https://github.com/mingzhi0119/Virtual-EIR-Capstone/actions/runs/37839067814)，提交 `93d1aecb9e1937ef0c4c5a3d140e2e726aa36c07`：EIR 18 passed、GOAT 540 passed / 8 skipped / 10 subtests、前端 217 passed / 50 files，契约与分层检查成功。上述“pending”是更早的观察快照；R8 现在关闭。英文/UI 新提交不借用该运行的结果。
+- 英文部署使用现有 `GOAT_SYSTEM_PROMPT` 和明确 `GOAT_USE_CHAT_API=true`，清空文件覆盖路径；三个主题的基线提示均被此 Capstone 配置覆盖。未修改上游通用多语言默认、API schema 或生成契约，也没有为 Capstone 英文定制新增上游 PR。
+- [真实英文两会话](2026-10-08-english-demo.json)：首次 13.471s、复盘 8.840s；英文输入、资料和模型原文，不是中文意译。复盘正确读取 5 planned / 2 completed / 3 remaining、价格 vs 速度变化及小样本限制；真实进程重启后资料/会话恢复、跨项目 404、客户修正通过。虚构项目 ID `2a64b54d-7c5c-4121-b6c4-194aaedf40dc`。
+- [语言边界实测](2026-10-08-language-proof.json)：英文业务问题、中文输入+旧中文历史+冲突偏好、EIR 中文资料/输入，最终三项回复英文且无 CJK，确认资料未改。最初软提示在冲突场景回复中文；“重复基础提示”实验仍失败，已经撤掉该无效上游代码/测试修改。改为更明确的部署语言指令后 GOAT 通过；EIR 曾在英文回复中原样引用中文项目名，补数据结束标记与英文描述指令后通过。保留这段失败记录，不称第一次就成功。
+- EIR 界面直接导入 GOAT 的真实 appearance 模块、数学规范化与现有 React/Markdown/KaTeX/Lucide；不复制主题 token、不引入新依赖。相同三主题、字体、图标、明暗与圆角聊天布局；确认资料移到弹窗，高级 JSON 折叠，行动/证据以摘要显示。偏好按端口分别保存，不声称自动跨端口同步。
+- [UI 证明](2026-10-08-english-ui-proof.json)：21 组 headless Edge 检查通过，涵盖字段/JSON同步、X/Escape保留草稿、非法 JSON 禁止字段覆写、starter 不覆盖未发消息、发送锁定、确认冲突、成功回复/新项目/新会话在刷新失败后仍保留、六主题配置与重载、1440/900/390宽度及844×390/390×350低高度、无模型反馈/弹窗内重试、Markdown/数学与恶意 HTML/链接/远程图片安全边界。
+- 实机浏览器已查看真实英文复盘及 GOAT 的真实英文回复，另查看欢迎页、档案弹窗、主题与低高度自动截图结果；未称专家评审。界面截图在本地忽略目录 `var/eir-ui-review`。代码/UI验证：EIR 24 passed，GOAT backend/contracts 540 passed / 8 skipped / 10 subtests，TypeScript、ESLint、Ruff/format、构建、契约同步、import-linter 成功。给提示末尾加说明后，旧 mock 把整个余下字符串当纯 JSON，导致五个测试失败；已按 JSON 原始解码边界修正 fixture 并复测，生产协议未改。
+- 英文约束仍是提示策略，不是确定性语言防火墙；不能从无 CJK 推断所有语言/模型都被硬性限制。历史中文记录与早期中文证据保留。老师演示用新英文项目；旧 v2 PPT/讲稿保留为制作时快照，现场步骤以新版部署说明为准。
+- GOAT 前端再次全量回归：双 worker 216 passed / 1 failed，原有图表关联测试在 `Loading responses` 状态等不到 `Earlier answer`。单文件 28 passed，单 worker 完整 217 passed / 50 files。外层 CI 采用单 worker 的同一全量套件，不跳过断言、不增加生产代码改动；资源/异步时序稳定性仍可继续改进，不称该原测试从此永不波动。
+- 质量仍待审阅：复盘里仍出现假设性的付费意愿问题，自动测试和外观改进不等于专家认可。无账号/授权、依赖 high 警告、跨设备真实数据灾备演练等门禁未关闭。无邀请组员、付费 API、合并 PR 或扩大监听范围。
+
+## 仍然有效的风险
 
 - 上游旧 PROJECT_STATUS 的登录描述与当前公开 demo 配置不一致；以当前代码和运行结果为准。本轮只允许 loopback 本地部署。
 - GOAT 聊天历史及只读 project_memory 不能替代可编辑的创业资料、待验证假设和行动状态。

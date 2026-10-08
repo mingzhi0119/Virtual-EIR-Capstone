@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES2022", "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext", "moduleResolution": "Bundler", "strict": true,
+    "noEmit": true, "skipLibCheck": true, "esModuleInterop": true,
+    "baseUrl": "../../apps/goat/frontend",
+    "paths": {
+      "react": ["node_modules/@types/react"],
+      "react-dom/*": ["node_modules/@types/react-dom/*"],
+      "lucide-react": ["node_modules/lucide-react"],
+      "react-markdown": ["node_modules/react-markdown"],
+      "remark-gfm": ["node_modules/remark-gfm"],
+      "remark-math": ["node_modules/remark-math"],
+      "rehype-katex": ["node_modules/rehype-katex"]
+    }
+  },
+  "include": ["appearance.ts", "styles.d.ts"]
+}

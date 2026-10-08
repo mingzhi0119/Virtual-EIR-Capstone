@@ -1,122 +1,204 @@
-// Automated behavior proof, not manual visual verification. Chat is mocked here;
-// real model and storage evidence is recorded by verify-demo.py.
+// Automated UI behavior, appearance and layout proof. Model feedback is mocked.
+// Real English model replies are retained separately by verify-demo.py.
 import assert from 'node:assert/strict'
-import { writeFile } from 'node:fs/promises'
+import { mkdir, writeFile } from 'node:fs/promises'
+import { fileURLToPath } from 'node:url'
 import { chromium } from '../apps/goat/frontend/node_modules/playwright/index.mjs'
 
 const browser = await chromium.launch({ channel: 'msedge', headless: true })
-const page = await browser.newPage()
-const errors = []
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 } })
+const checks = [], errors = []
+const passed = name => checks.push(name)
+const idle = async () => page.waitForFunction(() => !document.getElementById('new').disabled)
+const feedback = async text => { await page.waitForFunction(text => document.getElementById('status').textContent.includes(text), text); await idle() }
+const openProfile = async () => {
+  if (!await page.locator('#profile-panel').isVisible()) await page.locator('#open-profile').click()
+  if (!await page.locator('#advanced-profile').getAttribute('open')) {
+    if (!(await page.locator('#profile').isVisible())) await page.locator('#advanced-profile summary').click()
+  }
+}
+const closeProfile = async () => page.locator('#close-profile').click()
+const profile = async () => JSON.parse(await page.locator('#profile').inputValue())
 page.on('pageerror', error => errors.push(error.message))
 try {
   await page.goto('http://127.0.0.1:62607')
-  await page.waitForFunction(() => document.getElementById('models').options.length > 0)
-  await page.locator('#new').click()
-  await page.waitForFunction(() => document.getElementById('status').textContent.includes('已建立虚构项目') && !document.getElementById('new').disabled)
-  assert.match(await page.locator('#revision').textContent(), /版本 1/)
+  await idle()
+  assert.equal(await page.locator('html').getAttribute('lang'), 'en')
+  await page.locator('#new').click(); await feedback('Fictional venture created.')
   const venture = await page.locator('#ventures').inputValue()
-  await page.locator('#plan').click()
-  const planned = JSON.parse(await page.locator('#profile').inputValue())
-  assert.equal(planned.actions[0].target_count, 5)
-  assert.equal(planned.actions[0].completed_count, 0)
-  await page.locator('#save').click()
-  await page.waitForFunction(() => document.getElementById('revision').textContent.includes('版本 2'))
-  await page.locator('#result').click()
-  await page.locator('#followtext').click()
-  await page.locator('#send').click()
-  await page.waitForFunction(() => document.getElementById('status').textContent.includes('未保存修改'))
-  await page.locator('#save').click()
-  await page.waitForFunction(() => document.getElementById('revision').textContent.includes('版本 3'))
-  await page.locator('#followup').click()
-  await page.waitForFunction(() => document.getElementById('status').textContent.includes('已建立全新跟进会话') && !document.getElementById('followup').disabled)
+  assert.match((await profile()).name, /fictional/)
+  assert.equal(await page.locator('#profile-panel').isVisible(), false)
+  passed('English shell and fictional project creation')
+  await openProfile()
+  await page.locator('#field-customer').fill('Graduate students studying in the evening')
+  assert.equal((await profile()).customer, 'Graduate students studying in the evening')
+  await closeProfile(); await openProfile()
+  assert.equal(await page.locator('#field-customer').inputValue(), 'Graduate students studying in the evening')
+  await page.locator('#profile-panel').press('Escape'); await openProfile()
+  assert.equal((await profile()).customer, 'Graduate students studying in the evening')
+  passed('Typed fields sync to JSON; X and Escape preserve drafts')
+  await page.locator('#save').click(); await feedback('Profile confirmed and saved.')
+  await page.locator('#plan').click(); await idle()
+  assert.equal((await profile()).actions[0].target_count, 5)
+  assert.equal((await profile()).actions[0].completed_count, 0)
+  await page.locator('#save').click(); await feedback('Profile confirmed and saved.')
+  passed('Founder confirmation persists a five-interview plan')
+  await page.locator('#result').click(); await idle(); await closeProfile()
+  await page.locator('#followtext').click(); await page.locator('#send').click()
+  await feedback('unsaved profile changes')
+  passed('Unsaved profile blocks chat')
+  await page.locator('#message').fill(''); await openProfile()
+  await page.locator('#save').click(); await feedback('Profile confirmed and saved.')
+  assert.equal((await profile()).actions[0].completed_count, 2)
+  assert.equal((await profile()).evidence[0].sample_size, 2)
+  await closeProfile()
+  await page.locator('#followup').click(); await feedback('New follow-up session created.')
   assert.equal(await page.locator('#sessions option').count(), 2)
   const session = await page.locator('#sessions').inputValue()
-  assert.equal(await page.evaluate(id => localStorage.getItem(`eir-session-${id}`), venture), session)
-  await page.reload()
-  await page.waitForFunction(() => document.getElementById('models').options.length > 0)
+  await page.reload(); await idle()
   assert.equal(await page.locator('#ventures').inputValue(), venture)
   assert.equal(await page.locator('#sessions').inputValue(), session)
-  const restored = JSON.parse(await page.locator('#profile').inputValue())
-  assert.equal(restored.actions[0].target_count, 5)
-  assert.equal(restored.actions[0].completed_count, 2)
-  assert.equal(restored.evidence[0].sample_size, 2)
-  // Model failure must surface visibly and leave the confirmed editor intact.
-  await page.route('**/api/ventures/*/sessions/*/chat', route => route.fulfill({
-    status: 503, contentType: 'application/json', body: JSON.stringify({ detail: 'Mock model unavailable' }),
-  }))
-  await page.locator('#followtext').click()
-  await page.locator('#send').click()
-  await page.waitForFunction(() => document.getElementById('status').textContent.includes('Mock model unavailable'))
-  assert.equal(JSON.parse(await page.locator('#profile').inputValue()).actions[0].completed_count, 2)
-  // Invalid JSON helpers must explain the error instead of crashing the page.
+  assert.equal((await profile()).actions[0].completed_count, 2)
+  assert.match(await page.locator('#context-summary').textContent(), /5 planned \/ 2 completed \/ 3 remaining/)
+  passed('New follow-up and reload restore venture, session and 5/2/3 progress')
+  await page.route('**/api/ventures/*/sessions/*/chat', route => route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ detail: 'Mock model unavailable' }) }))
+  await page.locator('#followtext').click(); await page.locator('#send').click(); await feedback('Mock model unavailable')
+  assert.equal((await profile()).actions[0].completed_count, 2)
+  passed('Model error visible; confirmed profile unchanged')
+  await page.locator('#message').fill(''); await openProfile()
   const confirmedText = await page.locator('#profile').inputValue()
-  await page.locator('#profile').fill('{')
-  await page.locator('#plan').click()
-  await page.waitForFunction(() => document.getElementById('status').classList.contains('error'))
+  await page.locator('#profile').fill('{'); await page.locator('#plan').click(); await feedback('Profile JSON is invalid')
+  await page.locator('#profile-panel').press('Escape'); await openProfile()
   assert.equal(await page.locator('#profile').inputValue(), '{')
+  assert.equal(await page.locator('#field-customer').isDisabled(), true)
   await page.locator('#profile').fill(confirmedText)
-  // Unsaved state blocks creation, and formatting-only changes do not block chat.
-  const draft = JSON.parse(confirmedText)
-  draft.actions[0].completed_count = 3
+  assert.equal(await page.locator('#field-customer').isDisabled(), false)
+  passed('Invalid JSON produces English feedback and survives dialog close')
+  const draft = JSON.parse(confirmedText); draft.actions[0].completed_count = 3
   await page.locator('#profile').fill(JSON.stringify(draft))
-  const beforeSessions = await page.locator('#sessions option').count()
-  await page.locator('#followup').click()
-  await page.waitForFunction(() => document.getElementById('status').textContent.includes('未保存修改'))
-  assert.equal(await page.locator('#sessions option').count(), beforeSessions)
-  await page.locator('#profile').fill(JSON.stringify(JSON.parse(confirmedText)))
-  await page.locator('#send').click()
-  await page.waitForFunction(() => document.getElementById('status').textContent.includes('Mock model unavailable'))
-  // A failed project-list load cannot combine one venture with another session.
-  const otherResponse = await page.request.post('http://127.0.0.1:62607/api/ventures', { data: { name: 'UI isolation fixture' } })
-  const other = await otherResponse.json()
-  await page.reload()
-  await page.waitForFunction(() => document.getElementById('models').options.length > 0)
-  await page.route(`**/api/ventures/${other.venture_id}/sessions`, route => route.fulfill({
-    status: 503, contentType: 'application/json', body: JSON.stringify({ detail: 'Mock session-list failure' }),
-  }))
-  await page.locator('#ventures').selectOption(other.venture_id)
-  await page.waitForFunction(() => document.getElementById('status').textContent.includes('Mock session-list failure'))
+  assert.match(await page.locator('#action-summary').textContent(), /Completed: 3/)
+  await closeProfile(); const count = await page.locator('#sessions option').count()
+  await page.locator('#followup').click(); await feedback('unsaved profile changes')
+  assert.equal(await page.locator('#sessions option').count(), count)
+  passed('Advanced JSON syncs summaries; dirty profile blocks follow-up')
+  await openProfile(); await page.locator('#profile').fill(JSON.stringify(JSON.parse(confirmedText))); await closeProfile()
+  await page.locator('#followtext').click(); await page.locator('#send').click(); await feedback('Mock model unavailable')
+  passed('Formatting-only changes do not block chat')
+  const unsent = await page.locator('#message').inputValue()
+  await page.locator('#initial').click(); await feedback('before choosing another starter')
+  assert.equal(await page.locator('#message').inputValue(), unsent)
+  passed('Starter prompts never overwrite an unsent draft')
+  let switchRequests = 0
+  const countRequests = request => { if (/\/api\/ventures\/[^/]+\/sessions\//.test(request.url()) && request.method() === 'GET') switchRequests++ }
+  page.on('request', countRequests)
+  const previous = await page.locator('#sessions').inputValue()
+  await page.locator('#sessions').selectOption({ index: 0 }); await feedback('unsent message')
+  assert.equal(await page.locator('#sessions').inputValue(), previous)
+  assert.equal(switchRequests, 0)
+  page.off('request', countRequests); await page.locator('#message').fill('')
+  passed('Unsent composer draft blocks session switch without requests')
+  const other = await (await page.request.post('http://127.0.0.1:62607/api/ventures', { data: { name: 'UI isolation fixture (fictional)' } })).json()
+  await page.reload(); await idle()
+  await page.route(`**/api/ventures/${other.venture_id}/sessions`, route => route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ detail: 'Mock session-list failure' }) }))
+  await page.locator('#ventures').selectOption(other.venture_id); await feedback('Mock session-list failure')
   assert.equal(await page.locator('#ventures').inputValue(), venture)
   assert.equal(await page.locator('#sessions').inputValue(), session)
-  // A successful reply stays visible even when sidebar refresh fails afterward.
+  passed('Failed venture switch is atomic')
+  // A failed save must leave both typed draft and confirmed revision recoverable.
+  await openProfile(); await page.locator('#field-customer').fill('Unsaved correction')
+  await page.route(`**/api/ventures/${venture}`, route => route.request().method() === 'PUT' ? route.fulfill({ status: 409, contentType: 'application/json', body: JSON.stringify({ detail: 'Mock stale revision' }) }) : route.continue())
+  await page.locator('#save').click(); await feedback('Mock stale revision')
+  assert.equal((await profile()).customer, 'Unsaved correction')
+  await page.unroute(`**/api/ventures/${venture}`); await page.locator('#profile').fill(confirmedText); await closeProfile()
+  passed('Failed confirmation preserves edits and revision')
   await page.unroute('**/api/ventures/*/sessions/*/chat')
   const active = await (await page.request.get(`http://127.0.0.1:62607/api/ventures/${venture}/sessions/${session}`)).json()
-  await page.route('**/api/ventures/*/sessions/*/chat', route => route.fulfill({
-    status: 200, contentType: 'application/json', body: JSON.stringify({
-      session: { ...active, turns: [{ role: 'user', content: 'mock question' }, { role: 'assistant', content: 'Mock saved reply stays visible' }] },
-      reply: 'Mock saved reply stays visible', context_revision: 3, elapsed_seconds: 0.1,
-      goat_session_id: `eir-${session}`,
-    }),
-  }))
-  await page.route(`**/api/ventures/${venture}/sessions`, route => route.request().method() !== 'GET' ? route.continue() : route.fulfill({
-    status: 503, contentType: 'application/json', body: JSON.stringify({ detail: 'Mock refresh failure' }),
-  }))
-  await page.locator('#followtext').click()
-  await page.locator('#send').click()
-  await page.waitForFunction(() => document.getElementById('status').textContent.includes('回复已保存') && document.getElementById('status').textContent.includes('列表刷新失败'))
+  const markdown = '**Mock saved reply stays visible**\n\nSample: $n=2$. An extra $$3$ or $$5$.\n\n<script>alert(1)</script>\n\n[bad](javascript:alert(1))\n\n![tracker](https://tracking.invalid/pixel)'
+  await page.route('**/api/ventures/*/sessions/*/chat', async route => {
+    await new Promise(resolve => setTimeout(resolve, 300))
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ session: { ...active, turns: [{ role: 'user', content: 'Mock question' }, { role: 'assistant', content: markdown }] }, reply: markdown, context_revision: 4, elapsed_seconds: 0.1, goat_session_id: `eir-${session}` }) })
+  })
+  await page.route(`**/api/ventures/${venture}/sessions`, route => route.request().method() !== 'GET' ? route.continue() : route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ detail: 'Mock refresh failure' }) }))
+  await page.locator('#followtext').click(); await page.locator('#send').click()
+  assert.equal(await page.locator('#message').isDisabled(), true)
+  await feedback('List refresh failed')
   assert.match(await page.locator('#transcript').textContent(), /Mock saved reply stays visible/)
-  // A persisted creation must be remembered before the sidebar GET can fail.
-  await page.locator('#followup').click()
-  await page.waitForFunction(() => document.getElementById('status').textContent.includes('新会话已建立；列表刷新失败'))
+  assert.equal(await page.locator('#transcript script').count(), 0)
+  assert.equal(await page.locator('#transcript a[href^="javascript:"]').count(), 0)
+  assert.equal(await page.locator('#transcript img').count(), 0)
+  assert.ok(await page.locator('#transcript .katex').count() > 0)
+  assert.match(await page.locator('#transcript').textContent(), /An extra \$3 or \$5/)
+  assert.equal(await page.locator('#transcript .message-content strong').count(), 1)
+  passed('Send locks drafts; saved reply survives refresh failure; Markdown is sanitized')
+  await page.locator('#followup').click(); await feedback('New session created; list refresh failed')
   const createdSession = await page.evaluate(id => localStorage.getItem(`eir-session-${id}`), venture)
   assert.notEqual(createdSession, session)
-  assert.match(await page.locator('#sessionmeta').textContent(), new RegExp(createdSession))
-  await page.unroute(`**/api/ventures/${venture}/sessions`)
-  await page.reload()
-  await page.waitForFunction(() => document.getElementById('models').options.length > 0)
   assert.equal(await page.locator('#sessions').inputValue(), createdSession)
-  assert.deepEqual(errors, [])
-  const evidence = {
-    run_at: new Date().toISOString(), browser: 'installed Edge / Playwright headless',
-    model_calls: 'mocked for chat success/error UI feedback; real model proof is separate',
-    checks: ['project creation', 'plan confirmation', 'unsaved edit chat guard', 'result confirmation',
-      'new follow-up session', 'page reload project/session/state recovery', 'visible model error', 'invalid JSON helper feedback',
-      'unsaved follow-up guard', 'formatting-only edit accepted', 'atomic failed project switch', 'saved reply survives failed refresh',
-      'created session survives failed refresh and reload', 'no page errors'],
-    passed: true,
+  await page.unroute(`**/api/ventures/${venture}/sessions`); await page.reload(); await idle()
+  assert.equal(await page.locator('#sessions').inputValue(), createdSession)
+  passed('Created session survives failed refresh and reload')
+  // Same GOAT theme engine is the oracle; preferences are origin-local, not cross-port synced.
+  await page.locator('#open-appearance').click()
+  for (const themeStyle of ['classic', 'urochester', 'thu']) {
+    await page.locator('#theme-style').selectOption(themeStyle)
+    for (const themeMode of ['light', 'dark']) {
+      await page.locator('#theme-mode').selectOption(themeMode)
+      const proof = await page.evaluate(async config => {
+        const { getComputedThemeTokens, sanitizeAppearanceConfig } = await import('/assets/generated/appearance.js')
+        const expected = getComputedThemeTokens(sanitizeAppearanceConfig(config), false)
+        return { actualBg: document.documentElement.style.getPropertyValue('--bg-chat'), expectedBg: expected.chatBg, actualMuted: document.documentElement.style.getPropertyValue('--text-muted'), expectedMuted: expected.textMuted, mode: document.documentElement.dataset.themeResolved }
+      }, { themeStyle, themeMode })
+      assert.equal(proof.actualBg, proof.expectedBg); assert.equal(proof.actualMuted, proof.expectedMuted); assert.equal(proof.mode, themeMode)
+    }
   }
-  await writeFile(new URL('../docs/archive/2026-10-08-ui-proof.json', import.meta.url), JSON.stringify(evidence, null, 2))
-  console.log('14 automated UI behavior checks passed; no screenshots or manual visual claims.')
-} finally {
-  await browser.close()
-}
+  await page.locator('#theme-style').selectOption('classic'); await page.locator('#theme-mode').selectOption('light'); await page.locator('#close-appearance').click()
+  await page.reload(); await idle()
+  assert.equal(await page.locator('html').getAttribute('data-theme-resolved'), 'light')
+  assert.equal(await page.locator('html').getAttribute('data-theme-style'), 'classic')
+  passed('Six GOAT theme/mode combinations and reload persistence')
+  for (const width of [1440, 900, 390]) {
+    await page.setViewportSize({ width, height: 900 })
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true)
+    assert.equal(await page.locator('#message').isVisible(), true)
+    await page.locator('#open-profile').click()
+    assert.equal(await page.evaluate(() => { const r = document.getElementById('profile-panel').getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth }), true)
+    await closeProfile()
+  }
+  passed('Desktop, tablet and narrow viewport have no horizontal overflow')
+  for (const viewport of [{ width: 844, height: 390 }, { width: 390, height: 350 }]) {
+    await page.setViewportSize(viewport)
+    await page.locator('#send').scrollIntoViewIfNeeded()
+    assert.equal(await page.evaluate(() => { const r = document.getElementById('send').getBoundingClientRect(); return r.bottom <= innerHeight && r.top >= 0 && document.documentElement.scrollWidth <= innerWidth }), true)
+  }
+  passed('Landscape and keyboard-reduced heights keep send reachable by scrolling')
+  // Project creation success must survive a subsequent failed list GET.
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await page.route('**/api/ventures', route => route.request().method() === 'GET' ? route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ detail: 'Mock venture-list failure' }) }) : route.continue())
+  await page.locator('#new').click(); await feedback('created and retained; list refresh failed')
+  const retained = await page.locator('#ventures').inputValue()
+  assert.notEqual(retained, venture)
+  assert.equal(await page.evaluate(() => localStorage.getItem('eir-selected-venture')), retained)
+  await page.unroute('**/api/ventures'); await page.reload(); await idle()
+  assert.equal(await page.locator('#ventures').inputValue(), retained)
+  passed('Created venture survives list refresh failure and reload')
+  // Model loading works even if startup cannot load the venture list.
+  const recovery = await browser.newPage()
+  await recovery.route('**/api/ventures', route => route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ detail: 'Mock startup list failure' }) }))
+  await recovery.route('**/api/models', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ models: [] }) }))
+  await recovery.goto('http://127.0.0.1:62607'); await recovery.waitForFunction(() => !document.getElementById('new').disabled)
+  assert.match(await recovery.locator('#status').textContent(), /No installed model/)
+  assert.equal(await recovery.locator('#send').isDisabled(), true)
+  await recovery.unroute('**/api/models'); await recovery.locator('#open-appearance').click(); await recovery.locator('#refresh-models').click()
+  await recovery.waitForFunction(() => document.getElementById('status').textContent.includes('Local model list refreshed.'))
+  assert.match(await recovery.locator('#appearance-status').textContent(), /Local model list refreshed/)
+  assert.ok(await recovery.locator('#models option').count() > 0)
+  await recovery.close()
+  passed('Empty model feedback, retry, and discovery independent of venture list')
+  assert.deepEqual(errors, [])
+  await mkdir(new URL('../var/eir-ui-review/', import.meta.url), { recursive: true })
+  await page.screenshot({ path: fileURLToPath(new URL('../var/eir-ui-review/english-shell.png', import.meta.url)), fullPage: false })
+  passed('No page errors')
+  const evidence = { run_at: new Date().toISOString(), browser: 'installed Edge / Playwright headless', model_calls: 'mocked; separate real-model evidence', checks, passed: true }
+  await writeFile(new URL('../docs/archive/2026-10-08-english-ui-proof.json', import.meta.url), JSON.stringify(evidence, null, 2))
+  console.log(`${checks.length} UI proof groups passed; real-model language proof is separate.`)
+} finally { await browser.close() }

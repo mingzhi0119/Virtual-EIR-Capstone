@@ -27,8 +27,8 @@ jobs:
       - name: Capstone lint and deterministic tests
         run: |
           $PSNativeCommandUseErrorActionPreference = $true
-          python -m ruff check eir tests scripts/verify-demo.py
-          python -m ruff format --check eir tests scripts/verify-demo.py
+          python -m ruff check eir tests scripts/verify-demo.py scripts/verify-english.py
+          python -m ruff format --check eir tests scripts/verify-demo.py scripts/verify-english.py
           python -m pytest tests -q
       - name: GOAT backend and HTTP contract proof
         working-directory: apps/goat
@@ -47,5 +47,11 @@ jobs:
           npm run lint
           npm run depcruise
           npm run contract:check
-          npm test -- --run --maxWorkers=2
+          npm test -- --run --maxWorkers=1
           npm run build
+      - name: English EIR interface proof
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $true
+          node apps/goat/frontend/node_modules/typescript/bin/tsc -p eir/frontend/tsconfig.json
+          node apps/goat/frontend/node_modules/eslint/bin/eslint.js --config eir/frontend/eslint.config.mjs eir/web/app.js scripts/build-eir-ui.mjs scripts/verify-ui.mjs
+          node scripts/build-eir-ui.mjs

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 import time
 from datetime import datetime, timezone
@@ -34,15 +35,15 @@ def main() -> None:
             "/api/ventures",
             "POST",
             {
-                "name": "校园晚餐配送（自动验收虚构案例）",
-                "customer": "校内晚间学习的学生",
-                "problem": "晚间获得合适的晚餐可能不方便",
-                "assumptions": ["速度是最重要因素；尚未验证"],
+                "name": "Campus dinner delivery (English verification, fictional)",
+                "customer": "Students studying on campus in the evening",
+                "problem": "Getting an affordable dinner during evening study may be inconvenient",
+                "assumptions": ["Delivery speed matters most; not yet tested"],
             },
         )
         base = f"/api/ventures/{venture['venture_id']}"
         first = call(base + "/sessions", "POST")
-        initial_input = "我想做校园晚餐配送，现在只有想法，还没有访谈。我猜学生最在乎速度。我本周最多能访谈五人。请问两个关键问题并给我一个本周具体可执行的验证行动。"
+        initial_input = "I want to offer campus dinner delivery. This is only an idea; I have no interviews yet. I assume students care most about speed. I can interview at most five people this week. Ask two useful questions and propose one concrete validation action for this week."
         started = time.perf_counter()
         initial = call(
             base + f"/sessions/{first['session_id']}/chat",
@@ -58,10 +59,11 @@ def main() -> None:
         )
         evidence["initial_input"] = initial_input
         evidence["initial_response"] = initial
+        assert not re.search(r"[\u3400-\u9fff]", initial["reply"])
         profile = venture["profile"]
         profile["actions"] = [
             {
-                "description": "访谈五位校内晚间学习的学生，问最近一次买晚餐的实际经历、替代方案、价格及速度顾虑；记录原话和背景。",
+                "description": "Interview five students studying on campus in the evening about their most recent dinner purchase, alternatives, cost and speed concerns. Record their actual words and context.",
                 "target_count": 5,
                 "completed_count": 0,
             }
@@ -69,13 +71,15 @@ def main() -> None:
         confirmed_plan = call(base, "PUT", {"profile": profile, "expected_revision": 1})
         evidence["confirmed_plan"] = confirmed_plan
         profile["actions"][0]["completed_count"] = 2
-        profile["actions"][0]["result"] = "只完成两次访谈；两人提到价格比速度更重要。"
+        profile["actions"][0]["result"] = (
+            "Only two interviews completed; both students reported that price mattered more than speed."
+        )
         profile["evidence"] = [
             {
-                "observation": "两名受访学生报告价格比速度更重要。",
+                "observation": "Two students reported that price mattered more than speed.",
                 "sample_size": 2,
-                "source": "虚构案例：创业者手动确认报告",
-                "limitation": "仅两个便利样本，不能代表市场，也不证明愿意付费。",
+                "source": "Fictional case: founder-confirmed report",
+                "limitation": "Only two convenience samples; not representative and not evidence of willingness to pay.",
             }
         ]
         confirmed_result = call(
@@ -84,7 +88,7 @@ def main() -> None:
         evidence["confirmed_result"] = confirmed_result
         second = call(base + "/sessions", "POST")
         assert second["turns"] == []
-        followup_input = "本次访谈结果已经保存了。请结合上次计划复盘，下一步应该怎么调整？请说明证据局限。"
+        followup_input = "I have saved the latest interview results. Review them against the previous action plan. How should I adjust the next step? Explain the limits of the evidence."
         followup = call(
             base + f"/sessions/{second['session_id']}/chat",
             "POST",
@@ -98,6 +102,8 @@ def main() -> None:
         )
         evidence["followup_input"] = followup_input
         evidence["followup_response"] = followup
+        assert not re.search(r"[\u3400-\u9fff]", followup["reply"])
+        evidence["language"] = "English; actual replies retained for human review"
         stored = call(base)
         assert stored["profile"]["actions"][0]["target_count"] == 5
         assert stored["profile"]["actions"][0]["completed_count"] == 2
@@ -133,14 +139,16 @@ def main() -> None:
         restored_session = call(base + f"/sessions/{second['session_id']}")
         assert restored_session == followup["session"]
         evidence["restart_restored_profile_and_session"] = True
-        other = call("/api/ventures", "POST", {"name": "另一虚构项目"})
+        other = call("/api/ventures", "POST", {"name": "Another fictional venture"})
         cross = client.get(
             f"/api/ventures/{other['venture_id']}/sessions/{second['session_id']}"
         )
         assert cross.status_code == 404
         evidence["cross_project_session_status"] = cross.status_code
         correction = stored["profile"].copy()
-        correction["customer"] = "校内晚间学习的研究生（已纠正）"
+        correction["customer"] = (
+            "Graduate students studying on campus in the evening (corrected)"
+        )
         corrected = call(
             base,
             "PUT",
@@ -156,7 +164,7 @@ def main() -> None:
         evidence["goat_saved_followup"] = local.get(
             f"http://127.0.0.1:62606/api/history/{followup['goat_session_id']}"
         ).json()
-    output = ROOT / "docs/archive/2026-10-08-real-demo.json"
+    output = ROOT / "docs/archive/2026-10-08-english-demo.json"
     output.write_text(
         json.dumps(evidence, ensure_ascii=False, indent=2), encoding="utf-8"
     )

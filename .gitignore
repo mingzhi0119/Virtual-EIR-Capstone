@@ -22,6 +22,7 @@ dist/
 build/
 coverage/
 *.tsbuildinfo
+eir/web/generated/
 
 # Local project data, uploads and databases
 data/private/
