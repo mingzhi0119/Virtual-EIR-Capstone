@@ -10,7 +10,11 @@ if ($Install) {
         py -3.14 -m venv (Join-Path $goatRoot '.venv')
         if ($LASTEXITCODE -ne 0) { throw 'Python 3.14 virtual environment creation failed.' }
     }
-    uv pip install --python $pythonExe -r (Join-Path $goatRoot 'requirements-ci.txt')
+    if (Get-Command uv -ErrorAction SilentlyContinue) {
+        uv pip install --python $pythonExe -r (Join-Path $goatRoot 'requirements-ci.txt')
+    } else {
+        & $pythonExe -m pip install -r (Join-Path $goatRoot 'requirements-ci.txt')
+    }
     if ($LASTEXITCODE -ne 0) { throw 'Python dependency installation failed.' }
     Push-Location (Join-Path $goatRoot 'frontend')
     try {
@@ -25,6 +29,13 @@ if (-not (Test-Path -LiteralPath (Join-Path $goatRoot 'frontend\dist\index.html'
 Invoke-RestMethod 'http://127.0.0.1:11434/api/tags' -TimeoutSec 5 | Out-Null
 $env:GOAT_DEPLOY_MODE = '0'
 $env:GOAT_RUNTIME_ROOT = Join-Path $runtimeRoot 'goat'
+$env:GOAT_LOG_PATH = Join-Path $env:GOAT_RUNTIME_ROOT 'chat_logs.db'
+$env:GOAT_DATA_DIR = Join-Path $env:GOAT_RUNTIME_ROOT 'data'
+$env:GOAT_LOG_DIR = Join-Path $env:GOAT_RUNTIME_ROOT 'logs'
+$env:GOAT_OBJECT_STORE_BACKEND = 'local'
+$env:GOAT_RUNTIME_METADATA_BACKEND = 'sqlite'
+$env:GOAT_OBJECT_STORE_ROOT = $env:GOAT_DATA_DIR
+$env:OLLAMA_BASE_URL = 'http://127.0.0.1:11434'
 $env:GOAT_WORKBENCH_WEB_PROVIDER = 'disabled'
 $env:GOAT_FEATURE_CODE_SANDBOX = '0'
 $env:GOAT_FEATURE_AGENT_WORKBENCH = '0'

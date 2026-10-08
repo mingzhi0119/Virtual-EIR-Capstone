@@ -1,0 +1,21 @@
+{
+  "run_at": "2026-10-08T19:52:20.381Z",
+  "browser": "installed Edge / Playwright headless",
+  "model_calls": "mocked only for error feedback; real proof is separate",
+  "checks": [
+    "project creation",
+    "plan confirmation",
+    "unsaved edit chat guard",
+    "result confirmation",
+    "new follow-up session",
+    "page reload project/session/state recovery",
+    "visible model error",
+    "invalid JSON helper feedback",
+    "unsaved follow-up guard",
+    "formatting-only edit accepted",
+    "atomic failed project switch",
+    "saved reply survives failed refresh",
+    "no page errors"
+  ],
+  "passed": true
+}

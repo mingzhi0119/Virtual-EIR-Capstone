@@ -81,12 +81,22 @@ class GoatClient:
                     async for line in response.aiter_lines():
                         if line.startswith("data:"):
                             data = json.loads(line[5:].strip())
+                            if not isinstance(data, dict) or not isinstance(
+                                data.get("type"), str
+                            ):
+                                raise ModelUnavailable(
+                                    "GOAT returned an invalid event. No EIR turn was saved."
+                                )
                             event = data["type"]
                             if event == "error":
                                 raise ModelUnavailable(
                                     "GOAT returned a chat error. No turn was saved in EIR; inspect the GOAT log."
                                 )
                             if event == "token":
+                                if not isinstance(data.get("token"), str):
+                                    raise ModelUnavailable(
+                                        "GOAT returned an invalid token. No EIR turn was saved."
+                                    )
                                 tokens.append(data["token"])
                             if event == "done":
                                 done = True

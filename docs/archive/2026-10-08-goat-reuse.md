@@ -54,6 +54,17 @@
 - 已按 [Ollama 官方 chat 参数](https://docs.ollama.com/api/chat) 和 [thinking 文档](https://docs.ollama.com/capabilities/thinking) 修复本地 subtree 的五种调用路径；不更改 Capstone 私有仓库之外的原仓库。
 - 新增 26 个传参回归用例；包含旧 client 与黑盒的一组 88 tests 全通过，API 契约同步通过；真实两会话已成功。未变更公共 OpenAPI schema，不重生成契约文件。
 
+## R7：真实两会话与回归（完成）
+
+- [真实模型证据](2026-10-08-real-demo.json)：收紧首次五人预算后复测，首次 17.617s、跟进 16.088s。
+- 首次实际提出两条问题并解释依据，行动包含目标、五人、非引导式询问与记录指标；第二次读到 5/2/3，建议把剩余三次重点转向价格/价值及替代方案，说明两个样本不代表市场。
+- 新会话 turns=[]，输入不包含旧对话或五/二/价格结果的重复说明；这些来自已保存状态。模型没有把 planned=5 改成 completed=5。
+- 实际停止并重启 EIR，profile 与 session 完全恢复；跨项目 session 请求为 404；客户字段修正持久保存。
+- [自动 UI 行为证据](2026-10-08-ui-proof.json)：13 项，包含真实页面重载、确认保存、新会话、未保存草稿、非法 JSON、项目切换失败和列表刷新失败。UI 的模型错误/成功反馈边界使用 mock，真实模型另见上一证据，不混为一谈。
+- EIR 18 个确定性测试通过；修复后 GOAT backend/contracts 540 passed、8 skipped、10 subtests passed；Ruff、format、contract sync、import-linter 通过。
+- 只读复核发现并修复：无效 SSE token 的 500、SQLite 连接未确定性关闭、继承环境路径绕开项目存储、UI 项目/会话混用与保存回复被刷新错误遮住。
+- 质量限制：模型偶有不严谨证据解释和假设性的付费意愿提问，未做 EIR 专家评级；这是后续 R11 的优先评估项，不宣称专家认可。
+
 ## 已确认的风险
 
 - 上游旧 PROJECT_STATUS 的登录描述与当前公开 demo 配置不一致；以当前代码和运行结果为准。本轮只允许 loopback 本地部署。

@@ -1,0 +1,48 @@
+name: Local prototype checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  prototype:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: apps/goat/frontend/package-lock.json
+      - name: Install Python dependencies
+        run: python -m pip install -r apps/goat/requirements-ci.txt
+      - name: Capstone lint and deterministic tests
+        run: |
+          python -m ruff check eir tests scripts/verify-demo.py
+          python -m ruff format --check eir tests scripts/verify-demo.py
+          python -m pytest tests -q
+      - name: GOAT backend and HTTP contract proof
+        working-directory: apps/goat
+        run: |
+          python -m ruff check backend goat_ai __tests__/backend/services/test_ollama_thinking_request.py
+          python -m ruff format --check goat_ai/llm/ollama_client.py __tests__/backend/services/test_ollama_thinking_request.py
+          python -m pytest __tests__/backend __tests__/contracts -q
+          python -m tools.contracts.check_api_contract_sync
+          lint-imports
+      - name: GOAT frontend regression proof
+        working-directory: apps/goat/frontend
+        run: |
+          npm ci
+          npm run lint
+          npm run depcruise
+          npm run contract:check
+          npm test -- --run --maxWorkers=2
+          npm run build

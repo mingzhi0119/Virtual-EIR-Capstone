@@ -3,6 +3,7 @@
 import asyncio
 import json
 from pathlib import Path
+import sqlite3
 
 import httpx
 import pytest
@@ -204,3 +205,59 @@ def test_concurrent_turns_rejected(tmp_path: Path) -> None:
 
     asyncio.run(exercise())
     assert len(store.session(venture.venture_id, session.session_id).turns) == 2
+
+
+@pytest.mark.parametrize("value", [None, 1, [], {}])
+def test_invalid_token_then_successful_retry(tmp_path: Path, value: object) -> None:
+    store = Store(tmp_path / "state.sqlite3")
+    venture = store.create(Profile(name="test"))
+    session = store.new_session(venture.venture_id)
+    broken = True
+
+    def respond(request: httpx.Request) -> httpx.Response:
+        if broken:
+            body = (
+                "data: "
+                + json.dumps({"type": "token", "token": value})
+                + '\n\ndata: {"type":"done"}\n\n'
+            )
+            return httpx.Response(200, text=body)
+        return fake_goat(request)
+
+    client = TestClient(
+        create_app(
+            store=store,
+            goat=GoatClient("http://localhost:62606", httpx.MockTransport(respond)),
+        )
+    )
+    path = f"/api/ventures/{venture.venture_id}/sessions/{session.session_id}/chat"
+    assert client.post(path, json={"message": "Hi"}).status_code == 503
+    assert store.session(venture.venture_id, session.session_id).turns == []
+    assert store.get(venture.venture_id).revision == 1
+    broken = False
+    assert client.post(path, json={"message": "Retry"}).status_code == 200
+
+
+def test_partial_token_before_error_is_not_saved(tmp_path: Path) -> None:
+    body = 'data: {"type":"token","token":"partial"}\n\ndata: {"type":"error","message":"failed"}\n\ndata: {"type":"done"}\n\n'
+    test_model_failures_save_no_turns(tmp_path, body)
+
+
+def test_connections_close_and_failed_revision_rolls_back(tmp_path: Path) -> None:
+    store = Store(tmp_path / "state.sqlite3")
+    venture = store.create(Profile(name="test"))
+    with store.connect() as db:
+        db.execute("SELECT 1")
+    with pytest.raises(sqlite3.ProgrammingError):
+        db.execute("SELECT 1")
+    # Inject failure in the second write: neither current state nor audit history may change.
+    with store.connect() as db:
+        db.execute(
+            "CREATE TRIGGER reject_revision BEFORE INSERT ON revisions BEGIN SELECT RAISE(ABORT, 'injected'); END"
+        )
+    with pytest.raises(sqlite3.IntegrityError):
+        store.update(venture.venture_id, Profile(name="modified"), 1)
+    assert store.get(venture.venture_id).profile.name == "test"
+    assert store.get(venture.venture_id).revision == 1
+    with store.connect() as db:
+        assert db.execute("SELECT COUNT(*) FROM revisions").fetchone()[0] == 1
