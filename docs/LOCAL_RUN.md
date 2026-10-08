@@ -30,6 +30,10 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start-local.ps1
 
 ## 2. 本周两会话演示
 
+当前机器已有干净的英文案例：`Campus dinner delivery (English verification, fictional)`，包含 First consultation 与 Follow-up 1，顶部 5 planned / 2 completed / 3 remaining / Revision 4。2026-10-08 已清理 47 个无用实验项目并做本地备份，见 [清理归档](archive/2026-10-08-demo-cleanup-and-script.md)。老师现场可直接用该案例，新建跟进会话即可，不要点击准备模板覆盖已有结果。详细英文操作台词见 [讲稿 v3](../deliverables/2026-10-08/Speaker-Script-v3.md)。
+
+以下步骤用于从零构造一个新的虚构案例，不要求每次演示重复执行。
+
 1. 打开 EIR，刷新旧页面，点击 `New fictional venture`，模型选 `gemma4:26b`。界面、资料和输入模板均为英文。
 2. `Start the first consultation` → `Send message`。问题模板只填入输入框，不自动发送；说明两个问题、五次访谈和为何记录实际经历。
 3. 阅读建议，打开右上 `Venture profile` → `Prepare five-interview plan` → 审阅字段/行动摘要 → `Confirm and save profile`。高级 JSON 收在折叠区；这是人工确认，不是模型自动写库。
