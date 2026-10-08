@@ -1,0 +1,224 @@
+{
+  "date": "2026-10-08",
+  "sources": {
+    "meeting": "https://chatgpt.com/s/cx_6ac7ea276e00819180185b7e9114a6db",
+    "goat": "https://github.com/mingzhi0119/GOAT_AI/tree/9788ffab4a70f3dec6406778d1dc26f302b762f8",
+    "repo": "https://github.com/mingzhi0119/Virtual-EIR-Capstone",
+    "archive": "docs/archive/2026-10-08-goat-reuse.md",
+    "real": "docs/archive/2026-10-08-real-demo.json",
+    "ui": "docs/archive/2026-10-08-ui-proof.json",
+    "drafts": "docs/PROTOTYPE_BRIEF.md",
+    "weekly": "docs/WEEKLY_DELIVERABLES.md",
+    "pr": "https://github.com/mingzhi0119/GOAT_AI/pull/28",
+    "pathPr": "https://github.com/mingzhi0119/GOAT_AI/pull/29"
+  },
+  "slides": [
+    {
+      "title": "Virtual EIR",
+      "kind": "cover",
+      "seconds": 20,
+      "subtitle": "A local prototype for continuous founder coaching",
+      "speaker": "Today I will show our first Virtual EIR prototype, built on my existing GOAT AI platform. The goal is continuity: when a founder returns, the coach should use the project background and the actual results of the previous action. This is a local demonstration with a fictional venture.",
+      "cue": "开场明确：这是第一周本地原型，重点是连续指导，不是正式上线。",
+      "sourceKeys": [
+        "weekly",
+        "goat",
+        "archive"
+      ]
+    },
+    {
+      "title": "This week’s agreed scope",
+      "kind": "table",
+      "seconds": 35,
+      "headers": [
+        "Meeting direction",
+        "Current deliverable"
+      ],
+      "widths": [
+        455,
+        681
+      ],
+      "rows": [
+        [
+          "User journey",
+          "Draft flow for intake and return visits"
+        ],
+        [
+          "Entrepreneur profile",
+          "Draft template and editable saved state"
+        ],
+        [
+          "Coaching framework",
+          "Draft questions, evidence checks and actions"
+        ],
+        [
+          "Two-session example",
+          "Real local model run with fictional data"
+        ],
+        [
+          "Text prototype",
+          "Working chat with confirmed project context"
+        ]
+      ],
+      "foot": "Drafts and prototype await faculty and EIR review",
+      "speaker": "At our last discussion, we proposed a user journey, an entrepreneur profile, and a coaching framework. We also proposed an initial session and a follow-up using a mock venture. Those drafts now have a working text prototype behind them. I am bringing the flow and its limitations for feedback rather than claiming that the coaching method is already validated.",
+      "cue": "W1–W5 来自会上提出并获认可的方向。草稿已完成，但老师尚未审阅。",
+      "sourceKeys": [
+        "meeting",
+        "weekly",
+        "drafts"
+      ]
+    },
+    {
+      "title": "Existing platform and new Capstone work",
+      "kind": "table",
+      "seconds": 35,
+      "headers": [
+        "GOAT AI foundation",
+        "New Virtual EIR layer"
+      ],
+      "widths": [
+        545,
+        591
+      ],
+      "rows": [
+        [
+          "React interface and FastAPI backend",
+          "A focused founder-coaching interface"
+        ],
+        [
+          "Ollama chat and conversation history",
+          "Context from the same venture in a new session"
+        ],
+        [
+          "Model selection and runtime services",
+          "Confirmed profile, evidence and action records"
+        ],
+        [
+          "Existing test and contract tooling",
+          "Correction, persistence and demo boundary tests"
+        ]
+      ],
+      "foot": "Local Ollama with gemma4:26b on RTX 5090. No paid model API calls",
+      "speaker": "GOAT already provided the general chat platform and local model connection. The Capstone work adds explicit venture state: what the founder assumes, what evidence they report, what action they planned, and what they actually completed. The new service uses GOAT’s existing chat endpoint. I keep the original platform and the new contribution clearly separate in the repository.",
+      "cue": "清楚说明复用来源，不能把 GOAT 原平台全算本周新开发。",
+      "sourceKeys": [
+        "goat",
+        "repo",
+        "archive"
+      ]
+    },
+    {
+      "title": "First consultation: campus dinner delivery",
+      "kind": "initial",
+      "seconds": 40,
+      "speaker": "Our fictional founder wants to offer campus dinner delivery. They assume that students care most about speed, but they have no interviews yet and can interview at most five people this week. The coach asks about recent dinner experiences and existing alternatives, then proposes five interviews. The founder reviews and saves the plan. The assistant cannot mark that work as completed.",
+      "cue": "虚构案例，尚无访谈。行动是建议，必须人工确认保存。不要逐字朗读模型长回复。",
+      "sourceKeys": [
+        "real",
+        "drafts"
+      ]
+    },
+    {
+      "title": "Follow-up: saved results change the advice",
+      "kind": "followup",
+      "seconds": 45,
+      "speaker": "Before the follow-up, the founder saves two interview results. Both fictional students reported more concern about price than speed. I then create an entirely new session without pasting the old conversation. The coach reads the saved state, distinguishes five planned interviews from two completed interviews, and recommends exploring price and alternatives in the remaining three. It also warns that two interviews cannot establish market demand.",
+      "cue": "5 是计划，2 是实际，3 是剩余。price 只是两个虚构样本的反馈，不能说市场验证。",
+      "sourceKeys": [
+        "real",
+        "archive"
+      ]
+    },
+    {
+      "title": "Founder confirmation and coaching flow",
+      "kind": "table",
+      "seconds": 40,
+      "headers": [
+        "Stage",
+        "Founder or coach responsibility"
+      ],
+      "widths": [
+        355,
+        781
+      ],
+      "rows": [
+        [
+          "Intake",
+          "Founder states customer, problem and constraints"
+        ],
+        [
+          "Clarification",
+          "Coach asks about assumptions and existing evidence"
+        ],
+        [
+          "Action",
+          "Coach proposes a small test and explains its purpose"
+        ],
+        [
+          "Confirmation",
+          "Founder reviews, corrects and saves project state"
+        ],
+        [
+          "Return visit",
+          "Coach loads saved state and reviews reported results"
+        ]
+      ],
+      "foot": "Model suggestions never overwrite confirmed facts automatically",
+      "speaker": "The coaching framework starts with clarification and evidence, followed by a small action and a return visit. The important control is founder confirmation. The founder can correct the profile and the results, while the model only proposes changes. We preserve revisions and full conversation records. Automatic summaries and automatic fact extraction remain future work.",
+      "cue": "把指导框架和实现的确认边界讲清楚。没有自动摘要或自动资料提取。",
+      "sourceKeys": [
+        "drafts",
+        "archive"
+      ]
+    },
+    {
+      "title": "Demonstration evidence and current limits",
+      "kind": "evidence",
+      "seconds": 35,
+      "speaker": "We have verified complete local model replies, context in a new session, profile correction, and recovery after restarting the service. These checks demonstrate the flow and persistence. They do not demonstrate expert coaching quality. Some model questions still risk leading the respondent. The prototype also lacks user authentication and has unresolved dependency warnings, so I restrict it to local fictional cases.",
+      "cue": "运行成功不等于专家质量认可。无登录，安全告警未关闭，只在本地用虚构资料。",
+      "sourceKeys": [
+        "archive",
+        "real",
+        "ui"
+      ]
+    },
+    {
+      "title": "Next steps and feedback requested",
+      "kind": "next",
+      "seconds": 40,
+      "speaker": "The next step is to use this concrete example to refine our questions for Ain. I would value feedback on missing intake information and whether the follow-up questions lead to useful validation work. We would also like an approved mentoring template or anonymized case, if available. After that, we can assess several fictional ventures with a consistent rubric. Local testing needs no API key today.",
+      "cue": "请老师针对实际流程反馈，再带具体缺口找 Ain。资料权限和以后云 API 都需另外确认。",
+      "sourceKeys": [
+        "weekly",
+        "drafts",
+        "archive"
+      ]
+    },
+    {
+      "title": "Appendix: implementation and validation",
+      "kind": "technical",
+      "seconds": 0,
+      "speaker": "Use this appendix only if the audience asks about implementation. GOAT and EIR run as separate loopback services. EIR loads confirmed state and current-session history, then calls the existing GOAT SSE endpoint. Local checks passed. Remote Windows CI revealed path-comparison failures that an earlier success status masked. We reproduced and fixed those assertions, and the remote rerun is pending. The source syncs through private GitHub. Models and databases require separate installation or backup.",
+      "cue": "备问页，不必主动读测试数字。组员本周不邀请；代码同步不等于数据库同步。",
+      "sourceKeys": [
+        "archive",
+        "repo",
+        "pr",
+        "pathPr"
+      ]
+    },
+    {
+      "title": "Appendix: recorded demo fallback",
+      "kind": "fallback",
+      "seconds": 0,
+      "speaker": "If a live model call fails or runs slowly, explain that the next output is a recorded test from October 8, not a live response. The original Chinese input and output are in the evidence file. The English descriptions on the slides paraphrase those records. No real interviews or real founder data appear in the demonstration.",
+      "cue": "若现场失败，明确切换“10 月 8 日记录回放”，不能冒称实时回答。",
+      "sourceKeys": [
+        "real",
+        "archive"
+      ]
+    }
+  ]
+}

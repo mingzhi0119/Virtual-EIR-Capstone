@@ -81,6 +81,21 @@
 - 远程三个失败都比较未解析的临时路径与对象存储返回的已解析路径。用工作区内 Windows junction 作为 TMP/TEMP，旧测试出现相同的 3 failed/14 passed；改用 resolve + is_relative_to 后同一组 17 passed，完整 backend/contracts 540 passed。
 - [PR #29](https://github.com/mingzhi0119/GOAT_AI/pull/29) 仅修正这三个测试的路径比较，上游该 17-test slice 也在 junction 条件下通过。生产存储代码和路径逃逸拒绝保持不变，不是跳过失败测试。
 - PR 均未合并。上游 CI 现有 lint 工具版本漂移和前端高风险依赖另有阻断，本轮不冒称可合并或安全绿色，不禁用门禁。
+- 修复提交 `93d1aec` 的本项目 [run 37839067814](https://github.com/mingzhi0119/Virtual-EIR-Capstone/actions/runs/37839067814) 在材料交付检查时仍运行中：Python 安装与 EIR lint/18 项确定性测试步骤已通过，GOAT backend/contracts 尚未结束，前端待运行。R8 保持未勾选；上游 PR #29 的 CI 也为失败，不把本地回归当远程全绿。
+
+## R17：第一周 PPT 与演讲稿（完成）
+
+- 材料保存在 `deliverables/2026-10-08`：`Virtual-EIR-Week1-v2.pptx`、`Speaker-Script.md`、`Slide-Content.json` 与使用说明。可重建源码为 `tools/presentations/build-week1.mjs`。
+- 10 页英文 PPT：8 页主讲 + 2 页备问；全部有英文 Speaker Notes 和来源，5 页采用可编辑原生表格。讲稿含中文提示、现场演示插入点、明确说明非直播的录制备用方案与常见问答。
+- 内容区分 GOAT 既有能力和 Capstone 增量；使用虚构创业项目及中文输出的英文意译，不声明真实学生访谈、EIR 认可、安全上线或上游 CI 全绿。
+- 成果包、字体、布局、原生表格、重新导入检查通过；重新导入渲染全部 10 页并逐页检查，无可见重叠或裁切。检查结果在本地忽略目录 `var/presentation-build-20261008`；原生 PowerPoint 放映与计时排练尚未执行。
+- PPT SHA256：`ac6ec6438900406275c326eb7c2f43645fa5fdb4a697f474655a65dbb97daada`。旧草稿移至本地构建目录保留，未删除。
+- 时长是排练规划：约 5 分钟主讲，另留 60–90 秒演示。第 9 页是制作时 CI 快照；当前状态仍以本归档后续条目和 GitHub 为准。
+
+## R18：上游修复提交（完成）
+
+- 已提交且已关联本任务的 PR #28/#29 见上节。此处打勾仅指完成修复、局部/本地回归、提交 PR；不代表已合并或 CI 门禁解除。
+- 路线图保留 R14 依赖整改，并新增 R19 上游 Ruff CI 基线修复。邀请组员仍按用户要求留到下周，尚未邀请。
 
 ## 已确认的风险
 
