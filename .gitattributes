@@ -1,5 +1,5 @@
 # Keep text consistent across Windows, macOS and Linux.
-* text=auto
+* text=auto eol=lf
 *.md text eol=lf
 *.json text eol=lf
 *.yml text eol=lf

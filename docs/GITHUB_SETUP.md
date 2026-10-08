@@ -51,4 +51,6 @@
 3. `git rev-parse HEAD` 与 `git ls-remote origin refs/heads/main` 一致。
 4. 在独立临时目录 clone 后，文档和配置文件完整。
 
+2026-10-08 已实际验证：仓库为 Private，所有者权限为 ADMIN，默认分支为 main；本地 main 跟踪 origin/main，工作目录干净。首次推送提交 `d171d8d63189ac1bf64979095ff8a32e2ccc07a0` 与远端一致；独立目录成功 clone，9 个已跟踪文件完整。环境文件、依赖及运行数据库样例路径的忽略规则通过检查，Markdown 本地链接通过检查。这验证了新的 checkout 可获取共享内容，另一台物理设备的登录仍需在该设备执行。
+
 当前仓库是 Capstone 文档和未来增量实现的共享位置。GOAT AI 原仓库继续作为既有平台来源；正式导入或改造代码时记录基线和 Capstone 增量。
