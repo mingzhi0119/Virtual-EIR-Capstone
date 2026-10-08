@@ -65,15 +65,22 @@
 - 只读复核发现并修复：无效 SSE token 的 500、SQLite 连接未确定性关闭、继承环境路径绕开项目存储、UI 项目/会话混用与保存回复被刷新错误遮住。
 - 质量限制：模型偶有不严谨证据解释和假设性的付费意愿提问，未做 EIR 专家评级；这是后续 R11 的优先评估项，不宣称专家认可。
 
-## R8：部署、归档与 GitHub 同步（完成）
+## R8：部署、归档与 GitHub 同步（远程验证重新打开）
 
 - 一键 `start-local.ps1 -Install` 实际完成依赖安装、GOAT 构建与两个 loopback 服务启动；安全停止/重启保留数据，只停止本项目进程，不停止 Ollama。
 - 注入无效继承环境（错误 Ollama 地址及非项目存储路径）后重新启动，项目脚本明确固定正确配置；`var/unused-test.db`、`var/unused-data` 均未创建。
 - 上述启动后的最新真实模型复测：首次 20.785s、跟进 14.375s；重启恢复、修正与项目隔离仍通过；完整输出更新在真实证据 JSON，不把更早时长标成最新结果。
 - 完整源码已推送私有 GitHub，独立目录 clone 验证 `apps/goat/server.py` 与 `eir/app.py` 同时存在；代码同步不是模型/数据库同步。[部署说明](../LOCAL_RUN.md) 已解释前置环境、备份与未完成的跨设备数据恢复演练。
-- GitHub [run 37835443569](https://github.com/mingzhi0119/Virtual-EIR-Capstone/actions/runs/37835443569) 对代码提交 `30179fa` 检查全部成功；后续收尾提交另有一次自动检查，不把这一结果归给尚未验证的新提交。
+- 更正：GitHub [run 37835443569](https://github.com/mingzhi0119/Virtual-EIR-Capstone/actions/runs/37835443569) 状态曾为 success，但详细日志中实际有三个路径断言失败，后续命令掩盖退出码。不能将此前“全部成功”保留为验证结论。加入 fail-fast 的 [run 37837203095](https://github.com/mingzhi0119/Virtual-EIR-Capstone/actions/runs/37837203095) 正确阻断，等待本轮修复后的远程结果。
 - 最后补会话选择边界：新会话创建成功后立即记住 ID，即使列表刷新失败也能在重载后选中；新增此回归后 Edge 自动行为检查为 14 项，连续三次通过。测试的初版等待条件误把旧项目“版本 1”当新建完成，已改为等待新建完成状态及按钮解锁；保留这项测试修正记录。
-- 本周清单、原型设计状态、主路线图与来源标注已同步更新；后续 R9–R16 保持未勾选。无组员邀请、付费模型调用或原 GOAT 仓库修改。
+- 本周清单、原型设计状态、主路线图与来源标注已同步更新；后续 R9–R16 保持未勾选。无组员邀请或付费模型调用；上游修复 PR 状态另见下节。
+
+## 上游 PR 与远程路径断言修复
+
+- 用户已授权直接修复上游并提 PR，不要求保留不正确实现。[PR #28](https://github.com/mingzhi0119/GOAT_AI/pull/28) 修正 `think` 字段位置并补文档/26 回归；上游独立克隆验证 540 passed、8 skipped、10 subtests passed，契约与分层检查通过。
+- 远程三个失败都比较未解析的临时路径与对象存储返回的已解析路径。用工作区内 Windows junction 作为 TMP/TEMP，旧测试出现相同的 3 failed/14 passed；改用 resolve + is_relative_to 后同一组 17 passed，完整 backend/contracts 540 passed。
+- [PR #29](https://github.com/mingzhi0119/GOAT_AI/pull/29) 仅修正这三个测试的路径比较，上游该 17-test slice 也在 junction 条件下通过。生产存储代码和路径逃逸拒绝保持不变，不是跳过失败测试。
+- PR 均未合并。上游 CI 现有 lint 工具版本漂移和前端高风险依赖另有阻断，本轮不冒称可合并或安全绿色，不禁用门禁。
 
 ## 已确认的风险
 

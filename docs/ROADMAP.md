@@ -2,7 +2,7 @@
 
 更新日期：2026-10-08。本文是 Capstone 工作计划；没有修改 GOAT AI 原仓库路线图，也没有承诺各后续阶段的固定日期。
 
-本轮已按实际仓库、RTX 5090 / 本地 Ollama 和运行结果定制执行路线。操作级进度以 [逐项实施清单](IMPLEMENTATION_CHECKLIST.md) 为准：R1–R8 完成，R9–R13 为后续阶段，R14–R16 是多人/公网/真实敏感资料前的门禁。每项完成证据在 [归档](archive/2026-10-08-goat-reuse.md)；启动方式见 [LOCAL_RUN.md](LOCAL_RUN.md)。
+本轮已按实际仓库、RTX 5090 / 本地 Ollama 和运行结果定制执行路线。操作级进度以 [逐项实施清单](IMPLEMENTATION_CHECKLIST.md) 为准：R1–R7 完成，R8 的远程验证重新打开并等待路径断言修复后的结果，R9–R13 为后续阶段，R14–R16 是多人/公网/真实敏感资料前的门禁。每项完成证据在 [归档](archive/2026-10-08-goat-reuse.md)；启动方式见 [LOCAL_RUN.md](LOCAL_RUN.md)。
 
 ## 1. 目标与范围
 

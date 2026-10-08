@@ -34,8 +34,8 @@ jobs:
         working-directory: apps/goat
         run: |
           $PSNativeCommandUseErrorActionPreference = $true
-          python -m ruff check backend goat_ai __tests__/backend/services/test_ollama_thinking_request.py
-          python -m ruff format --check goat_ai/llm/ollama_client.py __tests__/backend/services/test_ollama_thinking_request.py
+          python -m ruff check backend goat_ai __tests__/backend/services/test_ollama_thinking_request.py __tests__/backend/services/test_object_storage.py __tests__/backend/services/test_knowledge_service.py __tests__/backend/services/test_media_service.py
+          python -m ruff format --check goat_ai/llm/ollama_client.py __tests__/backend/services/test_ollama_thinking_request.py __tests__/backend/services/test_object_storage.py __tests__/backend/services/test_knowledge_service.py __tests__/backend/services/test_media_service.py
           python -m pytest __tests__/backend __tests__/contracts -q
           python -m tools.contracts.check_api_contract_sync
           lint-imports

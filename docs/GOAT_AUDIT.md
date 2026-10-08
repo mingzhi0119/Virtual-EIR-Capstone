@@ -38,4 +38,6 @@ R5–R8 已完成本地最小验收；公网/多人/真实敏感资料前，另�
 
 ## 修复后的最终验证
 
-GOAT 后端/契约 540 passed、8 skipped、10 subtests passed；前端 217 passed；新增 EIR 18 passed、14 项 headless Edge 行为检查通过。真实 Gemma 两会话、新会话读取保存状态和重启恢复均通过。[GitHub 原型检查](https://github.com/mingzhi0119/Virtual-EIR-Capstone/actions/runs/37835443569) 全部成功。检查范围及每次真实输出见 [归档](archive/2026-10-08-goat-reuse.md)，不代表完整上游 E2E、安全或 EIR 专家评估。
+本地 GOAT 后端/契约 540 passed、8 skipped、10 subtests passed；前端 217 passed；新增 EIR 18 passed、14 项 headless Edge 行为检查通过。真实 Gemma 两会话、新会话读取保存状态和重启恢复均通过。远程首轮 [run 37835443569](https://github.com/mingzhi0119/Virtual-EIR-Capstone/actions/runs/37835443569) 的绿色状态掩盖三项 Windows 路径断言失败；fail-fast [run 37837203095](https://github.com/mingzhi0119/Virtual-EIR-Capstone/actions/runs/37837203095) 正确报红。三项失败已用 junction TMP/TEMP 在本机复现并修正，完整 540 项在该条件下通过，等待远程复测。检查范围及每次真实输出见 [归档](archive/2026-10-08-goat-reuse.md)，不代表完整上游 E2E、安全或 EIR 专家评估。
+
+上游 [PR #28](https://github.com/mingzhi0119/GOAT_AI/pull/28) 提交传参修复及文档说明，[PR #29](https://github.com/mingzhi0119/GOAT_AI/pull/29) 提交路径断言修复，均未合并。上游 CI 另受现有 Ruff action 使用 0.16.10 而 requirements-ci 固定 0.15.9、前端依赖审计 high 阻断；本轮未关闭安全门禁或广泛升级依赖。
