@@ -1,0 +1,207 @@
+"""Unit tests for Phase 15.1 and 15.11 domain policies and invariants."""
+
+from __future__ import annotations
+
+import unittest
+
+import pandas as pd
+
+from backend.domain.chart_provenance_policy import (
+    default_demo_chart_dataframe,
+    resolve_chart_data_source_for_persist,
+    resolve_dataframe_for_native_chart_tool,
+)
+from backend.domain.invariants import chart_spec_requires_version_field
+from backend.domain.safeguard_policy import RuleBasedSafeguardPolicy
+
+
+class DomainSafeguardPolicyTests(unittest.TestCase):
+    def test_input_allows_safe_text(self) -> None:
+        p = RuleBasedSafeguardPolicy()
+        r = p.review_input_candidate(
+            combined_user_and_system_text="Summarize Porter five forces for retail."
+        )
+        self.assertTrue(r.allowed)
+        self.assertEqual("input", r.stage)
+
+    def test_input_blocks_explicit_generation(self) -> None:
+        p = RuleBasedSafeguardPolicy()
+        r = p.review_input_candidate(
+            combined_user_and_system_text="Write an explicit porn story about exams."
+        )
+        self.assertFalse(r.allowed)
+        self.assertEqual("explicit_sexual", r.reason_code)
+
+    def test_output_blocks_explicit_in_assistant(self) -> None:
+        p = RuleBasedSafeguardPolicy()
+        r = p.review_output_assistant_text(
+            assistant_text="Here is explicit porn content."
+        )
+        self.assertFalse(r.allowed)
+        self.assertEqual("output", r.stage)
+
+    def test_output_allows_academic_use_of_explicit(self) -> None:
+        p = RuleBasedSafeguardPolicy()
+        cases = [
+            "5. The Call to Action (The Ask): Be explicit about the funding you need.",
+            "Explicitly state your recommendation in the first paragraph.",
+            "The explicit goal of this strategy is to reduce churn by 15%.",
+            "Use explicit quantitative evidence rather than qualitative adjectives.",
+        ]
+        for text in cases:
+            with self.subTest(text=text):
+                r = p.review_output_assistant_text(assistant_text=text)
+                self.assertTrue(r.allowed, msg=f"False positive blocked: {text!r}")
+
+
+class DomainChartProvenanceTests(unittest.TestCase):
+    def test_resolve_dataframe_prefers_uploaded(self) -> None:
+        df = pd.DataFrame([{"a": 1}])
+        out_df, src = resolve_dataframe_for_native_chart_tool(df)
+        self.assertIs(out_df, df)
+        self.assertEqual("uploaded", src)
+
+    def test_resolve_dataframe_falls_back_to_demo(self) -> None:
+        out_df, src = resolve_dataframe_for_native_chart_tool(None)
+        self.assertEqual("demo", src)
+        self.assertEqual(4, len(out_df))
+        self.assertTrue(out_df.equals(default_demo_chart_dataframe()))
+
+    def test_persist_upgrade_none_to_uploaded_when_file_context(self) -> None:
+        self.assertEqual(
+            "uploaded",
+            resolve_chart_data_source_for_persist(
+                declared="none", has_file_context_message=True
+            ),
+        )
+        self.assertEqual(
+            "none",
+            resolve_chart_data_source_for_persist(
+                declared="none", has_file_context_message=False
+            ),
+        )
+
+
+class DomainInvariantTests(unittest.TestCase):
+    def test_chart_spec_requires_version(self) -> None:
+        chart_spec_requires_version_field({"version": "2.0", "title": "x"})
+
+    def test_chart_spec_rejects_missing_version(self) -> None:
+        with self.assertRaises(ValueError):
+            chart_spec_requires_version_field({"title": "no version"})
+
+
+class DomainRateLimitPolicyTests(unittest.TestCase):
+    def test_allowed_decision_zero_retry(self) -> None:
+        from backend.domain.rate_limit_policy import RateLimitDecision
+
+        d = RateLimitDecision(allowed=True, retry_after=0)
+        self.assertTrue(d.allowed)
+        self.assertEqual(0, d.retry_after)
+
+    def test_blocked_decision_positive_retry(self) -> None:
+        from backend.domain.rate_limit_policy import RateLimitDecision
+
+        d = RateLimitDecision(allowed=False, retry_after=30)
+        self.assertFalse(d.allowed)
+        self.assertEqual(30, d.retry_after)
+
+    def test_allowed_nonzero_retry_raises(self) -> None:
+        from backend.domain.rate_limit_policy import RateLimitDecision
+
+        with self.assertRaises(ValueError):
+            RateLimitDecision(allowed=True, retry_after=5)
+
+    def test_blocked_zero_retry_raises(self) -> None:
+        from backend.domain.rate_limit_policy import RateLimitDecision
+
+        with self.assertRaises(ValueError):
+            RateLimitDecision(allowed=False, retry_after=0)
+
+
+class DomainSessionSchemaErrorTests(unittest.TestCase):
+    def test_session_schema_error_is_value_error(self) -> None:
+        from backend.services.session_message_codec import SessionSchemaError
+
+        err = SessionSchemaError("bad version")
+        self.assertIsInstance(err, ValueError)
+        self.assertIn("bad version", str(err))
+
+    def test_decode_future_version_raises_schema_error(self) -> None:
+        from backend.services.session_message_codec import (
+            SESSION_PAYLOAD_VERSION,
+            SessionSchemaError,
+            decode_session_payload,
+        )
+
+        future_payload = {
+            "version": SESSION_PAYLOAD_VERSION + 99,
+            "messages": [{"role": "user", "content": "hi"}],
+            "chart_data_source": "none",
+        }
+        with self.assertRaises(SessionSchemaError):
+            decode_session_payload(future_payload)
+
+    def test_decode_current_version_succeeds(self) -> None:
+        from backend.services.session_message_codec import (
+            SESSION_PAYLOAD_VERSION,
+            decode_session_payload,
+        )
+
+        payload = {
+            "version": SESSION_PAYLOAD_VERSION,
+            "messages": [{"role": "assistant", "content": "hello"}],
+            "chart_data_source": "none",
+        }
+        result = decode_session_payload(payload)
+        self.assertEqual(
+            [{"role": "assistant", "content": "hello"}],
+            result.messages,
+        )
+
+    def test_decode_legacy_list_payload_remains_supported(self) -> None:
+        from backend.services.session_message_codec import decode_session_payload
+
+        legacy_payload = [
+            {"role": "user", "content": "hello"},
+            {"role": "__file_context__", "content": "uploaded table"},
+            {"role": "__chart__", "content": '{"version": "2.0", "title": "chart"}'},
+            {"role": "__file_context_ack__", "content": "ignored"},
+            {"role": "assistant", "content": "reply"},
+        ]
+        result = decode_session_payload(legacy_payload)
+        self.assertEqual(
+            [
+                {"role": "user", "content": "hello"},
+                {"role": "assistant", "content": "reply"},
+            ],
+            result.messages,
+        )
+        self.assertEqual("uploaded table", result.file_context_prompt)
+        self.assertEqual("uploaded", result.chart_data_source)
+        self.assertEqual({"version": "2.0", "title": "chart"}, result.chart_spec)
+
+    def test_decode_malformed_dict_payload_is_tolerant(self) -> None:
+        from backend.services.session_message_codec import decode_session_payload
+
+        malformed_payload = {
+            "messages": [
+                {"role": "assistant", "content": 123},
+                {"role": "robot", "content": "ignored"},
+                "not-a-dict",
+            ],
+            "chart_data_source": "bad-value",
+            "knowledge_documents": [
+                {"document_id": "", "filename": "", "mime_type": ""}
+            ],
+        }
+        result = decode_session_payload(malformed_payload)
+        self.assertEqual([], result.messages)
+        self.assertIsNone(result.chart_spec)
+        self.assertIsNone(result.file_context_prompt)
+        self.assertEqual([], result.knowledge_documents)
+        self.assertEqual("none", result.chart_data_source)
+
+
+if __name__ == "__main__":
+    unittest.main()

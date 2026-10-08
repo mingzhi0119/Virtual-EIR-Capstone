@@ -1,0 +1,46 @@
+---
+description: Project snapshot, production host constraints, and deploy rules aligned with docs/standards/ENGINEERING_STANDARDS.md
+globs: ops/deploy/deploy.sh,ops/deploy/deploy.ps1,ops/verification/phase0_check.sh,docs/operations/OPERATIONS.md,docs/governance/PROJECT_STATUS.md,ops/systemd/goat-ai.service,tools/ops/rotate_fastapi_log.py,tools/ops/backup_chat_db.py,ops/verification/healthcheck.sh,ops/verification/watchdog.sh
+alwaysApply: false
+---
+
+# GOAT AI - Server and deploy
+
+Use this when changing deploy scripts, process management, host-only docs, or runtime target behavior.
+
+## Project snapshot
+
+- Repo: `GOAT_AI`
+- Deployments are portable across Windows, macOS, Linux development, and varied Linux or server layouts in production.
+- Reference deployment: GPU Linux host plus Ollama plus reverse proxy, but not the only topology.
+- App: FastAPI backend plus React SPA.
+- Default port: `62606` (`GOAT_SERVER_PORT`).
+- Frontend: Vite; Node 24 on server and CI.
+- Backend: Python 3.14 for CI and recommended local dev (OpenAPI parity); production may still be 3.12.x on some hosts.
+
+## Production server constraints
+
+- Shared JupyterHub-style environment; no sudo or root. Do not assume `apt`, system `systemctl`, nginx reloads, or `/etc/*` access.
+- `systemctl --user` may work but can fail in SSH sessions. Preserve the `ops/deploy/deploy.sh` nohup plus PID fallback.
+- Uvicorn on `0.0.0.0:62606` is valid for this user.
+- GPU: prefer `GOAT_GPU_UUID=GPU-fb2cf8f7-e9bf-f136-a3bb-e150426598e8` for the A100.
+
+## Host snapshot
+
+- No sudo: `sudo` blocked. Do not assume `apt`, system `systemctl`, `/etc/logrotate.d`, or `nginx -s reload`.
+- `systemctl --user`: may fail in SSH with `Failed to connect to bus: No medium found`. Test `systemctl --user status` before relying on user units.
+- Supervisor is not assumed installed.
+
+## Doc source of truth
+
+- Full table: `docs/operations/OPERATIONS.md` - Shared host permissions (JupyterHub / unprivileged user).
+- Short snapshot: `docs/governance/PROJECT_STATUS.md` - server permissions snapshot.
+- User-space log backup and health: `docs/operations/OPERATIONS.md` - user-space ops (no root) and related scripts.
+
+## Deploy rules
+
+- Do not assume `git pull` or `git reset --hard` by default.
+- Deploy from the current local checkout unless explicit sync is requested. `SYNC_GIT=1` is explicit opt-in only.
+- Keep nohup fallback deployment behavior intact.
+- Runtime target selection is interface-driven: `GOAT_DEPLOY_TARGET=auto` prefers `GOAT_SERVER_PORT` and falls back to `GOAT_LOCAL_PORT` only when the environment cannot bind or use the server port.
+- Keep `ops/deploy/deploy.sh` and related scripts aligned with `GET /api/system/runtime-target`.

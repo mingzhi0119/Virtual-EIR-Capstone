@@ -1,0 +1,68 @@
+---
+description: Python typing, Pydantic, logging, layered errors, and backend folder boundaries aligned with docs/standards/ENGINEERING_STANDARDS.md
+globs: **/*.py
+alwaysApply: false
+---
+
+# Python backend standards
+
+## Types
+
+- `from __future__ import annotations` at the top of every file.
+- Every function and method must be fully annotated, including return type.
+- Use `Protocol` for injectable dependencies when appropriate.
+- Structured data must cross boundaries as `pydantic.BaseModel` or `dataclass`; do not pass loose dicts.
+
+```python
+def list_models(self) -> list[str]: ...
+
+def list_models(self):
+    ...
+```
+
+## Pydantic and config
+
+- FastAPI bodies: always `BaseModel` subclasses.
+- Config: `pydantic_settings.BaseSettings` or the existing `goat_ai/config/settings.py` `@dataclass` + `load_settings()`. Both must validate at startup.
+- Never read `os.environ` inside request handlers.
+- Never parse raw `request.json()` dicts in a handler.
+
+## Error handling
+
+| Layer | Rule |
+|-------|------|
+| Service/client | Raise domain exceptions such as `OllamaUnavailable`. Never swallow errors. |
+| Route handler | Map domain exceptions to sanitized `HTTPException` responses and log the original. |
+| Startup | Invalid config must exit with a clear message. |
+
+## Logging
+
+- Use `logging.getLogger(__name__)`; never `print()`.
+- Configure logging once in `logging_config.py`; avoid `basicConfig` in feature modules.
+- Do not log secrets, full uploads, or raw user prompts at INFO level or above.
+
+## Backend architecture
+
+- `backend/routers/`: validate input, call services, return responses.
+- `backend/services/`: business logic.
+- `backend/models/`: Pydantic schemas only.
+- `goat_ai/`: shared code, no FastAPI imports.
+- `backend/main.py`: app factory and startup wiring.
+
+Do not move business logic into route handlers.
+
+## Module layout
+
+```
+backend/
+  main.py          # create_app(); startup wiring
+  platform/
+    config.py        # server-only; delegates to goat_ai/config/settings.py
+    dependencies.py  # Depends() factories
+  routers/
+  services/
+  models/
+goat_ai/           # shared: clients, config, tools; no FastAPI
+  config/settings.py
+  shared/exceptions.py
+```

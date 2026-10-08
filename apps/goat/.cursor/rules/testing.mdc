@@ -1,0 +1,55 @@
+---
+description: Python and TypeScript testing boundaries, mocks, and runners aligned with docs/standards/ENGINEERING_STANDARDS.md
+globs: __tests__/**,**/__tests__/**,**/*.test.*,**/conftest.py
+alwaysApply: false
+---
+
+# Testing standards
+
+## Python
+
+- Tests live in `__tests__/`.
+- Mock at the protocol boundary; unit tests do not hit real Ollama.
+- Prefer fixtures and shared setup over global mutable state in test files.
+- Cover happy path and edge cases.
+- Do not use `time.sleep()` in tests; use async-aware patterns where needed.
+
+**Common commands:**
+
+- `python -m unittest discover -s __tests__ -p "test_*.py" -v`
+- Targeted: `python -m pytest ...` with the same mocking discipline
+
+**Example fake at the LLM boundary:**
+
+```python
+class FakeLLMClient:
+    def list_model_names(self) -> list[str]:
+        return ["llama3:latest"]
+
+    def stream_tokens(
+        self, model: str, messages: list[ChatTurn], system_prompt: str
+    ) -> Generator[str, None, None]:
+        yield "Hello"
+        yield " world"
+```
+
+## TypeScript
+
+- Use Vitest and React Testing Library.
+- Mock `fetch`; never hit the live backend in unit tests.
+- Assert behavior and user-visible output, not CSS implementation details.
+
+```typescript
+vi.stubGlobal("fetch", vi.fn().mockResolvedValue(...));
+const { result } = renderHook(() => useChat());
+```
+
+## CI reference (pre-delivery)
+
+Run the full CI-equivalent suite from repo root `AGENTS.md` **before every code delivery** (same steps as `.github/workflows/ci.yml`):
+
+- **Backend:** `ruff check` and `ruff format --check` on `backend`, `goat_ai`, `scripts`, `tools`, `__tests__`; `pip-audit -r requirements-ci.txt`; `lint-imports`; `python -m tools.quality.run_rag_eval`; `python -m tools.contracts.check_api_contract_sync`; `python -m pytest __tests__/ -v --tb=short`.
+- **Frontend** (if `frontend/` changed): `cd frontend && npm ci && npm test -- --run && npm run build`.
+
+- Python **3.14** for parity with the CI backend job and `docs/api/openapi.json` / API contract sync (see `ENGINEERING_STANDARDS.md`).
+- Node **24.14.x** (match CI workflow and `frontend/package-lock.json`).

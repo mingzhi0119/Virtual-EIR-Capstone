@@ -1,0 +1,116 @@
+import { buildApiHeaders } from './auth'
+import { buildApiErrorMessage } from './errors'
+import { fetchApi } from './http'
+import {
+  parseCodeSandboxExecutionEventsResponse,
+  parseCodeSandboxLogStreamEvent,
+  parseCodeSandboxExecutionResponse,
+} from './runtimeSchemas'
+import type {
+  CodeSandboxExecRequest,
+  CodeSandboxExecutionEventsResponse,
+  CodeSandboxLogStreamEvent,
+  CodeSandboxExecutionResponse,
+} from './types'
+import { buildApiUrl } from './urls'
+
+function emitParsedEvent(line: string, onEvent: (event: CodeSandboxLogStreamEvent) => void): void {
+  if (!line.startsWith('data: ')) return
+  try {
+    onEvent(parseCodeSandboxLogStreamEvent(JSON.parse(line.slice(6).trim()) as unknown))
+  } catch {
+    // Ignore malformed SSE frames and keep the stream alive.
+  }
+}
+
+export async function executeCodeSandbox(
+  request: CodeSandboxExecRequest,
+): Promise<CodeSandboxExecutionResponse> {
+  const resp = await fetchApi('/code-sandbox/exec', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(request),
+  })
+  if (!resp.ok) throw new Error(await buildApiErrorMessage(resp, 'Code sandbox API'))
+  return parseCodeSandboxExecutionResponse(await resp.json())
+}
+
+export async function fetchCodeSandboxExecution(
+  executionId: string,
+): Promise<CodeSandboxExecutionResponse> {
+  const resp = await fetchApi(`/code-sandbox/executions/${executionId}`)
+  if (!resp.ok) throw new Error(await buildApiErrorMessage(resp, 'Code sandbox API'))
+  return parseCodeSandboxExecutionResponse(await resp.json())
+}
+
+export async function fetchCodeSandboxExecutionEvents(
+  executionId: string,
+): Promise<CodeSandboxExecutionEventsResponse> {
+  const resp = await fetchApi(`/code-sandbox/executions/${executionId}/events`)
+  if (!resp.ok) throw new Error(await buildApiErrorMessage(resp, 'Code sandbox API'))
+  return parseCodeSandboxExecutionEventsResponse(await resp.json())
+}
+
+interface CodeSandboxLogStreamOptions {
+  afterSequence?: number
+  onEvent: (event: CodeSandboxLogStreamEvent) => void
+  onError?: () => void
+}
+
+export function openCodeSandboxLogStream(
+  executionId: string,
+  options: CodeSandboxLogStreamOptions,
+): () => void {
+  const controller = new AbortController()
+  const url = new URL(
+    buildApiUrl(`/code-sandbox/executions/${executionId}/logs`),
+    window.location.origin,
+  )
+  if (options.afterSequence && options.afterSequence > 0) {
+    url.searchParams.set('after_seq', String(options.afterSequence))
+  }
+
+  void (async () => {
+    try {
+      const resp = await fetch(url.toString(), {
+        credentials: 'same-origin',
+        headers: buildApiHeaders(),
+        signal: controller.signal,
+      })
+      if (!resp.ok) {
+        throw new Error(await buildApiErrorMessage(resp, 'Code sandbox log stream'))
+      }
+      if (!resp.body) {
+        throw new Error('Code sandbox log stream: no response body')
+      }
+
+      const reader = resp.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ''
+
+      try {
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+          buffer += decoder.decode(value, { stream: true })
+          const parts = buffer.split('\n')
+          buffer = parts[parts.length - 1] ?? ''
+          for (const line of parts.slice(0, -1)) {
+            emitParsedEvent(line, options.onEvent)
+          }
+        }
+        if (buffer.trim()) {
+          emitParsedEvent(buffer, options.onEvent)
+        }
+      } finally {
+        reader.cancel().catch(() => {})
+      }
+    } catch {
+      if (!controller.signal.aborted) {
+        options.onError?.()
+      }
+    }
+  })()
+
+  return () => controller.abort()
+}

@@ -1,0 +1,64 @@
+---
+description: Strict TypeScript, React/hooks/api layers, SSE, charts, and theme aligned with docs/standards/ENGINEERING_STANDARDS.md
+globs: **/*.{ts,tsx}
+alwaysApply: false
+---
+
+# React / TypeScript standards
+
+## TypeScript
+
+- `tsconfig.json` must include `strict: true`, `noUncheckedIndexedAccess: true`, and `noImplicitReturns: true`.
+- No `any`; use `unknown` and narrow it, or define a proper type.
+- No `@ts-ignore`; fix the type.
+
+## API layer
+
+- All network calls live in `frontend/src/api/*.ts`; do not place ad hoc fetches inside components.
+- Shared types belong with the API layer and should match backend shapes.
+
+```typescript
+export async function* streamChat(req: ChatRequest): AsyncGenerator<string> { ... }
+
+const resp = await fetch("/api/chat", ...);
+```
+
+## Components and hooks
+
+- Components render UI; avoid business logic in JSX.
+- Hooks own client-side behavior and state in `frontend/src/hooks/`.
+- Hooks return typed objects, not wide positional tuples except for trivial established cases.
+- Hooks must not import from `src/components/`.
+- Use an error boundary around async-heavy UI sections.
+- For responsive chat-shell behavior, prefer a small hook + pure decision-mapper shape (`use...Mode` + `get...Decisions(...)`) over scattering viewport checks across JSX.
+
+## Frontend architecture
+
+- `frontend/src/api/`: fetch wrappers and shared API types.
+- `frontend/src/hooks/`: stateful client logic.
+- `frontend/src/components/`: rendering.
+- SSE remains the streaming mechanism; do not replace it with WebSocket without an explicit design decision.
+- Charts use Apache ECharts. The backend contract stays constrained: models emit `ChartIntentV2` through native tool calling; services compile to `ChartSpecV2` / ECharts `option`. Do not let models emit raw chart-library config.
+- If the selected Ollama model does not report native tool support, disable chart rendering; do not fall back to pseudo chart markup.
+
+## Theme rules
+
+- Light and dark theme toggles use `.dark` on `<html>`.
+- Theme state persists in `localStorage` (`goat-ai-theme` in `useTheme.ts`; seed from `prefers-color-scheme` on first visit).
+- Global tokens live in `frontend/src/styles/global.css` (`:root` plus `.dark` overrides).
+
+## Manual UI verification
+
+- For frontend UI/layout-affecting changes, follow the canonical verification loop in `docs/standards/ENGINEERING_STANDARDS.md` Section 3.4.
+- Prefer the FastAPI-served SPA path on the configured app port (default `62606` via `GOAT_SERVER_PORT`) instead of the Vite dev server for final manual verification.
+
+## Module layout
+
+```
+frontend/src/
+  api/
+  components/
+  hooks/
+  styles/
+  App.tsx
+```

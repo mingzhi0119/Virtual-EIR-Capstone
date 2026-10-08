@@ -1,0 +1,410 @@
+name: Desktop Provenance
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_ref:
+        description: "Git ref to build provenance assets from"
+        required: true
+        default: "main"
+        type: string
+      distribution_channel:
+        description: "Desktop distribution channel"
+        required: true
+        default: "public"
+        type: choice
+        options:
+          - public
+          - internal_test
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  linux-desktop-provenance:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_ref || github.ref }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: "pip"
+          cache-dependency-path: requirements-desktop-build.txt
+      - name: Install desktop sidecar build dependencies
+        run: python -m pip install -r requirements-desktop-build.txt
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: frontend/src-tauri -> target
+      - name: Build Linux desktop sidecar
+        run: python -m tools.desktop.build_desktop_sidecar --target-triple x86_64-unknown-linux-gnu --clean
+      - name: Generate desktop sidecar SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          file: ./frontend/src-tauri/binaries/goat-backend-x86_64-unknown-linux-gnu
+          artifact-name: goat-backend-x86_64-unknown-linux-gnu.spdx.json
+          output-file: desktop-sidecar.spdx.json
+          upload-release-assets: false
+      - name: Write Linux sidecar provenance
+        run: |
+          python -m tools.desktop.write_linux_sidecar_provenance \
+            --artifact frontend/src-tauri/binaries/goat-backend-x86_64-unknown-linux-gnu \
+            --sbom desktop-sidecar.spdx.json \
+            --output desktop-provenance.json \
+            --release-ref "${{ inputs.release_ref || github.ref_name }}" \
+            --resolved-sha "${{ github.sha }}" \
+            --platform linux-x64 \
+            --target-triple x86_64-unknown-linux-gnu
+      - name: Upload provenance assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-provenance-assets
+          path: |
+            frontend/src-tauri/binaries/goat-backend-x86_64-unknown-linux-gnu
+            desktop-provenance.json
+            desktop-sidecar.spdx.json
+      - name: Generate build provenance attestation
+        if: ${{ !github.event.repository.private || vars.ENABLE_GITHUB_ATTESTATIONS == '1' }}
+        uses: actions/attest@v4
+        with:
+          subject-path: frontend/src-tauri/binaries/goat-backend-x86_64-unknown-linux-gnu
+      - name: Generate SBOM attestation
+        if: ${{ !github.event.repository.private || vars.ENABLE_GITHUB_ATTESTATIONS == '1' }}
+        uses: actions/attest@v4
+        with:
+          subject-path: frontend/src-tauri/binaries/goat-backend-x86_64-unknown-linux-gnu
+          sbom-path: desktop-sidecar.spdx.json
+
+  linux-packaged-desktop:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_ref || github.ref }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: "pip"
+          cache-dependency-path: requirements-desktop-build.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24.14.1"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install Tauri Linux system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            curl \
+            file \
+            libayatana-appindicator3-dev \
+            libglib2.0-dev \
+            librsvg2-dev \
+            libssl-dev \
+            libwebkit2gtk-4.1-dev \
+            libxdo-dev \
+            wget
+      - name: Install desktop sidecar build dependencies
+        run: python -m pip install -r requirements-desktop-build.txt
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: frontend/src-tauri -> target
+      - name: Build Linux packaged desktop
+        working-directory: frontend
+        run: npm run desktop:build
+      - name: Write Linux packaged desktop provenance
+        run: |
+          python -m tools.desktop.write_desktop_release_provenance \
+            --bundle-root frontend/src-tauri/target/release/bundle \
+            --pattern "appimage/*.AppImage" \
+            --pattern "deb/*.deb" \
+            --output desktop-linux-release-provenance.json \
+            --release-ref "${{ inputs.release_ref || github.ref_name }}" \
+            --resolved-sha "${{ github.sha }}" \
+            --platform linux-x64 \
+            --distribution-channel "${{ inputs.distribution_channel || 'public' }}"
+      - name: Upload Linux packaged desktop assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-linux-release-assets
+          path: |
+            frontend/src-tauri/target/release/bundle/appimage/*.AppImage
+            frontend/src-tauri/target/release/bundle/deb/*.deb
+            desktop-linux-release-provenance.json
+
+  macos-packaged-desktop:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    runs-on: macos-latest
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_ref || github.ref }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: "pip"
+          cache-dependency-path: requirements-desktop-build.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24.14.1"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install desktop sidecar build dependencies
+        run: python -m pip install -r requirements-desktop-build.txt
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: frontend/src-tauri -> target
+      - name: Build macOS packaged desktop
+        working-directory: frontend
+        run: npm run desktop:build
+      - name: Write macOS internal-test provenance
+        run: |
+          python -m tools.desktop.write_desktop_release_provenance \
+            --bundle-root frontend/src-tauri/target/release/bundle \
+            --pattern "macos/*.app" \
+            --pattern "dmg/*.dmg" \
+            --output desktop-macos-provenance.json \
+            --release-ref "${{ inputs.release_ref || github.ref_name }}" \
+            --resolved-sha "${{ github.sha }}" \
+            --platform macos-universal \
+            --distribution-channel "${{ inputs.distribution_channel || 'internal_test' }}"
+      - name: Report macOS public release blockers
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          channel = "${{ inputs.distribution_channel || 'internal_test' }}"
+          payload = {
+              "platform": "macos",
+              "distribution_channel": channel,
+              "public_release_ready": False,
+              "blockers": [
+                  "Apple signing certificate import is not automated yet.",
+                  "Notarization credentials and submission flow are not wired yet.",
+                  "Installed macOS smoke evidence is not part of the release proof chain yet.",
+              ],
+              "readiness_doc": "docs/operations/DESKTOP_DISTRIBUTION_READINESS.md",
+          }
+          Path("desktop-macos-blockers.json").write_text(
+              json.dumps(payload, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          if channel == "public":
+              raise SystemExit(
+                  "Public macOS desktop distribution remains blocked; see desktop-macos-blockers.json."
+              )
+          PY
+      - name: Upload macOS packaged desktop assets
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-macos-release-assets
+          path: |
+            frontend/src-tauri/target/release/bundle/macos/*.app
+            frontend/src-tauri/target/release/bundle/dmg/*.dmg
+            desktop-macos-provenance.json
+            desktop-macos-blockers.json
+
+  windows-packaged-desktop:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+      actions: read
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_ref || github.ref }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: "pip"
+          cache-dependency-path: requirements-desktop-build.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24.14.1"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: frontend/src-tauri -> target
+      - name: Install desktop sidecar build dependencies
+        run: python -m pip install -r requirements-desktop-build.txt
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+      - name: Resolve desktop distribution channel
+        id: distribution
+        shell: pwsh
+        run: |
+          if ("${{ github.event_name }}" -eq "push") {
+            $channel = "public"
+          } elseif ([string]::IsNullOrWhiteSpace("${{ inputs.distribution_channel }}")) {
+            $channel = "public"
+          } else {
+            $channel = "${{ inputs.distribution_channel }}"
+          }
+          "channel=$channel" >> $env:GITHUB_OUTPUT
+      - name: Build Windows desktop package
+        working-directory: frontend
+        run: npm run desktop:build
+      - name: Sign public Windows desktop installers
+        shell: pwsh
+        env:
+          GOAT_DESKTOP_SIGNING_CERT_BASE64: ${{ secrets.GOAT_DESKTOP_SIGNING_CERT_BASE64 }}
+          GOAT_DESKTOP_SIGNING_CERT_PASSWORD: ${{ secrets.GOAT_DESKTOP_SIGNING_CERT_PASSWORD }}
+          GOAT_DESKTOP_SIGNING_TIMESTAMP_URL: ${{ secrets.GOAT_DESKTOP_SIGNING_TIMESTAMP_URL }}
+        run: |
+          $channel = "${{ steps.distribution.outputs.channel }}"
+          if ($channel -ne "public") {
+            Write-Host "Internal-test desktop provenance requested; skipping signing."
+            exit 0
+          }
+          if ([string]::IsNullOrWhiteSpace($env:GOAT_DESKTOP_SIGNING_CERT_BASE64) -or [string]::IsNullOrWhiteSpace($env:GOAT_DESKTOP_SIGNING_CERT_PASSWORD)) {
+            throw "Public desktop releases require GOAT_DESKTOP_SIGNING_CERT_BASE64 and GOAT_DESKTOP_SIGNING_CERT_PASSWORD."
+          }
+          $timestampUrl = $env:GOAT_DESKTOP_SIGNING_TIMESTAMP_URL
+          if ([string]::IsNullOrWhiteSpace($timestampUrl)) {
+            $timestampUrl = "http://timestamp.digicert.com"
+          }
+          .\scripts\desktop\sign_windows_desktop_artifacts.ps1 `
+            -BundleRoot "frontend/src-tauri/target/release/bundle" `
+            -CertificateBase64 $env:GOAT_DESKTOP_SIGNING_CERT_BASE64 `
+            -CertificatePassword $env:GOAT_DESKTOP_SIGNING_CERT_PASSWORD `
+            -TimestampUrl $timestampUrl
+      - name: Write Windows desktop provenance
+        shell: pwsh
+        run: |
+          $args = @(
+            "-m",
+            "tools.desktop.write_desktop_release_provenance",
+            "--bundle-root",
+            "frontend/src-tauri/target/release/bundle",
+            "--pattern",
+            "msi/*.msi",
+            "--pattern",
+            "nsis/*-setup.exe",
+            "--output",
+            "desktop-windows-provenance.json",
+            "--release-ref",
+            "${{ inputs.release_ref || github.ref_name }}",
+            "--resolved-sha",
+            "${{ github.sha }}",
+            "--platform",
+            "windows-x64",
+            "--distribution-channel",
+            "${{ steps.distribution.outputs.channel }}"
+          )
+          if ("${{ steps.distribution.outputs.channel }}" -eq "public") {
+            $args += "--require-signed"
+          }
+          python @args
+      - name: Capture Windows installer paths
+        id: windows_artifacts
+        shell: pwsh
+        run: |
+          $msi = Get-ChildItem -Path "frontend/src-tauri/target/release/bundle/msi/*.msi" -File | Select-Object -First 1
+          $nsis = Get-ChildItem -Path "frontend/src-tauri/target/release/bundle/nsis/*-setup.exe" -File | Select-Object -First 1
+          if ($null -eq $msi -or $null -eq $nsis) {
+            throw "Expected both MSI and NSIS desktop installer artifacts."
+          }
+          "msi_path=$($msi.FullName)" >> $env:GITHUB_OUTPUT
+          "nsis_path=$($nsis.FullName)" >> $env:GITHUB_OUTPUT
+      - name: Run installed MSI desktop smoke
+        shell: pwsh
+        run: |
+          python -m tools.desktop.installed_windows_desktop_fault_smoke `
+            --installer "${{ steps.windows_artifacts.outputs.msi_path }}" `
+            --installer-kind msi `
+            --artifact-dir "desktop-installed-smoke/msi" `
+            --workflow-role release_evidence `
+            --release-ref "${{ inputs.release_ref || github.ref_name }}" `
+            --resolved-sha "${{ github.sha }}" `
+            --distribution-channel "${{ steps.distribution.outputs.channel }}"
+      - name: Run installed NSIS desktop smoke
+        if: ${{ always() }}
+        shell: pwsh
+        run: |
+          python -m tools.desktop.installed_windows_desktop_fault_smoke `
+            --installer "${{ steps.windows_artifacts.outputs.nsis_path }}" `
+            --installer-kind nsis `
+            --artifact-dir "desktop-installed-smoke/nsis" `
+            --workflow-role release_evidence `
+            --release-ref "${{ inputs.release_ref || github.ref_name }}" `
+            --resolved-sha "${{ github.sha }}" `
+            --distribution-channel "${{ steps.distribution.outputs.channel }}"
+      - name: Summarize installed Windows evidence
+        if: ${{ always() }}
+        shell: pwsh
+        run: |
+          Add-Content $env:GITHUB_STEP_SUMMARY "## Installed Windows evidence"
+          $summaries = Get-ChildItem -Path "desktop-installed-smoke/*/summary.json" -File -ErrorAction SilentlyContinue
+          if ($null -eq $summaries -or $summaries.Count -eq 0) {
+            Add-Content $env:GITHUB_STEP_SUMMARY ""
+            Add-Content $env:GITHUB_STEP_SUMMARY "No installed Windows summary.json artifact was produced."
+            exit 0
+          }
+          foreach ($summaryPath in $summaries) {
+            $payload = Get-Content $summaryPath.FullName -Raw | ConvertFrom-Json
+            $healthyLaunch = $payload.healthy_launch
+            $readyStatus = if ($null -eq $healthyLaunch) { "<none>" } else { $healthyLaunch.ready_status }
+            $healthyStatus = if ($null -eq $healthyLaunch) { "<none>" } else { $healthyLaunch.status }
+            $primaryPhase = if ([string]::IsNullOrWhiteSpace($payload.primary_failure_phase)) { $payload.phase } else { $payload.primary_failure_phase }
+            Add-Content $env:GITHUB_STEP_SUMMARY ""
+            Add-Content $env:GITHUB_STEP_SUMMARY "* $($payload.installer_kind): status=$($payload.status), phase=$($payload.phase), primary_failure=$primaryPhase, healthy_launch=$healthyStatus, ready_status=$readyStatus, summary=$($summaryPath.FullName)"
+      - name: Upload Windows desktop release assets
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-windows-release-assets
+          path: |
+            frontend/src-tauri/target/release/bundle/msi/*.msi
+            frontend/src-tauri/target/release/bundle/nsis/*-setup.exe
+            desktop-windows-provenance.json
+      - name: Upload installed Windows smoke evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-windows-installed-smoke
+          path: desktop-installed-smoke
+      - name: Generate Windows MSI provenance attestation
+        if: ${{ !github.event.repository.private || vars.ENABLE_GITHUB_ATTESTATIONS == '1' }}
+        uses: actions/attest@v4
+        with:
+          subject-path: ${{ steps.windows_artifacts.outputs.msi_path }}
+      - name: Generate Windows NSIS provenance attestation
+        if: ${{ !github.event.repository.private || vars.ENABLE_GITHUB_ATTESTATIONS == '1' }}
+        uses: actions/attest@v4
+        with:
+          subject-path: ${{ steps.windows_artifacts.outputs.nsis_path }}

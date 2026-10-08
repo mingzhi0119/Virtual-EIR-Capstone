@@ -1,0 +1,47 @@
+---
+description: Docs update rules, commit hygiene, and recovery notes aligned with docs/standards/ENGINEERING_STANDARDS.md
+globs: README.md,docs/**,AGENTS.md
+alwaysApply: false
+---
+
+# GOAT AI - Documentation, commits, recovery
+
+## Documentation language
+
+- All prose under `docs/` and in `README.md` must be English.
+- Keep docs UTF-8 without BOM.
+- Prefer ASCII-safe prose where practical, and avoid mojibake or replacement characters.
+
+## Documentation update rules
+
+Update docs when behavior changes:
+
+| Change type | File |
+|-------------|------|
+| Ubiquitous domain terms (chat/chart/safeguard semantics) | `docs/architecture/DOMAIN.md` |
+| Architecture, structure, developer workflow | `README.md` |
+| Committed OpenAPI from FastAPI | `docs/api/openapi.json` |
+| LLM-optimized compact API | `docs/api/api.llm.yaml` (regenerate via `python -m tools.contracts.generate_llm_api_yaml` from repo root) |
+| Human-readable endpoints | `docs/api/API_REFERENCE.md` |
+| Env vars, deploy, startup, host ops | `docs/operations/OPERATIONS.md` |
+| Current shipped state | `docs/governance/PROJECT_STATUS.md` |
+| Phase completion / future work | `docs/governance/ROADMAP.md` |
+
+- Canonical workflow or verification rules belong in `docs/standards/ENGINEERING_STANDARDS.md`; `AGENTS.md` may carry agent memory and current collaboration guidance, but it should stay aligned with the canonical standards.
+- If the canonical standards change, keep relevant `.cursor/rules/*.mdc` files aligned in the same change.
+
+## Commit hygiene
+
+Before committing:
+
+- No `print()`, commented-out code, or hardcoded secrets, ports, or paths
+- New functions are typed and have one-line docstrings where the repo expects them
+- New logic has tests where practical
+- `requirements.txt` / `requirements-ci.txt` and `package-lock.json` are updated if dependencies changed
+- Docs are updated per the table above when user-facing or ops behavior changes
+
+## Recovery notes
+
+- If work appears lost, check `git reflog` before assuming it is gone
+- Be careful with `git reset --hard` on the server-hosted checkout
+- Do not commit `.venv/`, PID files, SQLite runtime files, notebook checkpoints, or other machine-local artifacts
