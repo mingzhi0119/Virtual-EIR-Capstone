@@ -29,9 +29,13 @@
 - **P1 / 公网发布阻断**：`npm audit` 当前报告 26 项（13 high、8 moderate、5 low），包括构建工具和运行依赖；没有自动执行可能破坏 Tailwind/KaTeX 等的重大升级。不能据此发布或承诺安全已完成。
 - **P2 / 文档漂移**：实际 session schema_version=5，部分文档仍写 v4；通过 API 使用，不手工硬编码旧存储格式。
 - **P2 / 证据缺口**：旧 protected-flow E2E 与公开 demo 模式冲突；本轮不宣称浏览器 E2E、desktop、Ubuntu CI parity 已通过。
-- 残余风险：模型输出不确定、可能幻觉；`think:false` 并未让这次 Gemma 停止思考输出。EIR 丢弃思考，仅显示完整回答，仍要留够输出预算。
+- 已修复的兼容问题：原代码把 `think:false` 放在 options 中而非 Ollama 顶层，首次测试因此只输出思考并耗尽预算；已修复本地 subtree 的五种路径，新增 26 项回归。原 GOAT 仓库未改。残余风险是模型输出不确定及幻觉，仍需检查非空完整回答和样本证据，不能把 HTTP 200 当成功。
 - 外部依赖：老师/EIR 审阅、组员权限、生产访问控制均非本机测试可证明。第一周不邀请组员。
 
 ## 最小整改路线
 
-本周先关 R5–R8（资料、教练、两会话和部署证明）；公网/多人/真实敏感资料前，另做依赖安全升级、认证与授权、跨用户隔离、浏览器 E2E 和部署复核。不得把这些生产阻断移成已完成任务。
+R5–R8 已完成本地最小验收；公网/多人/真实敏感资料前，另做依赖安全升级、认证与授权、跨用户隔离、浏览器 E2E 和部署复核。不得把这些生产阻断移成已完成任务。
+
+## 修复后的最终验证
+
+GOAT 后端/契约 540 passed、8 skipped、10 subtests passed；前端 217 passed；新增 EIR 18 passed、14 项 headless Edge 行为检查通过。真实 Gemma 两会话、新会话读取保存状态和重启恢复均通过。[GitHub 原型检查](https://github.com/mingzhi0119/Virtual-EIR-Capstone/actions/runs/37835443569) 全部成功。检查范围及每次真实输出见 [归档](archive/2026-10-08-goat-reuse.md)，不代表完整上游 E2E、安全或 EIR 专家评估。

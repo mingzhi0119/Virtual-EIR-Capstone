@@ -76,7 +76,7 @@ git pull --ff-only
 
 Git 同步已经 commit 且 push 的文件。未提交文件、环境变量、API key、依赖安装、运行数据库和被 .gitignore 忽略的文件不会自动同步。
 
-当前共享的是规划文档和协作配置，尚未导入 GOAT AI 代码。后续代码的运行说明和环境模板随实现补充。真实项目资料使用获准的共享渠道；仓库目前使用虚构演示数据。
+当前共享完整 GOAT 源码基线（`apps/goat`）、Capstone EIR 层（`eir`）、文档、测试和虚构运行证据。新设备安装与启动见 [LOCAL_RUN.md](docs/LOCAL_RUN.md)。`var` 中的数据库、模型与依赖不能通过 Git 恢复，需单独备份；真实资料使用获准的安全渠道。
 
 ## 6. 添加组员
 

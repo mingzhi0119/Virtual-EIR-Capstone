@@ -56,10 +56,10 @@ G1 状态：已完成仓库初始化、推送和独立 clone 验证；邀请暂�
 | --- | --- | --- | --- | --- |
 | 1 | 确定单一虚构项目和需求边界 | 草稿已写，待团队审阅 | [原型设计稿](PROTOTYPE_BRIEF.md) 第 1、5 节 | 产品/研究 |
 | 2 | 用户流程 W1、资料模板 W2、指导框架 W3 | 草稿已写，待审阅；尚非实现 | [原型设计稿](PROTOTYPE_BRIEF.md) 第 2–4 节 | 产品/研究 |
-| 3 | 两次会话 W4 | 演示脚本已写，尚未模型验证 | [原型设计稿](PROTOTYPE_BRIEF.md) 第 5 节 | 产品/研究 + 验证 |
-| 4 | 启动 GOAT，并确认可复用聊天路径 | 待执行 | 实际启动记录、一次模型回复 | 开发 |
-| 5 | 实现资料保存、读取与 follow-up W5 | 待执行 | 重载页面或新建同一项目的会话后仍能读取上次行动 | 开发 |
-| 6 | 运行演示和边界检查 | 待执行 | [第 5 节](#5-演示验收) 的逐项结果 | 验证/展示 |
+| 3 | 两次会话 W4 | 本地真实模型已验证，待老师审阅 | [真实输入/输出](archive/2026-10-08-real-demo.json) | 产品/研究 + 验证 |
+| 4 | 启动 GOAT，并确认可复用聊天路径 | 已完成，Gemma 26B / RTX 5090 | [GOAT 检查报告](GOAT_AUDIT.md) | 开发 |
+| 5 | 实现资料保存、读取与 follow-up W5 | 已实现并验证；资料须用户确认保存 | [归档 R5–R7](archive/2026-10-08-goat-reuse.md) | 开发 |
+| 6 | 运行演示和边界检查 | 已通过本地最小验收，未做 EIR 专家评价 | [UI 证明](archive/2026-10-08-ui-proof.json)及第 5 节 | 验证/展示 |
 | 7 | S1 架构图、S2 API 估算和申请草稿 | 架构草图/邮件模板已写；服务商和金额待定 | 原型设计稿第 6–7 节，填写真实测试用量 | 开发 |
 | 8 | 整理给老师/Ain 的具体问题 | 初稿已写，待结合演示修订 | 原型设计稿第 8 节 | 全组 |
 
@@ -67,14 +67,16 @@ G1 状态：已完成仓库初始化、推送和独立 clone 验证；邀请暂�
 
 ## 5. 演示验收
 
-- [ ] 首次会话能问清客户、问题、已有证据，而不是只输出泛泛建议。
-- [ ] 输出一个具体行动，含对象、数量/范围、执行方式和要记录的结果。
-- [ ] 显示首次会话保存的项目资料、待验证假设和行动计划。
-- [ ] 重载页面或创建同一项目的新会话后，能恢复上述内容。
-- [ ] 用户只输入本次结果时，教练能主动联系上次任务，无需再次粘贴完整旧对话。
-- [ ] 根据价格/速度的新发现改变建议，同时说明样本有限。
-- [ ] “只做了两次访谈”仍保存为两次，计划五次不能被写成已完成五次。
-- [ ] 若选择云 API，记录真实测试调用量；需要老师 key 时把具体需求准备好。
+- [x] 首次会话提出两个相关问题及依据，结合已确认客户、问题和尚无访谈的状态。
+- [x] 输出具体五人行动，含对象、方法和记录结果；首次过大样本建议已收紧并复测。
+- [x] 显示并经用户确认保存项目资料、待验证假设和行动计划。
+- [x] 重载页面、新建会话与真实服务重启后恢复资料及保存的会话。
+- [x] 无需粘贴旧对话；在资料面板确认本次结果后，新会话主动联系上次任务。
+- [x] 根据价格/速度的新发现改变建议，指出仅两个样本的局限。
+- [x] 保留计划五次、已完成两次的区别；模型不自动改写事实。
+- [x] 本轮使用本地 Ollama，未调用付费模型 API，不申请老师 key；将来选云 API 才需记录用量与准备具体需求。
+
+上述勾选是本地原型验收，不是老师/EIR 已审阅。指导质量仍有证据解释及假设性付费意愿问题，需要后续量表与专家反馈。模型聊天更新不是自动事实提取：用户须显式确认保存。
 
 现场建议 5–7 分钟：介绍复用基础 → 首次会话 → 显示保存资料 → 重载/新会话 → 反馈新证据 → 展示建议更新 → 请老师指出流程缺口。
 
@@ -82,17 +84,17 @@ G1 状态：已完成仓库初始化、推送和独立 clone 验证；邀请暂�
 
 ## 6. 汇报口径
 
-当前可以说：已基于 GOAT AI 整理 Virtual EIR 的用户流程、创业者资料模板、指导框架和两次会话设计，正在准备运行演示。
+当前可以说：已复用 GOAT AI 跑通本地 Virtual EIR，完成用户流程/资料/框架草稿、真实两次模型会话和确认式资料持久化；新会话会读取上次行动，重启后资料可恢复。
 
-完成实际测试后才能说：原型可以保存项目资料，并在新的 follow-up 会话中读取上次行动、结合新证据调整建议。
+证据在 [运行归档](archive/2026-10-08-goat-reuse.md)。老师/EIR 审阅、多人授权、公网安全与 Ain 定制尚未完成。
 
 给老师的英文汇报草稿（按实际完成情况替换）：
 
-> We are building on my existing GOAT AI business-school assistant. Our draft includes a user journey, an entrepreneur profile, a coaching framework, and a fictional venture with an initial session and a follow-up. The prototype work focuses on saving venture context and using it to follow up on the founder's previous action. We will show which parts are working and which still need validation, then use your feedback to make our questions for Ain more specific.
+> We reused my existing GOAT AI platform for a local Virtual EIR prototype. We have draft user-journey, entrepreneur-profile, and coaching-framework documents, plus a real initial session and follow-up using a fictional venture. Founder-confirmed profiles and actions persist across new sessions and a service restart. The follow-up distinguishes five planned interviews from two completed interviews and adapts its advice to the new price-related observations. We will show the working flow and its limitations, then use your feedback to make our questions for Ain more specific.
 
 ## 7. 待确认事项
 
 - 当前例会日期、时间和时区：旧记忆是周五 11:00，尚未读取最新邀请。
 - 老师是否允许在 Capstone 中复用既有 GOAT 代码，以及如何注明已有成果和团队新增贡献：在展示时主动说明复用来源。
-- 模型/API 选择与 key 安排：老师已表达支持，实际服务商、额度和 key 尚未确认。
+- 本轮已选本地 Ollama/Gemma；未来云 API 的服务商、额度和 key 仍未确认，届时向老师提出具体申请。
 - Ain 的真实 intake、EIR 评估框架及资料权限：需通过公开资料和后续具体反馈确认。

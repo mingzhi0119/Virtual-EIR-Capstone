@@ -2,6 +2,8 @@
 
 更新日期：2026-10-08。本文是 Capstone 工作计划；没有修改 GOAT AI 原仓库路线图，也没有承诺各后续阶段的固定日期。
 
+本轮已按实际仓库、RTX 5090 / 本地 Ollama 和运行结果定制执行路线。操作级进度以 [逐项实施清单](IMPLEMENTATION_CHECKLIST.md) 为准：R1–R8 完成，R9–R13 为后续阶段，R14–R16 是多人/公网/真实敏感资料前的门禁。每项完成证据在 [归档](archive/2026-10-08-goat-reuse.md)；启动方式见 [LOCAL_RUN.md](LOCAL_RUN.md)。
+
 ## 1. 目标与范围
 
 目标用户：有一个创业想法、尚未充分验证客户需求的早期创始人。
@@ -12,20 +14,20 @@
 
 ## 2. GOAT 基础与复用判断
 
-本轮读取 main 提交：`9788ffab4a70f3dec6406778d1dc26f302b762f8`，2026-04-29。以下是仓库依据及复用建议，实际启动和功能质量待验证。
+基线 main 提交：`9788ffab4a70f3dec6406778d1dc26f302b762f8`，2026-04-29，完整导入 `apps/goat`。实际检查见 [GOAT_AUDIT.md](GOAT_AUDIT.md)：聊天/历史/构建已运行；其他功能不从文档存在推断已部署。新增 `eir` 通过现有 HTTP 聊天接口复用，不扩大 GOAT workbench。
 
 | 能力 | 仓库依据 | Virtual EIR 的处理 |
 | --- | --- | --- |
-| React + FastAPI、Ollama 聊天 | [README](https://github.com/mingzhi0119/GOAT_AI/blob/9788ffab4a70f3dec6406778d1dc26f302b762f8/README.md) | 复用界面和聊天请求路径；增加创业教练模式 |
-| 会话历史、持久化、生成文件 | [API Reference](https://github.com/mingzhi0119/GOAT_AI/blob/9788ffab4a70f3dec6406778d1dc26f302b762f8/docs/api/API_REFERENCE.md) | 复用存储机制；新增项目资料、行动及会话关联 |
+| React + FastAPI、Ollama 聊天 | [运行检查](GOAT_AUDIT.md) | 保留完整原平台；EIR 新入口复用真实 GOAT SSE；补顶层 think 传参缺陷 |
+| 会话历史、持久化、生成文件 | [API Reference](https://github.com/mingzhi0119/GOAT_AI/blob/9788ffab4a70f3dec6406778d1dc26f302b762f8/docs/api/API_REFERENCE.md) | 历史已实测；EIR 独立 SQLite 保存确认资料/行动，加载当前会话历史；生成文件本轮未单独验收 |
 | 上传、知识检索、带引用的回答 | 同上 | 后续加载公开创业材料和获准 Ain 材料；第一版可从小范围精选资料开始 |
-| 本地/学校服务器/远程运行 | README | 第一轮选择能最快验证的单一环境 |
+| 本地/学校服务器/远程运行 | [本地说明](LOCAL_RUN.md) | 已选 Windows loopback + Ollama + 现有 Gemma 26B；本轮不做学校或公网部署 |
 | project_memory | [Memory 决策文档](https://github.com/mingzhi0119/GOAT_AI/blob/9788ffab4a70f3dec6406778d1dc26f302b762f8/docs/architecture/PROJECT_MEMORY_CONNECTORS_FOUNDATION_DECISION_PACKAGE.md) | 是项目输出的只读检索源；不能直接等同于自动更新创业者资料 |
 | 云模型 API | [原路线图](https://github.com/mingzhi0119/GOAT_AI/blob/9788ffab4a70f3dec6406778d1dc26f302b762f8/docs/governance/ROADMAP.md) 将相关前端占位列为暂缓 | 不假定现成可用；如选云 API，明确新增适配器和用量记录工作 |
 
 已有聊天历史解决“保存说过的话”；Virtual EIR 还需要明确“哪些假设仍未验证、约定做什么、实际完成什么”。这些应保存成可检查的项目状态。
 
-来源冲突：2026-04-14 的 PROJECT_STATUS.md 称账号/Google 登录已落地，但当前 API_REFERENCE.md 表述公开 demo 已移除登录、OAuth 和必需 owner-id header。实施时必须核查实际配置、路由和访问隔离；当前文档不把旧状态页的登录能力当成已验证保障。本周只使用虚构案例。
+来源冲突已核对代码：当前无登录 demo，历史 auth 配置会被拒绝；旧登录保障不可依赖。依赖审计另有 13 项 high。只用虚构案例、单用户和 loopback；公网/真实敏感资料前须新增安全整改与访问控制门禁。
 
 ## 3. 阶段 0：本周设计与最小演示
 
@@ -42,11 +44,15 @@
 
 完成条件：三个草稿可审阅；两次会话能展示；实际实现的保存/读取有证据。设计演示可先展示，但运行和持久化状态必须标明。
 
+当前结果：三个草稿已有，实际两会话及跨新会话状态、重启恢复已验证；尚待老师审阅。首次/跟进真实输出及质量局限均归档，未称专家认可。
+
 本阶段优先文字、单项目、虚构资料、单模型。语音、多 agent、微调、复杂 connector、桌面打包及平台整体升级不进入本周核心范围。
 
 ## 4. 阶段 1：通用 MVP 可靠运行
 
 在阶段 0 演示基础上完善，而非先扩展 GOAT 整个平台。
+
+已落地最小版本：profile/assumptions/evidence/actions、完整会话内容、确认编辑、项目关联隔离和本地模型。本轮未做自动 SessionSummary、自动事实提取或 RAG；模型不能直接覆盖已确认事实。
 
 | 工作 | 产出 | 完成条件 |
 | --- | --- | --- |
@@ -85,8 +91,8 @@
 
 | 选择/依赖 | 当前状态 | 对进度的影响 | 当前建议 |
 | --- | --- | --- | --- |
-| 本地/托管 Ollama 或云 API | 尚未选定 | 云 API 可能需要适配器及老师 key | 先跑现有路径；若质量/可用性不足，提出具体云 API 方案 |
-| 创业者资料持久化 | 待实现 | 直接决定连续指导是否成立 | 用现有数据库基础新增最小业务对象，避免扩大只读 project_memory |
+| 本地/托管 Ollama 或云 API | 已选本地 Ollama + Gemma 26B，两会话已实测 | 当前不阻塞；未使用付费模型 API | 先评估当前质量；若不足，再明确云 API 适配器与老师 key 需求 |
+| 创业者资料持久化 | 确认式 SQLite、版本修正与重启恢复已验证 | 已支持最小连续指导 | 保持显式确认；自动摘要/提取另立带评价的任务，不扩大只读 project_memory |
 | 首轮知识来源 | 公开资料范围待整理 | 不阻塞流程草稿和虚构演示 | 精选少量公开材料；缺乏来源时明确为通用设计假设 |
 | Ain-specific 数据/EIR 反馈 | 尚未取得 | 影响阶段 2，而非阶段 0 开始 | 用演示中的实际缺口请求具体材料 |
 | GOAT 既有成果与团队贡献 | 需说明来源 | 影响成果归属和学期汇报 | 保留基线提交、注明复用，记录 Capstone 新增工作；确认课程允许的复用方式 |
