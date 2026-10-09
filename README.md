@@ -2,6 +2,8 @@
 
 更新日期：2026-10-08（America/New_York）。
 
+只读展示部署更新：2026-10-09。[在线英文展示](https://virtual-eir-showcase.vercel.app)可匿名查看首次咨询、后续咨询与资料快照，不生成新回复、不保存编辑、不连接本机 Ollama。案例均为虚构，页面明确标注为 10 月 8 日录制；不需要作者电脑在线。见 [展示版说明](showcase/README.md)和 [部署归档](docs/archive/2026-10-09-vercel-showcase.md)。这不是完整应用的公网发布，下面的本地运行与安全边界不变。
+
 团队仓库：[mingzhi0119/Virtual-EIR-Capstone](https://github.com/mingzhi0119/Virtual-EIR-Capstone)（Private）。新设备同步和组员工作流程见 [CONTRIBUTING.md](CONTRIBUTING.md)，组员邀请状态见 [GitHub 设置说明](docs/GITHUB_SETUP.md)。
 
 项目方向：复用已有 GOAT AI 聊天平台，做一个能够记住创业项目背景、追问关键假设、跟进验证行动的 Virtual Entrepreneur-in-Residence（Virtual EIR）。先用通用创业框架和虚构案例形成演示，再让 Ain Center / EIR 提供具体反馈。
@@ -28,7 +30,7 @@
 - 已完成：完整 GOAT 源码 subtree 导入、本地部署、Gemma 26B 真实两会话；确认式创业资料、5/2 访谈数量区分、重启恢复、修正与项目关联隔离。
 - 已完成：面向老师的英文输入模板、英文默认回复策略与英文两会话真实演示；Virtual EIR 直接复用 GOAT 主题、字体和图标，改为聊天优先布局、侧栏会话和档案弹窗。历史中文记录保留，不冒充已翻译。
 - 本地已验证：EIR 24 个确定性测试、21 组 headless UI 检查；GOAT 后端/契约 540 项通过（另有 8 个跳过）。基线前端 217 项通过；远程 fail-fast [run 37839067814](https://github.com/mingzhi0119/Virtual-EIR-Capstone/actions/runs/37839067814) 也已通过并核对日志。此前状态绿色掩盖失败的记录仍保留；本次英文/UI 增量的远程结果另记，不沿用基线成功。
-- 尚未完成：老师/EIR 审阅、Ain-specific 知识、多案例评价、依赖安全升级、登录/多人授权或公网部署。当前只用虚构数据。
+- 尚未完成：老师/EIR 审阅、Ain-specific 知识、多案例评价、依赖安全升级、登录/多人授权或完整应用公网部署。已发布的只读静态展示不开放这些能力；当前只用虚构数据。
 - 本轮模型/API：本机 Ollama + 已有 `gemma4:26b`；未调用付费模型 API，不需要老师 key。以后需要云 API 再提出具体申请。
 - 第一周启动负责人：Mingzhi。组员邀请和后续分工最早下周再讨论；文档中的角色是工作类别，不代表成员已经接受任务。
 

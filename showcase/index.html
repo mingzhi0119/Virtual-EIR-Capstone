@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="description" content="Read-only Virtual EIR prototype showcase with recorded English conversations from a fictional venture.">
+  <title>Virtual EIR · Recorded showcase</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/assets/style.css">
+  <link rel="stylesheet" href="/assets/generated/appearance.css">
+  <link rel="stylesheet" href="/assets/showcase.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" aria-label="Recorded venture and session navigation">
+    <a class="brand" href="/" aria-label="Virtual EIR showcase home"><span data-icon="goat"></span><strong>GOAT</strong><span class="brand-edition">Virtual EIR</span></a>
+    <div class="showcase-label">READ-ONLY SHOWCASE</div>
+    <button id="new" class="new-chat" disabled title="Creating ventures is not available in this recorded showcase"><span data-icon="new"></span>New fictional venture</button>
+    <label class="section-label" for="ventures">VENTURE</label>
+    <select id="ventures" aria-label="Recorded venture"><option>Campus dinner delivery (fictional)</option></select>
+    <div class="section-heading"><label class="section-label" for="sessions">RECORDED SESSIONS</label></div>
+    <select id="sessions" aria-label="Select recorded session"></select>
+    <div id="session-list" class="session-list" aria-label="Recorded session history"></div>
+    <div class="sidebar-footer"><span>Built on GOAT AI</span><span>Pre-existing platform by Mingzhi Hu</span><span>Fictional educational demonstration</span><span>No live model or backend connection</span></div>
+  </aside>
+  <main class="chat-shell">
+    <header class="topbar"><div><h1 id="chat-title">Virtual EIR</h1><span class="topbar-caption">Founder coaching · English · Recorded example</span></div><div class="topbar-actions"><button id="open-profile" class="secondary"><span data-icon="profile"></span>Venture profile</button><button id="open-appearance" class="icon-button" aria-label="Appearance" title="Appearance"><span data-icon="settings"></span></button></div></header>
+    <div class="recording-banner" role="note"><strong>Recorded demo · October 8, 2026</strong><span>Browse saved conversations and profile snapshots. No new replies are generated; all venture and interview data are fictional.</span></div>
+    <div id="context-strip" class="context-strip"><span data-icon="memory"></span><span id="context-summary"></span></div>
+    <div id="conversation" class="conversation"><div id="transcript" class="transcript" aria-live="polite" aria-label="Recorded conversation"></div></div>
+    <div class="composer-area">
+      <div class="showcase-navigation"><button id="initial" class="secondary">First consultation</button><button id="followtext" class="secondary">Follow-up 1</button></div>
+      <div id="status" role="status" aria-live="polite"></div>
+      <form id="composer" class="composer"><label class="sr-only" for="message">Chat unavailable in this showcase</label><textarea id="message" rows="2" placeholder="Read-only showcase — select a recorded session to explore." disabled></textarea><div class="composer-bottom"><div class="composer-model"><span data-icon="model"></span><span id="recorded-model"></span><span class="language-label">English</span></div><button id="send" type="submit" class="send-button" disabled aria-label="Sending messages is unavailable" title="No live AI in this showcase"><span data-icon="send"></span></button></div></form>
+      <p class="composer-disclaimer">Fictional case · Recorded AI suggestions, not expert validation · No human EIR appointment</p>
+    </div>
+  </main>
+</div>
+<dialog id="profile-panel" aria-labelledby="profile-heading">
+  <div class="dialog-heading"><div><span class="eyebrow">RECORDED FOUNDER-CONFIRMED CONTEXT</span><h2 id="profile-heading">Venture profile</h2></div><button id="close-profile" class="icon-button" aria-label="Close venture profile"><span data-icon="close"></span></button></div>
+  <p class="dialog-intro">This is the saved profile snapshot for the selected recorded session. In the working local prototype, the founder confirms changes; this showcase cannot edit or save them.</p>
+  <div class="profile-fields"><label>Venture name<input id="field-name" readonly></label><label>Target customer<input id="field-customer" readonly></label><label>Problem to explore<textarea id="field-problem" rows="2" readonly></textarea></label><label>Stage<input id="field-stage" readonly></label><label>Assumptions to test<textarea id="field-assumptions" rows="2" readonly></textarea></label></div>
+  <div class="memory-section"><h3>Action progress</h3><div id="action-summary" class="memory-summary"></div></div>
+  <div class="memory-section"><h3>Reported evidence</h3><div id="evidence-summary" class="memory-summary"></div></div>
+  <details id="advanced-profile"><summary>View sanitized profile JSON</summary><label class="sr-only" for="profile">Recorded profile JSON</label><textarea id="profile" rows="12" readonly></textarea></details>
+  <p id="revision" class="meta"></p>
+  <div class="memory-section"><h3>What this example does not prove</h3><p class="hint">These are actual recorded model responses on a fictional case, not real student interviews. The follow-up includes a hypothetical willingness-to-pay question that needs improvement. Coaching quality, real-user usefulness, and expert approval have not been established.</p></div>
+</dialog>
+<dialog id="appearance-panel" aria-labelledby="appearance-heading"><div class="dialog-heading"><h2 id="appearance-heading">Appearance</h2><button id="close-appearance" class="icon-button" aria-label="Close appearance"><span data-icon="close"></span></button></div><p class="dialog-intro">The same theme system as GOAT AI. Only appearance preferences are saved in your browser; no venture data is submitted.</p><label>Theme<select id="theme-style"><option value="classic">Classic</option><option value="urochester">University of Rochester</option><option value="thu">Tsinghua</option></select></label><label>Mode<select id="theme-mode"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label></dialog>
+<script type="module" src="/assets/showcase.js"></script>
+</body>
+</html>

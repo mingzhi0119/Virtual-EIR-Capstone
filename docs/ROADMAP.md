@@ -2,6 +2,8 @@
 
 更新日期：2026-10-08。本文是 Capstone 工作计划；没有修改 GOAT AI 原仓库路线图，也没有承诺各后续阶段的固定日期。
 
+2026-10-09 补充：R24 已完成独立 [Vercel 只读展示](https://virtual-eir-showcase.vercel.app)，供组员和老师看英文界面、已录制会话和资料快照。无聊天/API/资料写入，不连接本机模型；这不代表登录、多人使用或完整应用公网部署门禁通过。见 [部署归档](archive/2026-10-09-vercel-showcase.md)。
+
 本轮已按实际仓库、RTX 5090 / 本地 Ollama 和运行结果定制执行路线。操作级进度以 [逐项实施清单](IMPLEMENTATION_CHECKLIST.md) 为准：R1–R8 完成，R17/R18 汇报材料与上游 PR 已交付，R20/R21 英文演示与 GOAT 外观复用已验证；R9–R13 为后续阶段，R14–R16 是多人/公网/真实敏感资料前的门禁，R19 上游 Ruff 基线仍待修。每项完成证据在 [归档](archive/2026-10-08-goat-reuse.md)；启动方式见 [LOCAL_RUN.md](LOCAL_RUN.md)。
 
 ## 1. 目标与范围

@@ -53,5 +53,6 @@ jobs:
         run: |
           $PSNativeCommandUseErrorActionPreference = $true
           node apps/goat/frontend/node_modules/typescript/bin/tsc -p eir/frontend/tsconfig.json
-          node apps/goat/frontend/node_modules/eslint/bin/eslint.js --config eir/frontend/eslint.config.mjs eir/web/app.js scripts/build-eir-ui.mjs scripts/verify-ui.mjs
+          node apps/goat/frontend/node_modules/eslint/bin/eslint.js --config eir/frontend/eslint.config.mjs eir/web/app.js showcase/showcase.js scripts/build-eir-ui.mjs scripts/verify-ui.mjs scripts/build-eir-showcase.mjs scripts/verify-eir-showcase.mjs
           node scripts/build-eir-ui.mjs
+          node scripts/build-eir-showcase.mjs
