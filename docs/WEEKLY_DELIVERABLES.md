@@ -4,6 +4,8 @@
 
 2026-10-09 新增：本周课程周次按用户确认为 **Week 4**。Mingzhi 补充老师明确要求根据用户画像调整教练 Persona（Engineer 技术、Artist 感性认知/体验、Scientist 学术、Business professional 商业）。作为新增要求登记，不改写为上次会议的历史承诺；部分录音没有截到该四类细节，来源为当前用户补充。见 [路线图 3.1](ROADMAP.md)、[Week 4 计划](../.omx/plans/2026-10-09-week4-persona.md)及 [规划归档](archive/2026-10-09-week4-persona-roadmap.md)。需求已登记，功能待实现；不取消原有交付和本次会议的团队任务。
 
+2026-10-09 第二次新增：Mingzhi 补充老师建议扩展 Features、加入 Plan/Goal；用户明确选择统一 Goal + Plan，并纳入 Experiment Designer、Evidence Board、Weekly Check-in、Pitch Practice、Decision Lab、Mentor Brief。已按依赖加入 [路线图 3.2](ROADMAP.md)和 [完整实施计划](../.omx/plans/2026-10-09-goal-plan-feature-roadmap.md)，R26–R33 保持待实现。Week 4 优先共享合同、Persona 与 Goal/Plan 最小流程；其余采用建议 Week 5–8 窗口/验收门禁，不写成老师规定本周全部完成，也不取代团队每人三个想法及 Roberto 问题。六功能是本次产品选择，不改写历史会议承诺。
+
 本周目标：拿出一套具体、可讨论的 Virtual EIR 初版，展示创业者从首次咨询到下一次复盘的连续指导，让老师和 Ain 能针对实际流程提供反馈。
 
 新增实施基础任务 G1：将本项目建立为私有 GitHub 仓库，推送文档和协作配置，验证跨设备 clone。按 2026-10-08 的最新安排，第一周启动工作由 Mingzhi 全权负责；暂不邀请组员，最早下周再讨论。此任务来自当前安排，并非上次会议的历史承诺。仓库及邀请状态见 [GITHUB_SETUP.md](GITHUB_SETUP.md)。
