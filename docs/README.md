@@ -23,7 +23,7 @@ Updated October 16, 2026. Start with current English guides. Plans, implemented 
 - [Progress report](../deliverables/2026-10-16/Week4-Progress-Report.md), [speaker script](../deliverables/2026-10-16/Week4-Speaker-Script.md), and [Persona review](../deliverables/2026-10-16/Persona-Review.md).
 - [Fictional evidence](../deliverables/2026-10-16/evidence/) and [implementation archive](archive/2026-10-16-week4-foundation.md).
 - [Showcase notes](../showcase/README.md): the online recording is older and does not show Week 4 dynamic features.
-- Post-meeting actions: [faculty summary](meetings/2026-10-16-faculty-actions.md) and [confirmed team allocation](TEAM_ASSIGNMENTS.md). The new recording, requirements brief and scored evaluation remain assigned work, not part of the already accepted foundation.
+- Next steps: [faculty summary](meetings/2026-10-16-faculty-actions.md) and [team assignments](TEAM_ASSIGNMENTS.md).
 
 ## Historical records
 

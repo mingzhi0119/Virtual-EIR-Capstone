@@ -17,7 +17,7 @@ All published venture examples and interview results are fictional. Recorded out
 
 ## Next AIN meeting: October 22
 
-The [October 16 faculty action summary](docs/meetings/2026-10-16-faculty-actions.md) and [confirmed team assignments](docs/TEAM_ASSIGNMENTS.md) guide the next feedback package: Mingzhi owns the working demo; Dachen owns recording/integration and submission coordination; Precious owns workflow/requirements questions; Julian owns the evaluation rubric and worked example. Everyone submits by October 20; assemble and send to Liza October 21; meet AIN October 22. These are team preparation commitments, not claims of completed work or AIN-approved scope.
+Mingzhi owns the working demo; Dachen owns recording, integration and submission coordination; Precious owns workflow/requirements questions; Julian owns the evaluation rubric and worked example. Everyone submits by October 20; assemble and send to Liza October 21; meet AIN October 22. See the [team assignments](docs/TEAM_ASSIGNMENTS.md) and [faculty meeting summary](docs/meetings/2026-10-16-faculty-actions.md).
 
 ## What works today
 
@@ -30,7 +30,7 @@ The [October 16 faculty action summary](docs/meetings/2026-10-16-faculty-actions
 | Progress integrity | Five planned / two completed / three remaining; task activity is **not** market validation |
 | Shared appearance | Reuses GOAT themes, fonts, and appearance components |
 
-The Week 4 delivery records 79 automated tests, 10 real-model workflow groups, 21 legacy UI groups, and 8 mock-network edge groups passing. The [CI run for the preceding baseline](https://github.com/mingzhi0119/Virtual-EIR-Capstone/actions/runs/38920734078) also passed; that is not proof of future changes. See the [report](deliverables/2026-10-16/Week4-Progress-Report.md) for scope and disclosed failures.
+The Week 4 delivery records 79 automated tests, 10 real-model workflow groups, 21 legacy UI groups, and 8 mock-network edge groups passing. The [preceding baseline's CI run](https://github.com/mingzhi0119/Virtual-EIR-Capstone/actions/runs/38920734078) also passed. See the [report](deliverables/2026-10-16/Week4-Progress-Report.md) for scope and disclosed failures.
 
 **Still open:** strict Persona coaching-quality acceptance; full Goal/Plan milestones, owners/dates, evidence-based criteria review and supported goal closure; all six dedicated feature workflows; Ain validation; production security and portable runnable handoff. Ordinary follow-up is not the planned Weekly Check-in feature. See the [current roadmap](docs/TEAM_ROADMAP.md).
 
@@ -71,7 +71,7 @@ See [architecture](docs/ARCHITECTURE.md) and [IP/reuse](docs/IP_AND_REUSE.md). A
 3. Work on a task branch, run relevant checks, and open a PR targeting this repository's `main`.
 4. Include actual evidence, remaining gaps and introduced data/dependencies. A plan or interface alone is not an accepted feature.
 
-English is the default for new shared documents, issues, PRs, UI text and demonstration conversations. Earlier Chinese plans and dated archives remain historical records; old pending/complete labels are not today's status. Current named preparation responsibilities are explicit in the assignment record; other work is not assigned by implication.
+Use English for new shared documents, issues, PRs, UI text and demonstration conversations. For current responsibilities and status, use the [team assignments](docs/TEAM_ASSIGNMENTS.md) and [roadmap](docs/TEAM_ROADMAP.md); earlier Chinese plans are retained as historical records.
 
 ## Documentation
 
