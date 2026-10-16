@@ -1,56 +1,28 @@
-# GitHub 仓库与组员访问
+# GitHub collaboration setup
 
-更新日期：2026-10-08。
+Updated October 16, 2026. This repository is the canonical upstream for Virtual EIR.
 
-## 仓库信息
-
-| 项目 | 值 |
+| Setting | Value / policy |
 | --- | --- |
-| 仓库 | [mingzhi0119/Virtual-EIR-Capstone](https://github.com/mingzhi0119/Virtual-EIR-Capstone) |
-| 所有者 | mingzhi0119 |
-| 可见性 | Private |
-| 主分支 | main |
-| 本地目录 | E:\MS_Apply\Offer\MSAIB UR\Capstone |
-| HTTPS remote | https://github.com/mingzhi0119/Virtual-EIR-Capstone.git |
-| 协作方式 | 分支 → Pull Request → 评审 → 合并 |
+| Repository | [mingzhi0119/Virtual-EIR-Capstone](https://github.com/mingzhi0119/Virtual-EIR-Capstone) |
+| Maintainer | `mingzhi0119` (Mingzhi Hu) |
+| Default branch | `main` |
+| Publication policy | Public source subject to the license; completed visibility verification is recorded in the dated publication receipt |
+| Contribution path | Personal fork → task branch → PR here → review → merge |
+| License | [PolyForm Noncommercial 1.0.0](../LICENSE.md), with [scope and provenance](IP_AND_REUSE.md) |
 
-## 组员状态
+## Forks and permissions
 
-| 账号 | 角色/状态 |
-| --- | --- |
-| mingzhi0119 | 仓库所有者 |
-| 其他组员 | 按 2026-10-08 安排暂不邀请，最早下周再讨论；未发出邀请 |
+Public repositories can be forked without a collaborator invitation. A fork does not grant upstream write/admin permissions; direct collaborator access is a separate maintainer decision. While a repository is private, a teammate needs access and the owner must permit forking. Account/organization policies can add restrictions.
 
-第一周启动工作由 Mingzhi 全权负责。下周是否邀请及邀请哪些账号，以届时安排为准，不自动发送邀请。
+Public forks are public. Making upstream private later does not recall previously shared copies. Read [GitHub's fork rules](https://docs.github.com/en/pull-requests/reference/forks) before sharing sensitive material. Forks include the tracked GOAT source; directory separation is not an access boundary.
 
-同一人的多台设备使用其自己的 GitHub 账号认证即可，无需按设备邀请。
+## Review conventions
 
-## 邀请方式
+- Keep this repository as the canonical source; do not move the team to another personal repository without agreement.
+- Submit task-specific PRs and actual validation in English. Preserve authorship and history.
+- Maintainer review is expected; this document does not claim branch protection or required reviews are enabled.
+- The [Windows prototype workflow](../.github/workflows/prototype-checks.yml) runs on upstream `main` pushes and PRs. Fork runs may need approval. It does not run live GPU/Ollama evaluations or replace expert review.
+- Keep credentials unavailable to fork PRs and do not execute unreviewed fork code in privileged workflows.
 
-所有者进入 [Settings → Collaborators](https://github.com/mingzhi0119/Virtual-EIR-Capstone/settings/access)，选择 Add people，输入组员 GitHub 用户名并邀请。组员接受后获得私有仓库协作访问，可以推送分支和创建 PR。
-
-组员使用自己的提交身份，贡献合并到主分支后 GitHub 才可能在 Contributors 中显示；显示可能存在延迟，邮箱也应与 GitHub 账号关联。
-
-邀请状态分为“未邀请”“待接受”“已接受”。只有“已接受”并完成访问验证，才登记为可用协作者。
-
-## 已加入的协作配置
-
-- `.gitignore`：排除本地密钥、环境文件、依赖、数据库、运行数据和缓存。
-- `.gitattributes`：规范跨 Windows/macOS/Linux 的文本换行。
-- `CONTRIBUTING.md`：新设备 clone、每日同步、分支/PR、换设备继续工作。
-- `.github/pull_request_template.md`：记录任务、变更及验证。
-
-没有配置付费能力、强制评审规则或 CI；以后有实际代码和验证命令时再补充。
-
-## 初始同步验证
-
-仓库初始化后核对：
-
-1. `git remote -v` 指向上表仓库。
-2. `git status --short --branch` 显示 main 跟踪 origin/main 且没有未提交改动。
-3. `git rev-parse HEAD` 与 `git ls-remote origin refs/heads/main` 一致。
-4. 在独立临时目录 clone 后，文档和配置文件完整。
-
-2026-10-08 已实际验证：仓库为 Private，所有者权限为 ADMIN，默认分支为 main；本地 main 跟踪 origin/main，工作目录干净。首次推送提交 `d171d8d63189ac1bf64979095ff8a32e2ccc07a0` 与远端一致；独立目录成功 clone，9 个已跟踪文件完整。环境文件、依赖及运行数据库样例路径的忽略规则通过检查，Markdown 本地链接通过检查。这验证了新的 checkout 可获取共享内容，另一台物理设备的登录仍需在该设备执行。
-
-当前仓库是 Capstone 文档和未来增量实现的共享位置。GOAT AI 原仓库继续作为既有平台来源；正式导入或改造代码时记录基线和 Capstone 增量。
+See [CONTRIBUTING.md](../CONTRIBUTING.md) for commands. This refresh does not invite collaborators, transfer the repository, change the separate GOAT repository, or assign teammate work.

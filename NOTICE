@@ -1,0 +1,12 @@
+Required Notice: Copyright 2026 Mingzhi Hu (https://github.com/mingzhi0119)
+
+Virtual EIR includes a vendored copy of Mingzhi Hu's pre-existing GOAT AI
+platform under apps/goat/. It is not newly authored Capstone work.
+
+Original material made available by Mingzhi Hu here is offered under
+LICENSE.md (PolyForm Noncommercial License 1.0.0), subject to the scope and
+third-party exceptions in docs/IP_AND_REUSE.md.
+
+Third-party dependencies, model weights, assets, documents and trademarks
+retain their terms. This notice does not change the separate GOAT upstream's
+license or override applicable institutional agreements.

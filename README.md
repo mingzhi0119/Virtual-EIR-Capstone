@@ -1,61 +1,88 @@
-# Virtual EIR / GOAT AI Capstone 文档入口
+# Virtual EIR
 
-更新日期：2026-10-08（America/New_York）。
+A continuity-focused AI coaching prototype for early-stage entrepreneurs: understand the venture, propose a plan, record founder-confirmed progress, and continue the conversation next time.
 
-只读展示部署更新：2026-10-09。[在线英文展示](https://virtual-eir-showcase.vercel.app)可匿名查看首次咨询、后续咨询与资料快照，不生成新回复、不保存编辑、不连接本机 Ollama。案例均为虚构，页面明确标注为 10 月 8 日录制；不需要作者电脑在线。见 [展示版说明](showcase/README.md)和 [部署归档](docs/archive/2026-10-09-vercel-showcase.md)。这不是完整应用的公网发布，下面的本地运行与安全边界不变。
+**Canonical upstream:** [mingzhi0119/Virtual-EIR-Capstone](https://github.com/mingzhi0119/Virtual-EIR-Capstone). Fork this repository and submit pull requests here.
 
-团队仓库：[mingzhi0119/Virtual-EIR-Capstone](https://github.com/mingzhi0119/Virtual-EIR-Capstone)（Private）。新设备同步和组员工作流程见 [CONTRIBUTING.md](CONTRIBUTING.md)，组员邀请状态见 [GitHub 设置说明](docs/GITHUB_SETUP.md)。
+Updated October 16, 2026. Built for a University of Rochester MSAIB Capstone exploring the Ain Center use case. This is a proof of concept, not an Ain-approved production product.
 
-项目方向：复用已有 GOAT AI 聊天平台，做一个能够记住创业项目背景、追问关键假设、跟进验证行动的 Virtual Entrepreneur-in-Residence（Virtual EIR）。先用通用创业框架和虚构案例形成演示，再让 Ain Center / EIR 提供具体反馈。
+## See the work
 
-## 阅读顺序
+- [Week 4 presentation](deliverables/2026-10-16/Virtual-EIR-Week4.pptx): ten editable English slides.
+- [Progress report](deliverables/2026-10-16/Week4-Progress-Report.md), [speaker script](deliverables/2026-10-16/Week4-Speaker-Script.md), and [Persona evaluation](deliverables/2026-10-16/Persona-Review.md).
+- [Curated fictional test evidence](deliverables/2026-10-16/evidence/).
+- [Read-only browser showcase](https://virtual-eir-showcase.vercel.app): an **older October 8 recording**, deployed October 9. No new replies, edits, local-model connection, or Week 4 Goal/Plan features. See [showcase notes](showcase/README.md).
 
-本周课程 Week 4 新增重点：[根据创业者画像调整教练 Persona](.omx/plans/2026-10-09-week4-persona.md)。四类起点为工程师/技术、艺术家/感性体验、科学家/学术、商业人士/商业分析；用户可覆盖风格，事实与证据标准不变。已加入路线图和未完成任务 R25，本轮只补规划，不声称本地或 Vercel 已实现。
+All published venture examples and interview results are fictional. Recorded outputs demonstrate particular runs, not a live service or a guarantee of coaching quality.
 
-新增发展范围：[Goal + Plan 与六功能实施路线](.omx/plans/2026-10-09-goal-plan-feature-roadmap.md)。采用先澄清/规划、用户确认、行动跟进、证据复盘、版本化调整；六功能全部纳入建议分批窗口，R26–R33 尚未实现。任务进度不等于市场验证，线上展示仍为冻结录制版。
+## What works today
 
-| 文档 | 用途 |
+| Capability | Current boundary |
 | --- | --- |
-| [本周交付与会议承诺](docs/WEEKLY_DELIVERABLES.md) | 核对老师指示、会上实际提出的内容、本周交付清单及验收标准 |
-| [GOAT AI → Virtual EIR 路线图](docs/ROADMAP.md) | 明确复用范围、开发顺序、阶段完成条件和暂缓事项 |
-| [逐项实施清单](docs/IMPLEMENTATION_CHECKLIST.md) | 复用、上游修复与汇报材料的打勾状态、后续步骤及验收条件 |
-| [第一周 PPT 与演讲稿](deliverables/2026-10-08/README.md) | 8 页英文主讲 + 2 页备问、逐页讲稿、现场演示与备用方案 |
-| [本地启动与换机](docs/LOCAL_RUN.md) | 一键启动、两会话演示、停止、数据备份与运行限制 |
-| [GOAT 完成情况检查](docs/GOAT_AUDIT.md) | 实测能力、待补差距、兼容修复和安全阻断 |
-| [本轮归档](docs/archive/2026-10-08-goat-reuse.md) | 每步执行记录、真实模型和自动测试证据 |
-| [第一版原型设计与演示稿](docs/PROTOTYPE_BRIEF.md) | 提供用户流程、资料模板、指导框架、两次会话脚本及 API 申请邮件草稿 |
-| [GitHub 设置与组员访问](docs/GITHUB_SETUP.md) | 仓库信息、邀请方式与同步验证 |
+| English consultation and follow-up | Uses saved, founder-confirmed venture state through GOAT's existing chat API |
+| Persistent profiles and sessions | SQLite storage, explicit corrections, revision checks, and restart recovery |
+| Profile-adaptive Persona | Engineer, Artist, Scientist, and Business framing; explicit preference override and general default |
+| Goal/Plan foundation | AI draft, founder edits and approval, progress reports, blockers, and versioned replanning |
+| Progress integrity | Five planned / two completed / three remaining; task activity is **not** market validation |
+| Shared appearance | Reuses GOAT themes, fonts, and appearance components |
 
-## 当前状态
+The Week 4 delivery records 79 automated tests, 10 real-model workflow groups, 21 legacy UI groups, and 8 mock-network edge groups passing. The [CI run for the preceding baseline](https://github.com/mingzhi0119/Virtual-EIR-Capstone/actions/runs/38920734078) also passed; that is not proof of future changes. See the [report](deliverables/2026-10-16/Week4-Progress-Report.md) for scope and disclosed failures.
 
-- 已完成：本轮规划文档和原型设计草稿。
-- 已完成：可编辑英文 PPT、Speaker Notes、英文讲稿与中文提示；成果日期为 10 月 8 日，会议安排未再次核对。
-- 已完成：私有 GitHub 仓库初始化、文档推送、main 跟踪及独立目录 clone 验证。组员邀请按安排暂缓。
-- 已完成：完整 GOAT 源码 subtree 导入、本地部署、Gemma 26B 真实两会话；确认式创业资料、5/2 访谈数量区分、重启恢复、修正与项目关联隔离。
-- 已完成：面向老师的英文输入模板、英文默认回复策略与英文两会话真实演示；Virtual EIR 直接复用 GOAT 主题、字体和图标，改为聊天优先布局、侧栏会话和档案弹窗。历史中文记录保留，不冒充已翻译。
-- 本地已验证：EIR 24 个确定性测试、21 组 headless UI 检查；GOAT 后端/契约 540 项通过（另有 8 个跳过）。基线前端 217 项通过；远程 fail-fast [run 37839067814](https://github.com/mingzhi0119/Virtual-EIR-Capstone/actions/runs/37839067814) 也已通过并核对日志。此前状态绿色掩盖失败的记录仍保留；本次英文/UI 增量的远程结果另记，不沿用基线成功。
-- 尚未完成：老师/EIR 审阅、Ain-specific 知识、多案例评价、依赖安全升级、登录/多人授权或完整应用公网部署。已发布的只读静态展示不开放这些能力；当前只用虚构数据。
-- 本轮模型/API：本机 Ollama + 已有 `gemma4:26b`；未调用付费模型 API，不需要老师 key。以后需要云 API 再提出具体申请。
-- 第一周启动负责人：Mingzhi。组员邀请和后续分工最早下周再讨论；文档中的角色是工作类别，不代表成员已经接受任务。
+**Still open:** strict Persona coaching-quality acceptance; full Goal/Plan milestones, owners/dates, evidence-based criteria review and supported goal closure; all six dedicated feature workflows; Ain validation; production security and portable runnable handoff. Ordinary follow-up is not the planned Weekly Check-in feature. See the [current roadmap](docs/TEAM_ROADMAP.md).
 
-写好示例对话不等于系统实际运行成功；写好数据模板不等于已实现存储。交付状态和验收证据统一记录在 [本周清单](docs/WEEKLY_DELIVERABLES.md)。
+## Run locally
 
-## 本机直接使用
+Supported prototype setup: Windows + Python 3.14 + Node.js 24 + Ollama. The recorded model is `gemma4:26b`, tested on a 32 GB GPU. Different hardware/models need their own feasibility and quality checks. Startup does not download models or install Ollama.
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start-local.ps1
+git clone https://github.com/mingzhi0119/Virtual-EIR-Capstone.git
+Set-Location Virtual-EIR-Capstone
+# Start Ollama and install a suitable model separately, then:
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start-local.ps1 -Install
 ```
 
-打开 [Virtual EIR](http://127.0.0.1:62607)；完整原平台在 [GOAT AI](http://127.0.0.1:62606)。若浏览器仍显示旧页面，刷新一次。老师演示请选择英文虚构项目，或点 `New fictional venture` 从头开始。新设备首次运行加 `-Install`，前置环境和数据恢复见 [本地说明](docs/LOCAL_RUN.md)。无登录，仅 loopback 本地使用。
+For subsequent starts, omit `-Install`. Open [Virtual EIR](http://127.0.0.1:62607); the original [GOAT interface](http://127.0.0.1:62606) remains available locally. A fresh clone starts without the author's saved demo database. Read the [English local run guide](docs/LOCAL_RUN.md) before running mutating verifiers.
 
-## 时间口径
+**Local single-user prototype only.** No multi-user authentication or authorization. Do not expose either backend to the Internet, use a public tunnel, or load real founder data. Public source code does not make the running application safe to publish.
 
-“本周”按当前对话理解为 2026-10-05 至 2026-10-11。此前记忆中的例会时间为周五 11:00；若该安排仍有效，下一次为 2026-10-09 11:00（America/New_York）。这只是计划锚点，未核对当前邀请；分享记录本身没有显示会议日期，不能据此认定正式截止日期。
+## Architecture and provenance
 
-## 依据
+Browser → Virtual EIR (`eir/`) → GOAT HTTP chat API (`apps/goat/`) → Ollama. The EIR layer owns confirmed venture state, Persona selection and the versioned planning workspace; GOAT supplies the reused platform/inference boundary.
 
-1. [上次对话及用户粘贴的会议转录](https://chatgpt.com/s/cx_6ac7ea276e00819180185b7e9114a6db)：区分老师原话、Mingzhi 实际发言和助手拟稿。
-2. [GOAT AI 仓库](https://github.com/mingzhi0119/GOAT_AI)：本轮读取的 main 提交为 `9788ffab4a70f3dec6406778d1dc26f302b762f8`，提交时间 2026-04-29。仓库文件是设计和代码依据，不能证明现在部署仍可用。
-3. 之前 Capstone 邮件/协议分析的记忆：用于例会与已有成果背景；本轮没有重新读取邮箱或最终签署协议，可能已更新。
+| Directory | Purpose |
+| --- | --- |
+| `eir/` | Capstone-specific application, storage, coaching, planning and interface |
+| `apps/goat/` | Vendored copy of Mingzhi Hu's **pre-existing GOAT AI**, not newly authored Capstone work |
+| `tests/`, `scripts/` | Tests, startup, UI builds and isolated evidence workflows |
+| `docs/`, `deliverables/` | Guides, plans, English reports/slides and fictional evidence |
+| `showcase/` | Separate read-only recorded presentation |
+| `var/` | Ignored local databases, logs, generated builds and test artifacts |
 
-GOAT 源码保存在 `apps/goat`，Capstone 新增层在 `eir`；基线 SHA 与新增改动分别留档。本项目 subtree 已补 `think` 传参及路径断言修复，上游分别提交 [PR #28](https://github.com/mingzhi0119/GOAT_AI/pull/28)、[PR #29](https://github.com/mingzhi0119/GOAT_AI/pull/29)，尚未合并，线上部署未变。代码经 GitHub 同步，数据库、模型和依赖不会自动同步。
+See [architecture](docs/ARCHITECTURE.md) and [IP/reuse](docs/IP_AND_REUSE.md). A fork copies the tracked GOAT source too; directory separation records provenance, **not** access isolation.
+
+## Contribute through a fork
+
+1. Read [CONTRIBUTING.md](CONTRIBUTING.md); agree a small task, owner, deliverable and acceptance checks.
+2. Fork this repository to your account; keep this repository as `upstream`.
+3. Work on a task branch, run relevant checks, and open a PR targeting this repository's `main`.
+4. Include actual evidence, remaining gaps and introduced data/dependencies. A plan or interface alone is not an accepted feature.
+
+English is the default for new shared documents, issues, PRs, UI text and demonstration conversations. Earlier Chinese plans and dated archives remain historical records; old pending/complete labels are not today's status. No teammate assignment is implied.
+
+## Documentation
+
+| Guide | Purpose |
+| --- | --- |
+| [Documentation index](docs/README.md) | Current English guides versus historical records |
+| [Contributor guide](CONTRIBUTING.md) | Fork, synchronize, validate and submit a PR |
+| [GitHub setup](docs/GITHUB_SETUP.md) | Canonical upstream, visibility and review conventions |
+| [Local run guide](docs/LOCAL_RUN.md) | Install, start, stop, test and preserve local data |
+| [Architecture](docs/ARCHITECTURE.md) | Request flow, storage and extension points |
+| [Current team roadmap](docs/TEAM_ROADMAP.md) | Delivered scope, next gates and unassigned work |
+| [IP and reuse](docs/IP_AND_REUSE.md) | GOAT provenance, license scope and commercial permission |
+
+## License
+
+Original material made available by Mingzhi Hu here is licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE.md), subject to [scope and third-party exceptions](docs/IP_AND_REUSE.md). This is **source-available, not OSI open source**. Permitted purposes include noncommercial use and organizational uses expressly allowed by the license; uses outside those permissions require separate authorization.
+
+For commercial licensing, contact [Mingzhi Hu](https://github.com/mingzhi0119). This publication does not change the separate GOAT AI upstream repository's license, assign its ownership to the Capstone, or override applicable institutional agreements. Model weights, dependencies, third-party assets and trademarks keep their own terms.

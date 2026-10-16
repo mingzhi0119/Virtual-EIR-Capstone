@@ -1,15 +1,22 @@
-## 变更
+## Task and scope
 
-说明改了什么，以及为什么需要。
+Link the issue or agreed roadmap item. State the owner and concrete deliverable; distinguish proposals from implemented features.
 
-## 对应任务
+## Changes
 
-填写 WEEKLY_DELIVERABLES.md 中的任务 ID，或相关 Issue。
+What changed and why? Identify changes to shared interfaces, storage or the pre-existing GOAT platform.
 
-## 验证
+## Verification
 
-记录实际检查/测试结果。文档修改说明核对的来源与链接；代码修改说明运行结果。
+List commands/checks actually run and results. For documents, identify checked sources, links and examples. Disclose failures and untested boundaries; do not reuse an older green result as proof of this change.
 
-## 需要评审的内容
+## Data, provenance and licensing
 
-列出需要组员判断的具体问题；没有则填写“无”。
+- [ ] Only fictional/public/publication-cleared data; no credentials, raw transcripts or local databases.
+- [ ] Authorship/notices retained; third-party origins and terms identified.
+- [ ] Authorized contribution under the repository license, or any exception explicitly described for review.
+- [ ] No equation of task progress with business validation or generation with founder approval.
+
+## Review and remaining gaps
+
+List decisions needed, limitations and follow-ups. Include fictional screenshots if useful. Confirm target: `mingzhi0119/Virtual-EIR-Capstone:main`.

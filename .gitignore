@@ -42,6 +42,10 @@ temp/
 *.tmp
 *.bak
 
+# Private meeting transcripts and local agent runtime state
+/ELIZABETH MOHR's Personal Meeting Room *.txt
+.omx/state/
+
 # Editor and operating system metadata
 .idea/
 .vscode/

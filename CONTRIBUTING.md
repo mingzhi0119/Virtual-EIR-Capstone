@@ -1,85 +1,107 @@
-# 团队协作与跨设备同步
+# Contributing to Virtual EIR
 
-本项目以 GitHub 仓库为共享来源，日常工作使用个人分支和 Pull Request。
+The canonical upstream is **[mingzhi0119/Virtual-EIR-Capstone](https://github.com/mingzhi0119/Virtual-EIR-Capstone)**. Use your own fork for development and submit pull requests here. Do not replace upstream with another member's repository.
 
-## 1. 在新设备开始
+Use English for new issues, PR descriptions, shared specifications, UI text and demo conversations. Historical Chinese records do not need rewriting for a focused contribution.
 
-安装 Git；私有仓库需要登录具有访问权限的 GitHub 账号。可使用 GitHub CLI、Git Credential Manager 或 GitHub Desktop 登录。
+## Before starting
 
-```bash
+- Read the [current roadmap](docs/TEAM_ROADMAP.md), [architecture](docs/ARCHITECTURE.md), [license](LICENSE.md), and [reuse notice](docs/IP_AND_REUSE.md).
+- Agree a bounded task, named owner, observable deliverable and acceptance checks. A suggestion is not an assignment or an Ain-approved requirement.
+- Keep GOAT platform work separate from Capstone changes. Discuss changes to `apps/goat/` first and follow its own `AGENTS.md` and relevant upstream gates.
+- Use your own Git identity. Preserve existing authorship and history; do not attribute inherited work to yourself.
+
+Contribute only material you are authorized to share and license. Unless explicitly identified and agreed otherwise, contributions are proposed under the existing repository license. A PR is not a copyright assignment and does not resolve institutional ownership agreements.
+
+## 1. Fork and clone
+
+Use GitHub's **Fork** button on upstream, or:
+
+```powershell
 gh auth login
-gh repo clone mingzhi0119/Virtual-EIR-Capstone
-cd Virtual-EIR-Capstone
-git status
+gh repo fork mingzhi0119/Virtual-EIR-Capstone --clone
+Set-Location Virtual-EIR-Capstone
+git remote -v
 ```
 
-也可在已配置 GitHub HTTPS 身份验证的设备使用：
+`origin` should point to **your fork** and `upstream` to `mingzhi0119/Virtual-EIR-Capstone`. If `upstream` is missing, add it once:
 
-```bash
-git clone https://github.com/mingzhi0119/Virtual-EIR-Capstone.git
+```powershell
+git remote add upstream https://github.com/mingzhi0119/Virtual-EIR-Capstone.git
 ```
 
-每台设备使用自己的 Git 提交身份；不要把其他组员姓名或邮箱设为自己的身份。可在本仓库配置（替换占位值）：
+For manual setup, clone your fork's URL, not another teammate's repository. A fork copies all tracked source, including `apps/goat`; it does not conceal GOAT code. Never put confidential data or credentials in a fork.
 
-```bash
+Configure your own identity if needed:
+
+```powershell
 git config user.name "Your Name"
-git config user.email "Your GitHub email or noreply email"
+git config user.email "Your GitHub email or noreply address"
 ```
 
-## 2. 开始一项工作
+## 2. Synchronize and create a task branch
 
-先确认没有未提交改动，再同步 main 并创建任务分支：
+Start from a clean working tree; safely preserve your own changes first. Do not discard unrelated work.
 
-```bash
+```powershell
 git status
+git fetch upstream
 git switch main
-git pull --ff-only
-git switch -c docs/your-name-user-journey
+git merge --ff-only upstream/main
+git push origin main
+git switch -c docs/your-name-coaching-rubric
 ```
 
-分支示例：`docs/name-profile`、`feat/name-venture-memory`、`fix/name-session-restore`。一个分支围绕一个任务，便于评审。
+Other examples: `feat/your-name-check-in`, `fix/your-name-profile-correction`. Automation-created branches use `codex/`. If fast-forwarding fails, inspect the divergence rather than force-pushing. Do not develop on your fork's `main`.
 
-## 3. 保存并共享
+## 3. Validate
 
-```bash
+After [local installation](docs/LOCAL_RUN.md), from the root:
+
+```powershell
+apps/goat/.venv/Scripts/python.exe -m pytest tests -q
+```
+
+For Python changes, run Ruff lint and format checks on touched files. For UI changes, run the EIR TypeScript/ESLint checks and appearance build in the [run guide](docs/LOCAL_RUN.md) and [CI workflow](.github/workflows/prototype-checks.yml). Upstream GOAT changes need the relevant upstream checks too.
+
+For document-only changes, check local links, executable command paths, current status claims and English readability. Record actual checks; do not claim a test you did not run.
+
+Model/browser verifiers may mutate fictional records, require Edge or a local model, and overwrite generated evidence. Use isolated databases, not the preserved live demo. CI has no live Ollama/GPU and is not an expert coaching review.
+
+## 4. Commit and submit to upstream
+
+Stage exact paths, not unrelated local files:
+
+```powershell
 git diff
-git add docs/PROTOTYPE_BRIEF.md
+git add docs/your-actual-file.md
 git diff --cached
-git commit -m "docs: refine entrepreneur profile"
+git commit -m "docs: add coaching evaluation rubric"
 git push -u origin HEAD
-gh pr create --base main
+gh pr create --repo mingzhi0119/Virtual-EIR-Capstone --base main
 ```
 
-`git add` 使用实际修改路径。提交前检查内容；PR 描述写明改变了什么、对应本周哪个任务、如何验证。完成评审后合并，任务状态在 WEEKLY_DELIVERABLES.md 更新。
+Replace the example file path with your actual change. If the CLI cannot infer your fork's head, select your fork/branch in GitHub's compare view. Confirm **base repository = mingzhi0119/Virtual-EIR-Capstone**, **base branch = main**.
 
-本流程是团队约定；目前未设置强制分支保护，仓库设置不会自动阻止直接推送 main。
+Use the PR template to describe the task, actual checks, remaining gaps, data/license impact and decisions needed. Useful nontechnical deliverables include concrete user journeys, intake-field recommendations, worked coaching rubrics and focused Ain questions.
 
-## 4. 换设备继续同一分支
+Maintainer review is expected before merging; do not assume enforced branch protection. Fork workflows may need approval. Never add secrets or privileged execution to make an untrusted fork job pass.
 
-离开设备 A 前 commit 并 push。首次在设备 B 使用该分支：
+## 5. Continue on another device
 
-```bash
+Commit and push to your fork before leaving the first device. Clone your fork on the second device, then:
+
+```powershell
 git fetch origin
-git switch --track origin/docs/your-name-user-journey
+git switch --track origin/docs/your-name-coaching-rubric
 ```
 
-若本地已存在该分支：
+If the branch already exists, switch to it and use `git pull --ff-only`. Git synchronizes pushed source/documents, **not** uncommitted work, ignored databases, model weights, dependencies or local configuration. See [data and backups](docs/LOCAL_RUN.md#data-and-backups).
 
-```bash
-git switch docs/your-name-user-journey
-git pull --ff-only
-```
+## Data, ownership and scope
 
-如果同一分支两台设备都已有新提交，`--ff-only` 会停止，先检查 `git status` 和分支差异再解决；不要用强制推送覆盖另一台设备或组员的工作。
-
-## 5. 同步范围
-
-Git 同步已经 commit 且 push 的文件。未提交文件、环境变量、API key、依赖安装、运行数据库和被 .gitignore 忽略的文件不会自动同步。
-
-当前共享完整 GOAT 源码基线（`apps/goat`）、Capstone EIR 层（`eir`）、文档、测试和虚构运行证据。新设备安装与启动见 [LOCAL_RUN.md](docs/LOCAL_RUN.md)。`var` 中的数据库、模型与依赖不能通过 Git 恢复，需单独备份；真实资料使用获准的安全渠道。
-
-## 6. 添加组员
-
-Collaborator 是访问权限；Contributor 是 GitHub 根据贡献记录展示的身份。添加组员须邀请其 GitHub 账号，接受后才能访问这个私有仓库。
-
-邀请和权限管理见 [GitHub 设置说明](docs/GITHUB_SETUP.md)。需要组员 GitHub 用户名；姓名和 GitHub display name 不足以准确邀请。
+- Use fictional examples or materials explicitly cleared for public release. Keep raw meeting transcripts, founder/customer data, private correspondence, credentials and local databases out of Git and PR attachments.
+- Preserve failures and sample limitations. Task progress is not business validation; model generation is not founder approval.
+- Preserve notices and attribution; identify third-party code/assets and their terms.
+- A public repository or fork does not grant commercial permission outside the license's permitted purposes.
+- Do not change licenses/visibility, invite collaborators, expose backends or incur paid API costs as part of an unrelated feature PR.
