@@ -15,10 +15,13 @@ Evidence: [report](../deliverables/2026-10-16/Week4-Progress-Report.md), [Person
 
 ## Next gates
 
+Immediate priority is the [October 22 AIN preparation plan](TEAM_ASSIGNMENTS.md), based on the [October 16 faculty guidance](meetings/2026-10-16-faculty-actions.md): individual submissions by Tuesday, October 20; integrate and send to Liza Wednesday, October 21; AIN meeting Thursday, October 22. These are confirmed team dates, not individual deadlines imposed by the professor. Exact meeting logistics follow the invitation.
+
 | Gate | Deliverable | Acceptance boundary / status |
 | --- | --- | --- |
-| Ain feedback package | 2–4 minute screen recording, concrete examples and compact questions | Pending; each question should explain the design decision needing feedback |
-| Coaching workflow discovery | Typical questions, intake/profile records, methods and handoff needs | Pending validation; ask what exists rather than assuming complete case archives/manuals |
+| Ain feedback package | Mingzhi: working demo; Dachen: 2–4 minute recording, screen/question mapping and integrated package | Assigned, not yet accepted; individual materials due October 20, package submission due October 21; actual sending needs a receipt |
+| Coaching workflow discovery | Precious: one-page brief with 5–6 focused questions, examples and affected decisions | Assigned, due October 20; ask what exists rather than assuming complete case archives/manuals; AIN answers remain pending |
+| Coaching evaluation preparation | Julian: one-page rubric and at least one scored actual recorded response | Assigned, due October 20; explain scores/limitations and proposed improvements; human review is not evidence of business effectiveness |
 | R25 quality | Correct founder/customer confusion, hypothetical payment probing, unsupported inference, typos and verbosity | Open; matched cases plus human rubric review, not just keyword checks |
 | Remaining R26 | Milestones, owners/dates, criterion/evidence review and supported goal closure | Open; retain history and confirmation, never equate activity with validation |
 | R29 Weekly Check-in | Structured results, blockers and next priorities | Planned; ordinary follow-up is not this feature |
@@ -31,7 +34,7 @@ Historical Week 5–8 windows are proposals, not confirmed deadlines. Re-estimat
 
 ## Ownership and completion
 
-Mingzhi is the recorded lead for the existing foundation. New work needs a named owner, proposed date, observable deliverable and acceptance evidence in an issue/PR. Teammate assignments and dates remain **unassigned until agreed**.
+Mingzhi is the recorded lead for the existing foundation. The four preparation roles and Tuesday/Wednesday/Thursday timeline are now recorded in [TEAM_ASSIGNMENTS.md](TEAM_ASSIGNMENTS.md). Recording that allocation does not establish that any member has submitted or completed the work. Other new product work still needs a named owner, agreed date, observable deliverable and acceptance evidence; it remains unassigned until agreed.
 
 Useful nontechnical work: focused Ain questions, intake-field recommendations, a worked coaching rubric and a concrete handoff example. Useful technical work: reproducible demo packaging, quality regression cases and an agreed feature slice. A feature suggestion should not leave all writing, coding and follow-up with the implementation lead.
 

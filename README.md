@@ -15,6 +15,10 @@ Updated October 16, 2026. Built for a University of Rochester MSAIB Capstone exp
 
 All published venture examples and interview results are fictional. Recorded outputs demonstrate particular runs, not a live service or a guarantee of coaching quality.
 
+## Next AIN meeting: October 22
+
+The [October 16 faculty action summary](docs/meetings/2026-10-16-faculty-actions.md) and [confirmed team assignments](docs/TEAM_ASSIGNMENTS.md) guide the next feedback package: Mingzhi owns the working demo; Dachen owns recording/integration and submission coordination; Precious owns workflow/requirements questions; Julian owns the evaluation rubric and worked example. Everyone submits by October 20; assemble and send to Liza October 21; meet AIN October 22. These are team preparation commitments, not claims of completed work or AIN-approved scope.
+
 ## What works today
 
 | Capability | Current boundary |
@@ -67,7 +71,7 @@ See [architecture](docs/ARCHITECTURE.md) and [IP/reuse](docs/IP_AND_REUSE.md). A
 3. Work on a task branch, run relevant checks, and open a PR targeting this repository's `main`.
 4. Include actual evidence, remaining gaps and introduced data/dependencies. A plan or interface alone is not an accepted feature.
 
-English is the default for new shared documents, issues, PRs, UI text and demonstration conversations. Earlier Chinese plans and dated archives remain historical records; old pending/complete labels are not today's status. No teammate assignment is implied.
+English is the default for new shared documents, issues, PRs, UI text and demonstration conversations. Earlier Chinese plans and dated archives remain historical records; old pending/complete labels are not today's status. Current named preparation responsibilities are explicit in the assignment record; other work is not assigned by implication.
 
 ## Documentation
 
@@ -78,7 +82,8 @@ English is the default for new shared documents, issues, PRs, UI text and demons
 | [GitHub setup](docs/GITHUB_SETUP.md) | Canonical upstream, visibility and review conventions |
 | [Local run guide](docs/LOCAL_RUN.md) | Install, start, stop, test and preserve local data |
 | [Architecture](docs/ARCHITECTURE.md) | Request flow, storage and extension points |
-| [Current team roadmap](docs/TEAM_ROADMAP.md) | Delivered scope, next gates and unassigned work |
+| [Current team roadmap](docs/TEAM_ROADMAP.md) | Delivered scope and next gates |
+| [Team assignments](docs/TEAM_ASSIGNMENTS.md) | Owners, October 20–22 milestones and completion evidence |
 | [IP and reuse](docs/IP_AND_REUSE.md) | GOAT provenance, license scope and commercial permission |
 
 ## License
