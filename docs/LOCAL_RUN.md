@@ -1,5 +1,7 @@
 # 本地启动、演示与换机
 
+版本提示：第 1–7 节保留 2026-10-08/09 的运行/演示快照；“当前案例/会话数量”是当时状态。October 16 Week 4 foundation 的当前入口、隔离测试、数据兼容和未完成验收见新增第 8 节。旧快照不代表新功能已经发布到 Vercel。
+
 验证环境：2026-10-08，Windows、Python 3.14.4、Node 24.14.1、Ollama 0.20.0、RTX 5090（32GB）。本轮选择已安装的 `gemma4:26b`，实际加载约 22GB 显存。其他模型可在界面选择，尚未用同一量表评估；其他操作系统未完成部署验证。
 
 ## 1. 新设备 / 首次安装
@@ -99,3 +101,50 @@ GitHub 根工作流只覆盖 Windows 原型回归；不是上游全部 CI、浏�
 给组员和老师查看：[Virtual EIR showcase](https://virtual-eir-showcase.vercel.app)。它仅包含 2026-10-08 虚构案例的真实英文记录和对应确认资料；可切换首次咨询/跟进、查看资料与主题，但不能聊天、新建或保存。生产域名已在未登录浏览器中验证，不需要本机服务在线。
 
 这是独立静态项目 `virtual-eir-showcase`，不是把本地服务暴露到公网。未发布数据库、提示词、会议记录、后端源码或完整仓库，GOAT 原有站点未覆盖，仓库权限未更改。编译后的界面代码与虚构展示内容对访问者可见，链接可转发；`noindex` 不是访问控制。完整应用仍受 R14–R16 门禁限制。构建/重新部署见 [showcase/README.md](../showcase/README.md)，验收见 [部署归档](archive/2026-10-09-vercel-showcase.md)。
+
+## 8. October 16 — Week 4 foundation runtime and isolated proof
+
+Implementation date is October 16, 2026, not October 11. The local EIR backend on [port 62607](http://127.0.0.1:62607) was restarted with the new foundation. GOAT remains on 62606 and Ollama on 11434. Readiness was observed during the implementation session; before a later presentation, check the services and send a real message on an isolated fictional venture. Code/policy changes require restarting the corresponding service, not only refreshing the browser.
+
+The new UI includes **Venture profile** background/preference fields and **Goal & Plan**. Save the profile explicitly. In the workspace, define an objective, success criteria and constraints; **Generate AI plan** creates a draft to review/edit/approve/reject. Fresh generation starts proposed work at zero with a warning; earlier reports remain in history. **Revise approved plan · retain reports** creates a new draft carrying existing reports. The recorded button workflow approves v2 retaining 2/5 and v1 history. Backend task-lineage/diff and stale-proposal fixes are implemented; final workflow/edge reruns passed and foundation architecture approval was obtained.
+
+Record absolute completed counts with **Confirm task report**. Five task states, blocker/result fields and pause/resume/cancel controls are implemented. 2/5 = 40% of that task, not business validation. Unsupported goal achievement is blocked; full milestones, task owners/dates, criterion/evidence review and supported goal closure remain pending. New-session chat uses approved workspace context, but the dedicated Weekly Check-in feature remains future work.
+
+### Data and compatibility
+
+Workspace history is stored in separate `workspaces` and `workspace_revisions` tables **inside the existing SQLite database**, not a separate live database. Profile actions and workspace tasks remain separate; editing one does not automatically synchronize the other. New sessions load confirmed current state without requiring a pasted transcript.
+
+The old-profile 5,500-character admission limit applies to legacy content excluding `founder_background` / `communication_preference`; background is separately bounded to 200 characters and preference to an enum. This keeps old profiles at the original limit loadable. Workspace context is capped at 1,600 serialized characters. The combined 8,000-character system-context budget first reserves common policy, Persona, planner instructions and workspace context, then includes the full venture profile if it fits. Otherwise it uses an explicitly partial view: omitted-item counts and shortened-field paths are included, strings are shortened through 120/80/40-character stages, and at least the first action/evidence/assumption is selected when present. Full saved data stays unchanged; the coach is warned that omitted text is unknown and to ask for details. Policies are not silently removed. Focused long-legacy/context tests passed; final combined regression remains pending.
+
+Pre-migration backup: `var/backups/eir-pre-week4-20261016.sqlite3`, recorded integrity `ok`, one venture and three sessions. The implementation owner confirmed raw legacy rows unchanged and zero live workspace rows after migration. This is a migration snapshot, not a complete disaster-recovery exercise or final post-repair audit. Do not restore that backup over the current database as a routine demo step.
+
+### Reproduce proof without touching the live demo
+
+The workflow verifier is fixed to `http://127.0.0.1:62608` and must use `var/week4-proof/workflow.sqlite3`. Persona generation uses `var/week4-proof/personas.sqlite3` directly. Both share local GOAT/Ollama inference but keep test venture data separate from live `var/eir/ventures.sqlite3`. These are mutating fictional test scripts; they regenerate local JSON/screenshots and add isolated records. Preserve needed earlier proof before rerunning. Do not point old mutating demo scripts at the preserved live service.
+
+If the isolated server is not already running, use a separate terminal from the repository root; do not start a second process on an occupied port:
+
+```powershell
+$env:EIR_DB_PATH = Join-Path (Get-Location).Path 'var\week4-proof\workflow.sqlite3'
+$env:EIR_GOAT_BASE_URL = 'http://127.0.0.1:62606'
+$env:EIR_HTTP_PORT = '62608'
+apps/goat/.venv/Scripts/python.exe -m uvicorn eir.app:create_app --factory --host 127.0.0.1 --port 62608
+```
+
+Run verifiers in another terminal from the same repository root after the required services are ready:
+
+```powershell
+apps/goat/.venv/Scripts/python.exe -m pytest tests -q -p no:cacheprovider
+node scripts/verify-week4-eir.mjs
+apps/goat/.venv/Scripts/python.exe scripts/verify-week4-personas.py
+```
+
+Final foundation verification: **79 automated tests passed, including 42 workspace tests; 10 real-model workflow groups, 21 legacy UI groups and 8 mock-network edge groups passed**. Independent architecture re-review **APPROVED** the foundation and closed all seven findings after the scoped cleanup. Full R26, the six future features and strict Persona coaching-quality acceptance remain open. No CI-green or expert-endorsement claim is made.
+
+### Evidence and presenter caveats
+
+Raw local files: `var/week4-proof/workflow-real.json`, `persona-real.json`, `profile.png`, `draft.png`, `progress.png`, `followup.png`, `mobile.png`. The workflow proof normally ends at approved v2 with 2/5; inspect before presenting, or create a fresh fictional venture on the isolated server. Do not assume a replayed screenshot is a new live response. Local databases remain ignored. Curated fictional JSON and screenshots are versioned in deliverables/2026-10-16/evidence.
+
+The eight-response Persona comparison is English with preserved follow-up counts/sample limits, but has known quality failures: founder/customer confusion in Engineer/Business initials, hypothetical payment probing and overstrong elasticity wording in Engineer follow-up, Artist typo `e.le.`, and occasional word-limit overruns. The initial unsupported statistical claim is preserved in `workflow-initial-statistical-wording.json`; the corrected workflow avoids it. Earlier Persona attempts remain in `persona-baseline.json` and `persona-pre-stereotype-guard.json`. No perfect language/quality guarantee or Ain approval is claimed.
+
+Use the [Week 4 script](../deliverables/2026-10-16/Week4-Speaker-Script.md), [report](../deliverables/2026-10-16/Week4-Progress-Report.md) and [archive](archive/2026-10-16-week4-foundation.md). Main owner owns the final ten-slide PPT and quality notes. The old Vercel recording stays frozen; no public/cloud backend, invitation, licence/GOAT-source change or current green-CI claim is made. This documentation lane performs no commits or external writes.

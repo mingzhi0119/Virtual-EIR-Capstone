@@ -1,5 +1,7 @@
 # Week 4 roadmap addition: profile-adaptive coaching Persona
 
+Historical baseline: the October 9 text and its original checklist below describe the planning-only turn. For implementation status, use the appended **October 16 current status** section; the original requirements and date context are retained.
+
 Updated: October 9, 2026 (America/New_York). Week 4 is the course-week label explicitly confirmed by Mingzhi. The current work-week window remains October 5–11; this does not establish a new faculty deadline. Earlier Week 1/Week 2 files remain historical artifacts, not the basis for the current course-week label.
 
 ## Requirement and source
@@ -59,3 +61,19 @@ P1–P4 are the added Week 4 workstream, not a guaranteed completion before Octo
 | Scope expands into cloud deployment or private GOAT changes | Keep work in EIR; no paid API, permissions/license change, model switch, or public republishing |
 
 After implementation: run existing deterministic tests and new Persona tests; exercise UI save/correction on an isolated database; capture the eight real local-model outputs; review failures before checking P1–P4 off and archive evidence per step. This turn edits roadmap documents only; no Persona behavior is implemented.
+
+## October 16 current status — foundation delivered, final acceptance open
+
+Implementation date: October 16, 2026 (America/New_York), not October 11. Week 4 remains the course label; the original October 5–11 window was a proposed kickoff. The checklist above is the October 9 baseline. Current delivery status is:
+
+- [x] P1 — Implemented optional `founder_background` and explicit `communication_preference` with confirmed UI saves and old-profile defaults. `eir/models.py`, `eir/web/app.js`, `eir/web/index.html`, `tests/test_personas.py` provide the implementation/evidence. The legacy 5,500-character admission limit excludes the two new Persona fields; background is separately bounded to 200 characters and preference to an enum. This preserves old profiles at the original limit.
+- [x] P2 — Implemented four mappings in `eir/personas.py`, explicit preference override, general fallback for mixed/unknown backgrounds, and request-level common-policy integration. Tests cover selection, override and untrusted background; policy also guards against assuming the founder is the customer. Generated responses still expose quality failures, so guard text is not proof of perfect compliance.
+- [x] P3 — Initial deterministic evidence covers old-profile compatibility, correction, re-opening the store, session continuity and venture isolation without rewriting earlier turns. The isolated UI workflow confirms saved preference use. Post-repair combined regressions passed.
+- [x] P4 — Recorded and reviewed eight real English outputs in `var/week4-proof/persona-real.json`: each initial asks two questions and proposes three interviews within capacity; each follow-up retains 5/2/3, small-sample/generalization limits and no invented completed work. Four styles are observable with overlap. This closes the recorded comparison, **not every coaching-quality criterion**. The main owner is archiving the detailed eight-by-five review table.
+- [ ] R25 strict quality acceptance — Foundation implementation and exploratory evaluation are delivered; remaining response failures and final regression/review prevent a full acceptance claim.
+
+Known failures: Engineer and Business initial replies still address the founder as a customer; the Engineer follow-up uses a hypothetical extra-payment question and overstates price-elasticity inference; the Artist follow-up has `e.le.`; some answers exceed 180 words. Use neutral recent-behavior questions and preserve these findings. No Ain/expert approval is claimed.
+
+Final foundation verification: **79 automated tests passed, including 42 workspace tests; 10 real-model workflow groups, 21 legacy UI groups and 8 mock-network edge groups passed**. Independent architecture re-review **APPROVED** the foundation and closed all seven findings after the scoped cleanup. Full R26, the six future features and strict Persona coaching-quality acceptance remain open. No CI-green or expert-endorsement claim is made.
+
+See [October 16 archive](../../docs/archive/2026-10-16-week4-foundation.md), [report](../../deliverables/2026-10-16/Week4-Progress-Report.md) and [speaker script](../../deliverables/2026-10-16/Week4-Speaker-Script.md). Experiments remain in isolated databases; the frozen Vercel recording, GOAT source, permissions/licensing and historical artifacts are unchanged. This documentation update makes no commit or external write. Further team owners/dates remain unassigned until agreed.

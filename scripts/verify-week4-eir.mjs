@@ -1,0 +1,140 @@
+// Isolated end-to-end proof. Never point this mutating verifier at the live port.
+import assert from 'node:assert/strict'
+import { mkdir, writeFile } from 'node:fs/promises'
+import { fileURLToPath } from 'node:url'
+import { chromium } from '../apps/goat/frontend/node_modules/playwright/index.mjs'
+
+const base = 'http://127.0.0.1:62608'
+const out = new URL('../var/week4-proof/', import.meta.url)
+await mkdir(out, { recursive: true })
+const browser = await chromium.launch({ channel: 'msedge', headless: true })
+const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } })
+const checks = [], errors = [], evidence = { model: 'gemma4:26b', boundary: 'Fictional isolated database on port 62608', checks }
+page.on('pageerror', error => errors.push(error.message))
+const idle = () => page.waitForFunction(() => !document.getElementById('new').disabled, null, { timeout: 240000 })
+const feedback = async text => { await page.waitForFunction(text => document.getElementById('status').textContent.includes(text), text, { timeout: 240000 }); await idle() }
+const pass = name => { checks.push(name); console.log(name) }
+const request = async (path, method = 'GET', data) => {
+  const response = await page.request.fetch(base + '/api' + path, { method, data, timeout: 240000 })
+  const body = await response.json()
+  assert.equal(response.ok(), true, JSON.stringify(body))
+  return body
+}
+try {
+  await page.goto(base); await idle()
+  await page.locator('#new').click(); await feedback('Fictional venture created.')
+  const id = await page.locator('#ventures').inputValue(), path = `/ventures/${id}/workspace`
+  await page.locator('#open-profile').click()
+  await page.locator('#field-founder-background').fill('Engineer')
+  await page.locator('#field-communication-preference').selectOption('technical')
+  await page.locator('#save').click(); await feedback('Profile confirmed and saved.')
+  await page.screenshot({ path: fileURLToPath(new URL('profile.png', out)) })
+  await page.locator('#close-profile').click()
+  pass('Confirmed Persona preference saved through UI')
+  await page.locator('#open-workspace').click()
+  await page.locator('#workspace-objective').fill('Learn whether evening graduate students face a recurring dinner-access problem')
+  await page.locator('#workspace-criteria').fill('Complete five interviews and distinguish observations from assumptions\nWrite a cautious evidence review; interview activity alone is not market validation')
+  await page.locator('#workspace-constraints').fill('At most five student interviews; no product build or spending. Fictional demonstration only.')
+  const draftResponse = page.waitForResponse(r => r.url().endsWith(path + '/draft') && r.request().method() === 'POST', { timeout: 240000 })
+  await page.locator('#workspace-generate').click()
+  const raw = await draftResponse; evidence.generated_plan = await raw.json()
+  assert.equal(raw.ok(), true, JSON.stringify(evidence.generated_plan))
+  await feedback('AI proposal saved.')
+  let workspace = await request(path)
+  assert.equal(workspace.goal, null); assert.equal(workspace.plans.at(-1).status, 'draft')
+  assert.ok(workspace.plans.at(-1).tasks.every(t => t.completed_count === 0))
+  pass('Real Ollama plan generated through GOAT; draft does not confirm goal or progress')
+  // Founder reviews and simplifies the real model proposal to a single counted task.
+  const task = { ...workspace.plans.at(-1).tasks[0], title: 'Interview five evening students about their last dinner purchase and alternatives', target_count: 5, completed_count: 0, status: 'not_started', blocker: '', result: '', dependencies: [] }
+  await page.locator('#workspace-draft details summary').click()
+  await page.locator('#workspace-tasks-json').fill(JSON.stringify([task], null, 2))
+  await page.locator('#workspace-rationale').fill('Founder-reviewed learning plan. Five interviews are an initial discovery sample, not proof of market demand.')
+  await page.getByRole('button', { name: 'Confirm and save draft edits', exact: true }).click(); await feedback('Draft edits saved')
+  await page.screenshot({ path: fileURLToPath(new URL('draft.png', out)) })
+  await page.getByRole('button', { name: 'Approve plan', exact: true }).click(); await feedback('Plan v1 approved.')
+  workspace = await request(path); assert.equal(workspace.goal.status, 'active')
+  pass('Editable draft and explicit founder approval activate the first plan')
+  const card = page.locator('.workspace-task').first()
+  await card.locator('input[type=number]').fill('2')
+  await card.locator('select').selectOption('in_progress')
+  await card.locator('textarea').last().fill('Fictional founder report: two interviews completed; both students mentioned price more than speed. Convenience sample n=2, not market validation.')
+  await card.getByRole('button', { name: 'Confirm task report' }).click(); await feedback('Task report confirmed.')
+  await page.locator('#workspace-progress-heading').scrollIntoViewIfNeeded()
+  await page.screenshot({ path: fileURLToPath(new URL('progress.png', out)) })
+  workspace = await request(path)
+  const revision = workspace.revision, savedTask = workspace.plans.at(-1).tasks[0]
+  assert.equal(savedTask.completed_count, 2); assert.equal(savedTask.status, 'in_progress')
+  assert.match(await page.locator('#workspace-summary').textContent(), /2\/5 \(40%\)/)
+  const update = { expected_revision: revision, completed_count: 2, status: 'in_progress', blocker: '', result: savedTask.result }
+  assert.equal((await request(path + '/tasks/' + savedTask.task_id, 'POST', update)).revision, revision)
+  assert.equal((await page.request.post(base + '/api' + path + '/tasks/' + savedTask.task_id, { data: { ...update, expected_revision: revision - 1 } })).status(), 409)
+  assert.equal((await page.request.post(base + '/api' + path + '/tasks/' + savedTask.task_id, { data: { ...update, completed_count: 6 } })).status(), 422)
+  assert.equal((await page.request.post(base + '/api' + path + '/goal', { data: { expected_revision: revision, status: 'achieved' } })).status(), 422)
+  pass('2/5 = 40% task progress; duplicate, stale, overflow and unsupported achievement safeguards')
+  await page.locator('#workspace-pause').click(); await feedback('Goal paused.')
+  await page.locator('#workspace-resume').click(); await feedback('Goal active.')
+  await page.locator('#workspace-objective').fill('Unsaved draft must survive navigation')
+  await page.locator('#close-workspace').click(); await page.locator('#followup').click(); await feedback('unsaved Goal & Plan')
+  await page.locator('#open-workspace').click()
+  assert.equal(await page.locator('#workspace-objective').inputValue(), 'Unsaved draft must survive navigation')
+  page.once('dialog', d => d.accept()); await page.locator('#workspace-discard').click()
+  pass('Pause/resume and unsaved workspace guards preserve founder control')
+  await page.locator('#close-workspace').click()
+  const venture = await request(`/ventures/${id}`)
+  venture.profile.evidence = [{ observation: 'Two students mentioned price more than speed', sample_size: 2, source: 'Fictional founder report', limitation: 'Convenience sample n=2; not market validation.' }]
+  await request(`/ventures/${id}`, 'PUT', { expected_revision: venture.revision, profile: venture.profile })
+  await page.reload(); await idle()
+  await page.locator('#followup').click(); await feedback('New follow-up session created.')
+  const chatResponse = page.waitForResponse(r => r.url().endsWith('/chat'), { timeout: 240000 })
+  await page.locator('#message').fill('Review my approved Goal & Plan and reported evidence. State exactly planned, completed and remaining interview counts. Explain sample limits and propose one next action. Do not change saved state. Under 180 words, in English.')
+  await page.locator('#send').click()
+  const chat = await chatResponse; evidence.followup = await chat.json()
+  assert.equal(chat.ok(), true, JSON.stringify(evidence.followup)); await feedback('Reply saved')
+  assert.doesNotMatch(evidence.followup.reply, /[\u3400-\u9fff]/)
+  assert.doesNotMatch(evidence.followup.reply, /statistically (?:in)?significant\b/i)
+  for (const n of [/5|five/i, /2|two/i, /3|three/i]) assert.match(evidence.followup.reply, n)
+  assert.equal((await request(path)).plans.at(-1).tasks[0].completed_count, 2)
+  await page.screenshot({ path: fileURLToPath(new URL('followup.png', out)) })
+  pass('Real English new-session follow-up uses approved 5/2/3 counts without writing progress')
+  workspace = await request(path)
+  const approved = workspace.plans.at(-1)
+  await page.locator('#open-workspace').click()
+  await page.getByRole('button', { name: 'Revise approved plan · retain reports', exact: true }).click(); await feedback('Revision proposed')
+  await page.locator('#workspace-simple-tasks input[type=text]').first().fill('Interview five students; focus remaining questions on price sensitivity')
+  await page.locator('#workspace-rationale').fill('Replan proposal: investigate price sensitivity in the remaining interviews; retain the two reported interviews.')
+  await page.getByRole('button', { name: 'Confirm and save draft edits', exact: true }).click(); await feedback('Draft edits saved')
+  workspace = await request(path)
+  assert.equal(workspace.plans.at(-1).status, 'draft'); assert.equal(workspace.plans[0].tasks[0].title, task.title)
+  await page.getByRole('button', { name: 'Approve plan', exact: true }).click(); await feedback('Plan v2 approved.')
+  await page.reload(); await idle(); await page.locator('#open-workspace').click()
+  assert.match(await page.locator('#workspace-summary').textContent(), /Plan v2/)
+  assert.match(await page.locator('#workspace-summary').textContent(), /2\/5/)
+  await page.locator('#workspace-history summary').first().click()
+  assert.match(await page.locator('#workspace-history-content').textContent(), /Compared with v1/)
+  pass('Versioned replan retains partial progress, immutable prior version and visible differences')
+  const other = await request('/ventures', 'POST', { name: 'Week 4 isolation case (fictional)' })
+  assert.equal((await request(`/ventures/${other.venture_id}/workspace`)).goal, null)
+  const foreign = await page.request.post(base + `/api/ventures/${other.venture_id}/workspace/approve`, { data: { plan_id: approved.plan_id, expected_revision: 0 } })
+  assert.equal(foreign.status(), 404)
+  pass('Separate ventures do not share goals or plan IDs')
+  await page.locator('#close-workspace').click()
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: width === 390 ? 844 : 1000 })
+    await page.locator('#open-appearance').click()
+    for (const theme of ['classic', 'urochester', 'thu']) for (const mode of ['light', 'dark']) {
+      await page.locator('#theme-style').selectOption(theme); await page.locator('#theme-mode').selectOption(mode)
+      await page.locator('#close-appearance').click(); await page.locator('#open-workspace').click()
+      assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1))
+      assert.ok(await page.locator('#workspace-panel').evaluate(el => el.scrollWidth <= el.clientWidth + 1))
+      await page.locator('#close-workspace').click(); await page.locator('#open-appearance').click()
+    }
+    await page.locator('#theme-style').selectOption('classic'); await page.locator('#theme-mode').selectOption('dark'); await page.locator('#close-appearance').click()
+    if (width === 390) { await page.locator('#open-workspace').click(); await page.screenshot({ path: fileURLToPath(new URL('mobile.png', out)) }); await page.locator('#close-workspace').click() }
+  }
+  pass('Desktop/mobile: all three inherited themes in light/dark without horizontal overflow')
+  assert.deepEqual(errors, []); pass('No browser runtime errors')
+  evidence.workspace = await request(path); evidence.venture_id = id; evidence.errors = errors; evidence.run_at = new Date().toISOString()
+} finally {
+  await writeFile(new URL('workflow-real.json', out), JSON.stringify(evidence, null, 2))
+  await browser.close()
+}

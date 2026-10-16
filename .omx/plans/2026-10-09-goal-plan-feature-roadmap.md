@@ -1,5 +1,7 @@
 # Virtual EIR: Goal + Plan and six-feature implementation roadmap
 
+Historical baseline: the October 9 planning-only status, requirements and original checklist below are preserved. The appended **October 16 current status** is the current implementation record; the original proposed release windows are not actual completion dates or faculty deadlines.
+
 Planning date: October 9, 2026 (America/New_York). Status: scope selected by Mingzhi; implementation not started. Week 4 is the user-confirmed course week. Later week labels/windows below are proposed sequencing, not faculty deadlines or a promise of finishing every feature this week.
 
 ## 1. Requirements and boundaries
@@ -123,3 +125,27 @@ Stop a release on data loss, unauthorized writes, incorrect progress, invented e
 | Prior personal IP exposed by collaboration | EIR-only increments with baseline attribution; no repo invitations, visibility/license changes or source export in briefs |
 
 Next implementation action after a separate start instruction: S1 shared contracts, then S2 Persona and S3–S4 Goal/Plan vertical slice. This plan itself does not start a Codex persistent Goal or an autonomous background task.
+
+## October 16 current status — Week 4 foundation
+
+The separately authorized foundation implementation is now present, with recorded real-model/UI evidence dated October 16, 2026. This is not completion by October 11, full R26, or delivery of all six future features. The original unchecked checklist is the October 9 planning baseline; this current checklist records the delivered slices and open gates without deleting requirements:
+
+- [x] S1 foundation — Added strict workspace contracts and separate revisioned `workspaces` / `workspace_revisions` tables in the existing SQLite file; venture ownership, confirmation/revision guards and compatibility tests. Pre-migration backup and raw legacy-row comparison are recorded in the [archive](../../docs/archive/2026-10-16-week4-foundation.md). Legacy actions are separate from new workspace tasks, with no automatic import/duplication. Final foundation boundary regression gate passed.
+- [x] S2 foundation — Persona fields, selection, explicit override, general fallback, persistence/correction/isolation tests and eight recorded English outputs delivered. P1–P4 delivery/evaluation is recorded in the [Persona plan](2026-10-09-week4-persona.md). R25 strict quality acceptance remains open for disclosed response failures and final review.
+- [x] S3 foundation — Actual GOAT/Ollama JSON generation, typed validation, editable draft, explicit approval/rejection and no confirmed-state change on invalid output. The implemented foundation uses ordered tasks/dependencies; the original full milestone/owner/date/evidence requirements are retained for R26. Initial UI proof records the complete draft/edit/approve path.
+- [ ] S4 / full R26 — Basic progress, five states, absolute/idempotent reports, corrections, blockers, version history and pause/resume/cancel are implemented. The button path to approved v2 retaining 2/5 is recorded. Backend task-lineage/diff and stale retained-report approval fixes are complete; final workflow/edge reruns passed and foundation architecture approval was obtained. Full milestones, task owners/dates, criterion/evidence review and supported goal closure remain pending. Achievement is blocked rather than automatically inferred from counts.
+- [ ] S5 / R29 — Dedicated Weekly Check-in remains pending. Normal new-session chat already receives approved workspace context and the recorded reply retains 5/2/3; that is continuity evidence, not the whole feature.
+- [ ] S6 / R27 — Experiment Designer pending.
+- [ ] S7 / R28 — Evidence Board pending.
+- [ ] S8 / R31 — Decision Lab pending.
+- [ ] S9 / R30 — Pitch Practice pending.
+- [ ] S10 / R32 — Mentor Brief pending.
+- [ ] S11 / R33 — Full integrated evaluation, final post-repair regression and independent sign-off pending. The broader three-case/all-feature gate remains future work.
+
+`Revise approved plan · retain reports` creates a new draft with the founder's reports and preserves prior versions. `Generate AI plan` creates fresh proposed work at zero, with an explicit warning and earlier history retained. 2/5 = 40% of the interview task; neither those counts nor completing every task proves business validation. Criterion-by-criterion evidence review is not yet implemented, and unsupported achievement is rejected.
+
+Final foundation verification: **79 automated tests passed, including 42 workspace tests; 10 real-model workflow groups, 21 legacy UI groups and 8 mock-network edge groups passed**. Independent architecture re-review **APPROVED** the foundation and closed all seven findings after the scoped cleanup. Full R26, the six future features and strict Persona coaching-quality acceptance remain open. No CI-green or expert-endorsement claim is made.
+
+Context hardening preserves the old-profile 5,500-character admission limit **excluding the new Persona fields**, whose bounds are separate. The combined 8,000-character system-context budget reserves common policy, Persona, planner instructions and selected workspace data first. It then includes the full venture profile if it fits, otherwise an explicitly marked partial view with omission counts and shortened-field paths; full storage remains unchanged. Focused legacy/context tests have passed, while final combined verification passed.
+
+Evidence: [dated foundation archive](../../docs/archive/2026-10-16-week4-foundation.md), [progress report](../../deliverables/2026-10-16/Week4-Progress-Report.md), `var/week4-proof/workflow-real.json`, `var/week4-proof/persona-real.json`, `tests/test_personas.py`, `tests/test_workspace.py`. Local raw proof is ignored by Git. The main owner owns the final PPT and quality notes. Mingzhi remains implementation lead; teammate owners and dates are unassigned until agreed. No frozen-showcase update, public backend, GOAT-source/licensing change, invitations, commits or external writes are made by this documentation lane.

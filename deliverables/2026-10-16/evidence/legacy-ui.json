@@ -1,0 +1,29 @@
+{
+  "run_at": "2026-10-16T14:55:43.257Z",
+  "browser": "installed Edge / Playwright headless",
+  "model_calls": "mocked; separate real-model evidence",
+  "checks": [
+    "English shell and fictional project creation",
+    "Typed fields sync to JSON; X and Escape preserve drafts",
+    "Founder confirmation persists a five-interview plan",
+    "Unsaved profile blocks chat",
+    "New follow-up and reload restore venture, session and 5/2/3 progress",
+    "Model error visible; confirmed profile unchanged",
+    "Invalid JSON produces English feedback and survives dialog close",
+    "Advanced JSON syncs summaries; dirty profile blocks follow-up",
+    "Formatting-only changes do not block chat",
+    "Starter prompts never overwrite an unsent draft",
+    "Unsent composer draft blocks session switch without requests",
+    "Failed venture switch is atomic",
+    "Failed confirmation preserves edits and revision",
+    "Send locks drafts; saved reply survives refresh failure; Markdown is sanitized",
+    "Created session survives failed refresh and reload",
+    "Six GOAT theme/mode combinations and reload persistence",
+    "Desktop, tablet and narrow viewport have no horizontal overflow",
+    "Landscape and keyboard-reduced heights keep send reachable by scrolling",
+    "Created venture survives list refresh failure and reload",
+    "Empty model feedback, retry, and discovery independent of venture list",
+    "No page errors"
+  ],
+  "passed": true
+}

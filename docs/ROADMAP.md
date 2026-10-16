@@ -1,5 +1,7 @@
 # GOAT AI → Virtual EIR 路线图
 
+日期阅读说明：以下 2026-10-08/09 内容保留当时基线；其中“本轮仅规划”“未实现”和原始勾选状态指当时工作。当前实现进度见文末 **9. October 16 current status**，不将历史规划倒写成当时已实现。
+
 更新日期：2026-10-08。本文是 Capstone 工作计划；没有修改 GOAT AI 原仓库路线图，也没有承诺各后续阶段的固定日期。
 
 2026-10-09 补充：R24 已完成独立 [Vercel 只读展示](https://virtual-eir-showcase.vercel.app)，供组员和老师看英文界面、已录制会话和资料快照。无聊天/API/资料写入，不连接本机模型；这不代表登录、多人使用或完整应用公网部署门禁通过。见 [部署归档](archive/2026-10-09-vercel-showcase.md)。
@@ -149,3 +151,27 @@ LoRA/微调只有在 MVP 评估暴露明确能力缺口、拥有合适样例与�
 每项任务登记负责人、状态、证据位置。状态采用：草稿 → 待实现 → 已实现未验证 → 已验证 → 已展示/反馈。
 
 实现时记录 GOAT 基线提交和每项 Capstone 增量。保留既有成果来源；对课程协议如何处理预先存在的代码，依据最终协议和老师意见确认。本轮仅整理计划，未核对最终签署文件。
+
+## 9. October 16 current status — Week 4 foundation
+
+Foundation implementation and recorded demonstrations were delivered on **October 16, 2026**, not October 11. Week 4 is the user-confirmed course label. The October 9 windows above remain historical proposals; no faculty deadline is inferred. See the [dated archive](archive/2026-10-16-week4-foundation.md), [English report](../deliverables/2026-10-16/Week4-Progress-Report.md) and [speaker script](../deliverables/2026-10-16/Week4-Speaker-Script.md).
+
+| Workstream | Current delivery | Open acceptance |
+| --- | --- | --- |
+| P1–P3 / Persona foundation | Confirmed background/preference fields; four mappings, explicit override, unknown/mixed general fallback; compatibility, correction, session/restart and isolation evidence | Final regressions after boundary fixes |
+| P4 / Persona comparison | Eight real English outputs recorded and read; observable styles, 5/2/3 follow-ups and small-sample limits, with failures retained | R25 strict quality acceptance stays open; no expert endorsement |
+| S1–S3 / shared foundation | Separate versioned workspace tables in existing SQLite; typed local-model draft, edit/approve/reject, unchanged confirmed state on invalid output | Final boundary verification; full requirements retained |
+| S4 / R26 | Progress states, absolute/idempotent reports, blockers, controls and report-preserving v2 demonstration implemented; backend lineage/stale-proposal fixes complete | Milestones, task owners/dates, criterion/evidence review, supported goal closure; final workflow/edge reruns and architecture acceptance |
+| S5–S11 / R27–R33 | Roadmap and original acceptance gates retained | All six dedicated future features and integrated evaluation remain pending |
+
+The recorded `Revise approved plan · retain reports` flow keeps 2/5 while approving v2 and preserving v1. Fresh `Generate AI plan` instead starts zero-count proposed work with an explicit warning and history retained. Two of five is 40% **task activity**, not business validation. Goal achievement is blocked until supported evidence review is implemented. A normal new-session follow-up using approved context is demonstrated, but the dedicated Weekly Check-in feature remains pending.
+
+Final foundation verification: **79 automated tests passed, including 42 workspace tests; 10 real-model workflow groups, 21 legacy UI groups and 8 mock-network edge groups passed**. Independent architecture re-review **APPROVED** the foundation and closed all seven findings after the scoped cleanup. Full R26, the six future features and strict Persona coaching-quality acceptance remain open. No CI-green or expert-endorsement claim is made.
+
+Persona evaluation retains quality failures: Engineer/Business initials assume the founder is the customer; Engineer follow-up uses hypothetical payment probing and overstates price-elasticity inference; Artist follow-up has `e.le.`; some outputs exceed 180 words. The initial unsupported statistical wording and earlier Persona runs are preserved; the corrected workflow reply avoids that significance claim. Eight examples do not establish reliable improvement or Ain validation.
+
+Legacy-profile compatibility now applies the original 5,500-character limit to old content excluding the two new Persona fields, which have separate bounds. Context selection reserves policies and workspace data within the 8,000-character system-context guard, then includes full profile data if possible or explicitly marks a partial view and omissions. Full records are preserved. Focused boundary checks passed; final combined regression passed.
+
+Recorded live migration snapshot: `var/backups/eir-pre-week4-20261016.sqlite3`, integrity `ok`, one venture / three sessions; raw legacy rows unchanged, zero live workspace records after migration. Experiments use isolated databases under `var/week4-proof/` and workflow port 62608. Final foundation repairs are verified. Live EIR remains local on 62607, GOAT on 62606 and Ollama on 11434; the Vercel recording remains frozen and older.
+
+Next gate: complete final workflow/edge reruns and architecture re-review of the seven findings; main owner finalizes exact counts, the ten-slide PPT, detailed Persona review and quality notes; then finish remaining R26 scope before advancing each feature gate. Mingzhi remains implementation lead; teammate owners/dates are unassigned until agreed. The documentation lane makes no commits or external writes and changes no permissions, licences, GOAT source, earlier PPT or raw transcript. No cloud/public backend or expert approval is claimed.

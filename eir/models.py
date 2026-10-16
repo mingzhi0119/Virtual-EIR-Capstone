@@ -32,6 +32,10 @@ class Profile(StrictModel):
     customer: str = Field(default="", max_length=500)
     problem: str = Field(default="", max_length=1000)
     stage: Literal["idea", "validation", "prototype", "growth"] = "idea"
+    founder_background: str = Field(default="", max_length=200)
+    communication_preference: Literal[
+        "auto", "general", "technical", "experiential", "academic", "business"
+    ] = "auto"
     assumptions: list[str] = Field(default_factory=list, max_length=10)
     evidence: list[Evidence] = Field(default_factory=list, max_length=10)
     actions: list[Action] = Field(default_factory=list, max_length=10)
@@ -40,7 +44,15 @@ class Profile(StrictModel):
     def bound_context(self) -> Profile:
         if any(not item.strip() or len(item) > 500 for item in self.assumptions):
             raise ValueError("Each assumption must contain 1–500 characters.")
-        if len(self.model_dump_json()) > 5500:
+        # Preserve the original admission limit: defaults must not invalidate old rows.
+        if (
+            len(
+                self.model_dump_json(
+                    exclude={"founder_background", "communication_preference"}
+                )
+            )
+            > 5500
+        ):
             raise ValueError(
                 "Profile is too large for the bounded coaching context (5500 characters)."
             )

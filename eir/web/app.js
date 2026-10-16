@@ -1,4 +1,5 @@
 import { initializeAppearance, paintIcons, renderMarkdown } from './generated/appearance.js'
+import { initializeWorkspace } from './workspace.js'
 
 const $ = id => document.getElementById(id)
 let venture = null, session = null, busy = false, sessionList = []
@@ -32,7 +33,7 @@ function normalized(value) {
 function dirty() { return !!venture && JSON.stringify(normalized(editable())) !== JSON.stringify(normalized(venture.profile)) }
 function markDraft() { try { $('draft-dot').hidden = !dirty() } catch { $('draft-dot').hidden = false } }
 function requireSaved() { if (dirty()) throw Error('You have unsaved profile changes. Confirm and save them first.') }
-function requireSwitchReady() { requireSaved(); if ($('message').value.trim()) throw Error('You have an unsent message. Send it or clear it before changing venture or session.') }
+function requireSwitchReady() { requireSaved(); if (workspaceUI.hasDraft()) throw Error('Confirm or discard unsaved Goal & Plan changes before navigating.'); if ($('message').value.trim()) throw Error('You have an unsent message. Send it or clear it before changing venture or session.') }
 function renderMemory(profile) {
   const action = profile.actions?.[0]
   $('action-summary').textContent = action ? `${action.description}\n\nPlanned: ${action.target_count} · Completed: ${action.completed_count} · Remaining: ${Math.max(0, action.target_count - action.completed_count)}\n${action.result || 'No results reported yet.'}` : 'No confirmed action yet.'
@@ -94,6 +95,7 @@ async function refreshSessions(selected) { setSessions(await api(`/ventures/${ve
 async function load(id) {
   try {
     const next = await api(`/ventures/${id}`); const list = await api(`/ventures/${id}/sessions`)
+    await workspaceUI.load(id)
     venture = next; remember('eir-selected-venture', id); setSessions(list, stored(`eir-session-${id}`)); render()
     status('Restored the confirmed venture profile and conversation history.')
   } catch (error) { if (venture) $('ventures').value = venture.venture_id; throw error }
@@ -112,8 +114,10 @@ function disabled(value) {
   if (venture) { try { editable() } catch { invalid = true } }
   for (const input of document.querySelectorAll('[data-field],#field-assumptions')) input.disabled ||= invalid
   $('send').disabled = value || !$('models').value || !venture || !$('message').value.trim()
+  workspaceUI.setBusy(value)
 }
 async function run(task) { if (busy) return; disabled(true); try { await task() } catch (error) { status(error.message, true) } finally { disabled(false) } }
+const workspaceUI = initializeWorkspace({ api, getVenture: () => venture, getModel: () => $('models').value, requireSaved, onStatus: status, run })
 async function selectSession(id) {
   const previous = session
   try { requireSwitchReady(); retainSession(await api(`/ventures/${venture.venture_id}/sessions/${id}`)); status('Opened the saved session. The same confirmed venture context is available.') }
@@ -125,6 +129,7 @@ $('new').onclick = () => run(async () => {
   venture = created; session = null; sessionList = []; remember('eir-selected-venture', created.venture_id)
   $('ventures').append(option(created.venture_id, created.profile.name)); $('ventures').value = created.venture_id
   renderSessionNavigation(); render()
+  await workspaceUI.load(created.venture_id)
   try { retainSession(await api(`/ventures/${created.venture_id}/sessions`, 'POST')) }
   catch (error) { status(`Fictional venture created; initial session could not be created: ${error.message}. Send a message to retry in this venture.`, true); return }
   try { await refreshVentures(created.venture_id) }
@@ -168,7 +173,7 @@ $('followtext').onclick = () => prepareMessage(followupMessage)
 $('message').oninput = () => disabled(busy)
 $('composer').onsubmit = event => { event.preventDefault(); run(async () => {
   if (!venture) throw Error('Create or select a venture first.')
-  requireSaved(); const message = $('message').value.trim()
+  requireSaved(); if (workspaceUI.hasDraft()) throw Error('Confirm or discard unsaved Goal & Plan changes before asking the coach.'); const message = $('message').value.trim()
   if (!message) throw Error('Enter a message before sending.')
   if (!$('models').value) throw Error('No installed model available. Check GOAT and Ollama, then retry model discovery.')
   if (!session) retainSession(await api(`/ventures/${venture.venture_id}/sessions`, 'POST'))

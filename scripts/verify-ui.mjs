@@ -6,6 +6,8 @@ import { fileURLToPath } from 'node:url'
 import { chromium } from '../apps/goat/frontend/node_modules/playwright/index.mjs'
 
 const browser = await chromium.launch({ channel: 'msedge', headless: true })
+const base = process.env.EIR_TEST_BASE_URL || 'http://127.0.0.1:62607'
+const proofPath = process.env.EIR_UI_PROOF_PATH || '../docs/archive/2026-10-08-english-ui-proof.json'
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } })
 const checks = [], errors = []
 const passed = name => checks.push(name)
@@ -21,7 +23,7 @@ const closeProfile = async () => page.locator('#close-profile').click()
 const profile = async () => JSON.parse(await page.locator('#profile').inputValue())
 page.on('pageerror', error => errors.push(error.message))
 try {
-  await page.goto('http://127.0.0.1:62607')
+  await page.goto(base)
   await idle()
   assert.equal(await page.locator('html').getAttribute('lang'), 'en')
   await page.locator('#new').click(); await feedback('Fictional venture created.')
@@ -97,7 +99,7 @@ try {
   assert.equal(switchRequests, 0)
   page.off('request', countRequests); await page.locator('#message').fill('')
   passed('Unsent composer draft blocks session switch without requests')
-  const other = await (await page.request.post('http://127.0.0.1:62607/api/ventures', { data: { name: 'UI isolation fixture (fictional)' } })).json()
+  const other = await (await page.request.post(base + '/api/ventures', { data: { name: 'UI isolation fixture (fictional)' } })).json()
   await page.reload(); await idle()
   await page.route(`**/api/ventures/${other.venture_id}/sessions`, route => route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ detail: 'Mock session-list failure' }) }))
   await page.locator('#ventures').selectOption(other.venture_id); await feedback('Mock session-list failure')
@@ -112,7 +114,7 @@ try {
   await page.unroute(`**/api/ventures/${venture}`); await page.locator('#profile').fill(confirmedText); await closeProfile()
   passed('Failed confirmation preserves edits and revision')
   await page.unroute('**/api/ventures/*/sessions/*/chat')
-  const active = await (await page.request.get(`http://127.0.0.1:62607/api/ventures/${venture}/sessions/${session}`)).json()
+  const active = await (await page.request.get(`${base}/api/ventures/${venture}/sessions/${session}`)).json()
   const markdown = '**Mock saved reply stays visible**\n\nSample: $n=2$. An extra $\\$3$ or $\\$5$. Also $$3$ or $$5$.\n\n<script>alert(1)</script>\n\n[bad](javascript:alert(1))\n\n![tracker](https://tracking.invalid/pixel)'
   await page.route('**/api/ventures/*/sessions/*/chat', async route => {
     await new Promise(resolve => setTimeout(resolve, 300))
@@ -186,7 +188,7 @@ try {
   const recovery = await browser.newPage()
   await recovery.route('**/api/ventures', route => route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ detail: 'Mock startup list failure' }) }))
   await recovery.route('**/api/models', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ models: [] }) }))
-  await recovery.goto('http://127.0.0.1:62607'); await recovery.waitForFunction(() => !document.getElementById('new').disabled)
+  await recovery.goto(base); await recovery.waitForFunction(() => !document.getElementById('new').disabled)
   assert.match(await recovery.locator('#status').textContent(), /No installed model/)
   assert.equal(await recovery.locator('#send').isDisabled(), true)
   await recovery.unroute('**/api/models'); await recovery.locator('#open-appearance').click(); await recovery.locator('#refresh-models').click()
@@ -200,6 +202,6 @@ try {
   await page.screenshot({ path: fileURLToPath(new URL('../var/eir-ui-review/english-shell.png', import.meta.url)), fullPage: false })
   passed('No page errors')
   const evidence = { run_at: new Date().toISOString(), browser: 'installed Edge / Playwright headless', model_calls: 'mocked; separate real-model evidence', checks, passed: true }
-  await writeFile(new URL('../docs/archive/2026-10-08-english-ui-proof.json', import.meta.url), JSON.stringify(evidence, null, 2))
+  await writeFile(new URL(proofPath, import.meta.url), JSON.stringify(evidence, null, 2))
   console.log(`${checks.length} UI proof groups passed; real-model language proof is separate.`)
 } finally { await browser.close() }

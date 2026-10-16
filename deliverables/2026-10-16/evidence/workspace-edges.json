@@ -1,0 +1,45 @@
+{
+  "run_at": "2026-10-16T14:55:32.498Z",
+  "command": "node scripts/verify-week4-workspace-edges.mjs",
+  "browser": "installed Microsoft Edge / Playwright headless",
+  "isolation": "All browser requests intercepted; workspace API is an in-memory mock. No live database or model calls.",
+  "checks": [
+    {
+      "name": "Older v1 draft is excluded after approved v2; revise-approved button creates v3",
+      "passed": true
+    },
+    {
+      "name": "A confirms independently while B and goal/rationale/invalid-JSON drafts remain local",
+      "passed": true
+    },
+    {
+      "name": "Confirmed 2/5 displays 40% task progress and leaves the goal active",
+      "passed": true
+    },
+    {
+      "name": "A failed B confirmation preserves both report drafts and other local edits",
+      "passed": true
+    },
+    {
+      "name": "B retries independently while A and other local drafts remain unsaved",
+      "passed": true
+    },
+    {
+      "name": "Pause locks every task-report control; resume preserves drafts and permits confirmation",
+      "passed": true
+    },
+    {
+      "name": "Source lineage shows target 5 → 7 without false added/removed tasks or dependency changes",
+      "passed": true
+    },
+    {
+      "name": "390px modal fits; no page errors or unmocked network requests",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "passed_count": 8,
+  "failed_count": 0,
+  "page_errors": [],
+  "blocked_requests": []
+}

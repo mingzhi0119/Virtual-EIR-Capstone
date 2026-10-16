@@ -1,5 +1,7 @@
 # GOAT AI 复用实施清单
 
+历史与当前状态：下方 2026-10-08/09 的描述与原始勾选保留当时事实；最新 Week 4 实施状态见文末 **October 16 current status**。历史“仅文档”不代表当前仍未实现；本次文档协作不执行提交或外部写入。
+
 负责人：Mingzhi；开始日期：2026-10-08。每一步通过验收后打勾，将证据记入 [实施归档](archive/2026-10-08-goat-reuse.md)，随后提交 Git。未运行的功能不标为完成。
 
 ## 本轮执行顺序
@@ -62,3 +64,31 @@
 本地单用户、虚构案例、文字优先。服务只绑定 `127.0.0.1`，不把无登录 demo 暴露到局域网或互联网。代码通过 GitHub 同步；数据库、模型、依赖和日志不进 Git，换机需另行安全迁移数据。自动提取的资料不得未经用户确认覆盖事实；先实现显式编辑与保存。
 
 R24 的静态展示是独立的、无后台读写能力的公开文件集；不改变上述本地服务边界，也不关闭 R14–R16。
+
+## October 16 current status — foundation delivery and open gates
+
+Completed to the foundation demo stage on October 16, 2026 (America/New_York), not October 11. Original requirements above are retained. Evidence and caveats: [foundation archive](archive/2026-10-16-week4-foundation.md), [report](../deliverables/2026-10-16/Week4-Progress-Report.md), [script](../deliverables/2026-10-16/Week4-Speaker-Script.md).
+
+- [x] P1 — Confirmed optional founder background/preference, explicit save/revisions and old-profile defaults. Legacy content retains its 5,500-character limit excluding the new, separately bounded Persona fields.
+- [x] P2 — Four mapped styles, explicit preference override and general fallback for unknown/mixed background; shared policy and untrusted-input handling.
+- [x] P3 — Initial evidence for continuity, correction, reopening persisted state and venture isolation without rewriting historical turns. Final foundation regression passed.
+- [x] P4 — Eight real English outputs recorded and read, with style/factual/action/evidence/language review and disclosed failures; main owner archives the detailed table. This completes evaluation recording, not perfect response-quality acceptance.
+- [ ] R25 strict acceptance — Implemented and exploratorily evaluated; quality failures and final review still open. Engineer/Business customer-perspective confusion, Engineer hypothetical payment / overstrong elasticity wording, Artist typo and word-limit overruns are retained.
+- [x] S1 foundation — Strict versioned workspace contracts and separate tables in existing SQLite; backup/compatibility/isolation evidence. Legacy actions are not silently migrated into workspace tasks.
+- [x] S2 foundation — Persona implementation and eight-output comparison delivered; R25 final quality gate remains open.
+- [x] S3 foundation — Real GOAT/Ollama JSON draft, validation, edit/approve/reject and confirmed-state boundary demonstrated. Full milestone/owner/date requirements remain in R26.
+- [ ] S4 / full R26 — Five states, absolute/idempotent progress, corrections, blockers, pause/resume/cancel and report-preserving v2 are implemented. Backend task-lineage/diff and stale retained-report proposal fixes are complete; final workflow/edge reruns passed and foundation architecture approval was obtained. Milestones, task owners/dates, criterion/evidence review and supported goal closure remain pending. No automatic achievement.
+- [ ] S5 / R29 — Weekly Check-in feature pending; ordinary new-session context with 5/2/3 demonstrated only.
+- [ ] S6 / R27 — Experiment Designer pending.
+- [ ] S7 / R28 — Evidence Board pending.
+- [ ] S8 / R31 — Decision Lab pending.
+- [ ] S9 / R30 — Pitch Practice pending.
+- [ ] S10 / R32 — Mentor Brief pending.
+- [ ] S11 / R33 — Full integration/evaluation and final independent acceptance pending.
+Final foundation verification: **79 automated tests passed, including 42 workspace tests; 10 real-model workflow groups, 21 legacy UI groups and 8 mock-network edge groups passed**. Independent architecture re-review **APPROVED** the foundation and closed all seven findings after the scoped cleanup. Full R26, the six future features and strict Persona coaching-quality acceptance remain open. No CI-green or expert-endorsement claim is made.
+
+The UI-tested `Revise approved plan · retain reports` creates a draft carrying 2/5; fresh `Generate AI plan` starts proposed tasks at zero with a warning and earlier history retained. 40% means task activity only, never market validation. Model drafts do not confirm facts; invalid output leaves confirmed state unchanged. Full goal achievement remains blocked pending future evidence review.
+
+Legacy-row comparison confirmed one venture and three sessions unchanged after migration, with zero live workspace records; backup integrity was `ok`. This is the recorded migration snapshot. Raw proof and test databases live under ignored `var/week4-proof/`; tests use workflow port 62608, not live 62607. Context hardening explicitly selects a partial profile when needed while preserving policies/full storage; final combined boundary verification passed.
+
+Mingzhi remains implementation lead. Teammate owners and deadlines are unassigned until agreed. Main owner owns final PPT/quality notes. Frozen Vercel, GOAT source/licensing, invitations and historical PPT/transcript are unchanged by this lane; no new CI, cloud deployment or Ain-approval claim.

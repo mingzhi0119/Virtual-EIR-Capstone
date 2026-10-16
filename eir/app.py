@@ -12,6 +12,7 @@ from starlette.responses import Response
 from starlette.staticfiles import StaticFiles
 
 from eir.coaching import Coach, GoatClient, ModelUnavailable
+from eir.feature_routes import install_workspace_routes
 from eir.models import ChatInput, ChatOutput, Profile, ProfileUpdate, Session, Venture
 from eir.store import Conflict, NotFound, Store
 
@@ -29,6 +30,14 @@ def create_app(
     )
     coach = Coach(store, goat)
     app = FastAPI(title="Virtual EIR local prototype", version="0.1.0")
+    port_text = os.environ.get("EIR_HTTP_PORT", "62607")
+    if (
+        not port_text.isascii()
+        or not port_text.isdecimal()
+        or not 1 <= int(port_text) <= 65535
+    ):
+        raise ValueError("EIR_HTTP_PORT must be an integer port from 1 to 65535.")
+    port = int(port_text)
 
     @app.middleware("http")
     async def local_boundary(
@@ -41,7 +50,7 @@ def create_app(
         }:
             return JSONResponse({"detail": "Local prototype only."}, status_code=403)
         origin = request.headers.get("origin")
-        allowed = {"http://127.0.0.1:62607", "http://localhost:62607"}
+        allowed = {f"http://127.0.0.1:{port}", f"http://localhost:{port}"}
         if origin and origin not in allowed:
             return JSONResponse(
                 {"detail": "Cross-origin requests are not allowed."}, status_code=403
@@ -107,6 +116,8 @@ def create_app(
     @app.post("/api/ventures/{venture_id}/sessions/{session_id}/chat")
     async def chat(venture_id: str, session_id: str, request: ChatInput) -> ChatOutput:
         return await coach.chat(venture_id, session_id, request)
+
+    install_workspace_routes(app, store, goat)
 
     app.mount(
         "/assets", StaticFiles(directory=Path(__file__).parent / "web"), name="assets"
