@@ -7,7 +7,7 @@ Updated October 16, 2026. This repository is the canonical upstream for Virtual 
 | Repository | [mingzhi0119/Virtual-EIR-Capstone](https://github.com/mingzhi0119/Virtual-EIR-Capstone) |
 | Maintainer | `mingzhi0119` (Mingzhi Hu) |
 | Default branch | `main` |
-| Publication policy | Public source subject to the license; completed visibility verification is recorded in the dated publication receipt |
+| Visibility | **Public**, verified October 16, 2026 through GitHub metadata and anonymous access |
 | Contribution path | Personal fork → task branch → PR here → review → merge |
 | License | [PolyForm Noncommercial 1.0.0](../LICENSE.md), with [scope and provenance](IP_AND_REUSE.md) |
 
@@ -26,3 +26,5 @@ Public forks are public. Making upstream private later does not recall previousl
 - Keep credentials unavailable to fork PRs and do not execute unreviewed fork code in privileged workflows.
 
 See [CONTRIBUTING.md](../CONTRIBUTING.md) for commands. This refresh does not invite collaborators, transfer the repository, change the separate GOAT repository, or assign teammate work.
+
+Publication checks and their limits are recorded in the [dated receipt](archive/2026-10-16-public-collaboration.md). GitHub may display the nonstandard license as `Other` / `NOASSERTION`; the committed full license text, not that detection label, specifies the offered terms.

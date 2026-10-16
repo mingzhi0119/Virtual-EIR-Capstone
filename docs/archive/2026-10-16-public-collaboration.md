@@ -17,9 +17,12 @@ Date: October 16, 2026. Scope: make `mingzhi0119/Virtual-EIR-Capstone` the Engli
 
 ## Publication
 
-- [ ] Push only the reviewed documentation/licensing changes to canonical upstream.
-- [ ] Change visibility to Public and verify metadata and anonymous access.
-- [ ] Verify English repository description, fork permission and remote commit alignment.
+- [x] Push only reviewed documentation/licensing changes: initial publication commit `3efe3e8f5790b6dcb1ae663e36ed8465811a22c8` on canonical `main`.
+- [x] Change visibility to Public; GitHub API reports `private=false`, and anonymous metadata/README/license requests succeed (HTTP 200 for both documents).
+- [x] Verify English repository description, `allow_forking=true`, default branch `main`, and matching local/remote publication commit.
+- [x] Confirm no change to application code, GOAT source or the separate GOAT upstream repository's license. The earlier local PPT edit remains uncommitted.
+
+The new [publication CI run](https://github.com/mingzhi0119/Virtual-EIR-Capstone/actions/runs/38952255844) was in progress at this receipt update; it is not recorded as passing until completion. The local 79-test result above is current. GitHub's license detector reports `NOASSERTION`; the full committed PolyForm text and documented scope are authoritative for the offered terms, not the detector label.
 
 No application behavior, GOAT source, paid API configuration, collaborator invitations, Vercel deployment or runtime data is changed. Forks include tracked GOAT code. Public forks and downloaded copies cannot be recalled by later making upstream private. Public GitHub source is not a public running backend.
 
