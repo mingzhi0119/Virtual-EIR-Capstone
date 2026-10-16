@@ -44,7 +44,7 @@ The pre-migration backup is `var/backups/eir-pre-week4-20261016.sqlite3`. The im
 
 | Evidence | Recorded result | Interpretation |
 | --- | --- | --- |
-Final foundation verification: **79 automated tests passed, including 42 workspace tests; 10 real-model workflow groups, 21 legacy UI groups and 8 mock-network edge groups passed**. Independent architecture re-review **APPROVED** the foundation and closed all seven findings after the scoped cleanup. Full R26, the six future features and strict Persona coaching-quality acceptance remain open. No CI-green or expert-endorsement claim is made.
+| Automated suite | 79 passed, including 42 workspace tests | Final post-cleanup suite; not a CI or expert-quality claim |
 | Legacy UI regression | 21 isolated groups passed | Original interface remains usable |
 | Isolated workflow | 10 real-model groups passed; 8 mock-network edge groups passed separately | Final repair rerun; fictional isolated data |
 | Responsive appearance | Desktop 1440×1000 and mobile 390×844; all three inherited themes, light/dark | Recorded layout/overflow checks, not expert usability certification |

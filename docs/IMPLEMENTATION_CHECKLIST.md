@@ -67,6 +67,8 @@ R24 的静态展示是独立的、无后台读写能力的公开文件集；不�
 
 ## October 16 current status — foundation delivery and open gates
 
+- [x] Final foundation QA — 79 automated tests, 10 real-model workflow groups, 21 legacy UI groups and 8 edge groups passed. All seven findings closed; independent architecture APPROVED. Ten-slide PPT, English report, speaker script and evidence archive delivered. Full R26 and six future features remain open.
+
 Completed to the foundation demo stage on October 16, 2026 (America/New_York), not October 11. Original requirements above are retained. Evidence and caveats: [foundation archive](archive/2026-10-16-week4-foundation.md), [report](../deliverables/2026-10-16/Week4-Progress-Report.md), [script](../deliverables/2026-10-16/Week4-Speaker-Script.md).
 
 - [x] P1 — Confirmed optional founder background/preference, explicit save/revisions and old-profile defaults. Legacy content retains its 5,500-character limit excluding the new, separately bounded Persona fields.
