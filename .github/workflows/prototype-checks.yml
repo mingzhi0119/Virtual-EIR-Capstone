@@ -53,6 +53,6 @@ jobs:
         run: |
           $PSNativeCommandUseErrorActionPreference = $true
           node apps/goat/frontend/node_modules/typescript/bin/tsc -p eir/frontend/tsconfig.json
-          node apps/goat/frontend/node_modules/eslint/bin/eslint.js --config eir/frontend/eslint.config.mjs eir/web/app.js eir/web/workspace.js showcase/showcase.js scripts/build-eir-ui.mjs scripts/verify-ui.mjs scripts/build-eir-showcase.mjs scripts/verify-eir-showcase.mjs scripts/verify-week4-eir.mjs scripts/capture-week4-eir.mjs scripts/verify-week4-workspace-edges.mjs
-          node scripts/build-eir-ui.mjs
+          node apps/goat/frontend/node_modules/eslint/bin/eslint.js --config eir/frontend/eslint.config.mjs eir/web/app.js eir/web/workspace.js showcase/showcase.js scripts/build-eir-ui.mjs scripts/build-eir-hosted.mjs scripts/build-eir-vercel.mjs scripts/verify-ui.mjs scripts/build-eir-showcase.mjs scripts/verify-eir-showcase.mjs scripts/verify-week4-eir.mjs scripts/capture-week4-eir.mjs scripts/verify-week4-workspace-edges.mjs
+          node scripts/build-eir-vercel.mjs
           node scripts/build-eir-showcase.mjs

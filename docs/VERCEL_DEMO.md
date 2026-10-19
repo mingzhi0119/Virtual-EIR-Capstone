@@ -36,15 +36,24 @@ Use the project's **Logs** tab to inspect `openai_call` events. Successful calls
 
 To pause AI calls, set `EIR_DEMO_DISABLED=1` in Vercel production environment variables and redeploy; existing deployments do not receive changed environment variables automatically. To withdraw recipient access, use Share to change access back to **Only people with access**. API credentials and CLI automation bypass credentials are separate secrets and must not be put in a recipient URL.
 
-## Repeatable deployment
+## Automatic deployment from GitHub
 
-1. Run `node scripts/build-eir-hosted.mjs` from the repository root. It builds UI assets, copies an explicit source allowlist to ignored `var/eir-hosted`, rejects unexpected files and scans the publishable files for likely API keys.
-2. Keep `var/eir-hosted/.vercel/project.json` linked to `virtual-eir-demo`. Do not deploy the whole repository. The bundle excludes `.env*`, CLI controls, private documents, and local databases.
-3. The optional `scripts/configure-eir-hosted.mjs` reads the existing root `.env.local`, verifies the project has protection on all deployments, and uploads only the OpenAI key, default model, model allowlist and protected-entrypoint flag. It uses the authenticated Vercel CLI and does not print the key. Current model settings are `EIR_OPENAI_MODEL=gpt-5.6-luna` and `EIR_OPENAI_MODELS=gpt-5.6-luna,gpt-5.6-terra,gpt-5.6-sol,gpt-4.1-mini`.
-4. Deploy the bundle with the authenticated Vercel CLI to production. The entrypoint is `hosting/main.py`; only `hosting/requirements.txt` is installed. Local GOAT and its dependencies are excluded.
-5. Verify an unauthenticated request to `/api/health` is blocked by Vercel. Verify the complete shareable link in a browser without a Vercel login, then check real chat, plan approval and saved progress after refresh. Keep any access token in ignored local handoff files only.
+The intended source is [mingzhi0119/Virtual-EIR-Capstone](https://github.com/mingzhi0119/Virtual-EIR-Capstone), production branch `main`, connected to the existing `virtual-eir-demo` project. The build configuration is prepared; the GitHub App still needs access to this repository before the connection can be completed and tested.
 
-The local file `var/eir-hosted/.env.local` contains pulled cloud credentials. It is ignored and excluded from deployment. Never display, commit or distribute it. Changing or revoking the share link does not rotate the OpenAI API key.
+- Root Directory: `hosting`; enable **Include source files outside of the Root Directory in the Build Step**.
+- Framework: FastAPI. `hosting/vercel.json` runs `node ../scripts/build-eir-vercel.mjs`.
+- The build installs frontend dependencies from the existing GOAT lockfile, builds appearance assets, checks the explicit app allowlist and copies that app into generated `hosting/eir/`. Only `hosting/requirements.txt` supplies Python runtime dependencies. The GOAT backend is not installed.
+- `main` pushes and merges create production deployments. Other branches are disabled by `git.deploymentEnabled`; this classroom project does not build fork previews with the teacher's API key.
+- The API key and database URL stay in Vercel environment variables. Do not add them to GitHub Actions secrets or the repository. Local databases, `.env*` files and the complete invitation link stay ignored.
+- The stable production address and its existing invitation link follow the latest successful production deployment. A failed build leaves the previous working version live. Saved ventures remain in Neon across deployments.
+
+Before pushing changes, run the relevant EIR checks and `node scripts/build-eir-vercel.mjs` locally. The local command reuses installed frontend dependencies; Vercel performs a clean install. Check the Vercel deployment's commit and **Ready** status after a push. The existing GitHub prototype checks run separately; they are not a production approval gate.
+
+The CLI bundle remains in ignored `var/eir-hosted/`, with its build command disabled because its assets are already prepared. It is not the Git project root. Do not upload the full local checkout or change the Git project's Root Directory just to deploy that bundle.
+
+`scripts/configure-eir-hosted.mjs` is an optional owner maintenance tool for server environment variables. It reads the existing root `.env.local`, checks protection on all deployments and uploads the OpenAI settings without printing the key. Changed environment variables require a new deployment. The ignored local bundle may contain pulled credentials in `.env.local`; never display, commit or distribute it.
+
+After the first automatic deployment, verify the original invitation in a fresh browser, blocked unauthenticated access, retained ventures and working UI assets. The live classroom check uses `EIR_UI_TARGET=hosted node scripts/verify-eir-business-ui.mjs` (set the variable with the syntax for your shell); it does not call OpenAI or modify classroom records.
 
 ## Classroom check
 

@@ -25,6 +25,8 @@ build/
 coverage/
 *.tsbuildinfo
 eir/web/generated/
+/hosting/eir/
+/.vercel/
 
 # Local project data, uploads and databases
 data/private/

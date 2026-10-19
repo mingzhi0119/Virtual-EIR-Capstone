@@ -1,8 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "fastapi",
+  "buildCommand": "node ../scripts/build-eir-vercel.mjs",
+  "git": {"deploymentEnabled": {"main": true, "*": false}},
   "regions": ["iad1"],
-  "functions": {"main.py": {"maxDuration": 180}},
+  "functions": {"main.py": {"maxDuration": 180, "includeFiles": "eir/**"}},
   "headers": [{
     "source": "/(.*)",
     "headers": [

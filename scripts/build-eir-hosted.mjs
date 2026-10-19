@@ -20,7 +20,14 @@ const files = [
 const allowed = new Set(files.map(([, target]) => target))
 for (const [source, target] of files) {
   await mkdir(path.dirname(path.join(out, target)), { recursive: true })
-  await copyFile(path.join(root, source), path.join(out, target))
+  if (target === 'vercel.json') {
+    const config = JSON.parse(await readFile(path.join(root, source), 'utf8'))
+    // The CLI bundle already contains built assets and has no parent checkout.
+    config.buildCommand = ''
+    await writeFile(path.join(out, target), `${JSON.stringify(config, null, 2)}\n`)
+  } else {
+    await copyFile(path.join(root, source), path.join(out, target))
+  }
 }
 allowed.add('.vercelignore')
 // Every publishable file is copied above and checked below. Exclude local CLI

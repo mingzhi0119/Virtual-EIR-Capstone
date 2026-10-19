@@ -1,4 +1,4 @@
-"""Deploy only a generated allowlisted bundle, never the whole checkout."""
+"""Serve the allowlisted app prepared in the protected hosting directory."""
 
 import os
 
