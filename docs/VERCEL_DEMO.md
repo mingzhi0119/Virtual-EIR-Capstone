@@ -38,7 +38,7 @@ To pause AI calls, set `EIR_DEMO_DISABLED=1` in Vercel production environment va
 
 ## Automatic deployment from GitHub
 
-The intended source is [mingzhi0119/Virtual-EIR-Capstone](https://github.com/mingzhi0119/Virtual-EIR-Capstone), production branch `main`, connected to the existing `virtual-eir-demo` project. The build configuration is prepared; the GitHub App still needs access to this repository before the connection can be completed and tested.
+The source is [mingzhi0119/Virtual-EIR-Capstone](https://github.com/mingzhi0119/Virtual-EIR-Capstone), production branch `main`, connected to the existing `virtual-eir-demo` project. The owner granted the GitHub App access to this repository on October 19, 2026. Pushes to `main` now trigger Vercel builds with the configuration below.
 
 - Root Directory: `hosting`; enable **Include source files outside of the Root Directory in the Build Step**.
 - Framework: FastAPI. `hosting/vercel.json` runs `node ../scripts/build-eir-vercel.mjs`.
