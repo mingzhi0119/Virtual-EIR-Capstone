@@ -1,6 +1,6 @@
 # Documentation index
 
-Updated October 16, 2026. Start with current English guides. Plans, implemented features, recorded outputs and acceptance decisions are different evidence types.
+Updated October 19, 2026. Start with current English guides. Plans, implemented features, recorded outputs and acceptance decisions are different evidence types.
 
 ## Current English guides
 
@@ -11,6 +11,7 @@ Updated October 16, 2026. Start with current English guides. Plans, implemented 
 | [GitHub setup](GITHUB_SETUP.md) | Canonical upstream and review conventions |
 | [OpenAI demo](OPENAI_DEMO.md) | Private API config, recording startup, recovery and actual API evidence |
 | [Hosted classroom demo](VERCEL_DEMO.md) | Protected Vercel link, cloud persistence, shared limits, monitoring and recovery |
+| [Weekly progress record](WEEKLY_PROGRESS.md) and [Word copy](../deliverables/2026-10-19/Virtual-EIR-Weekly-Progress.docx) | October 12–18 summary and October 19–25 progress to date, deployment, checks and pending owners |
 | [Local run](LOCAL_RUN.md) | Install, demo, isolated tests and backups |
 | [Architecture](ARCHITECTURE.md) | Request flow and component responsibilities |
 | [Team roadmap](TEAM_ROADMAP.md) | Current feature gates and next deliverables |
@@ -20,7 +21,12 @@ Updated October 16, 2026. Start with current English guides. Plans, implemented 
 | [IP and reuse](IP_AND_REUSE.md) | Provenance, licensing scope and commercial permission |
 | [Security](../SECURITY.md) | Private reporting and deployment limits |
 
-## Latest delivery: October 16 / Week 4
+## Weekly work record updated October 19
+
+- [Weekly progress record](WEEKLY_PROGRESS.md) and [editable Word copy](../deliverables/2026-10-19/Virtual-EIR-Weekly-Progress.docx): last week's foundation, this week's product additions, local-to-Vercel deployment, observed checks and pending owners.
+- Reporting cut-off: October 19. Recording, package submission and Ain feedback remain pending until separately evidenced.
+
+## Foundation delivery: October 16 / Week 4
 
 - [Editable English presentation](../deliverables/2026-10-16/Virtual-EIR-Week4.pptx).
 - [Progress report](../deliverables/2026-10-16/Week4-Progress-Report.md), [speaker script](../deliverables/2026-10-16/Week4-Speaker-Script.md), and [Persona review](../deliverables/2026-10-16/Persona-Review.md).
