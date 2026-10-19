@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 from typing import Annotated, Literal
+from datetime import date
 
-from pydantic import Field, model_validator
+from pydantic import Field, StrictBool, StringConstraints, model_validator
 
 from eir.models import StrictModel
 
@@ -12,6 +13,90 @@ Count = Annotated[int, Field(strict=True, ge=0, le=10000)]
 Revision = Annotated[int, Field(strict=True, ge=0)]
 GoalStatus = Literal["active", "paused", "achieved", "cancelled"]
 TaskStatus = Literal["not_started", "in_progress", "blocked", "done", "cancelled"]
+ReviewText = Annotated[
+    str, StringConstraints(strip_whitespace=True, min_length=1, max_length=1000)
+]
+
+
+class EvidenceData(StrictModel):
+    observation: ReviewText
+    source: ReviewText
+    observed_on: date
+    sample_size: Count | None = None
+    limitation: ReviewText
+    task_id: str | None = Field(default=None, max_length=80)
+    supersedes_id: str | None = Field(default=None, max_length=80)
+
+
+class EvidenceInput(EvidenceData):
+    expected_revision: Revision
+
+
+class EvidenceRecord(EvidenceData):
+    evidence_id: str
+    at: str
+    plan_id: str
+
+
+class CriterionAssessment(StrictModel):
+    criterion_index: Annotated[int, Field(strict=True, ge=0, le=7)]
+    verdict: Literal["supported", "not_supported", "uncertain"]
+    evidence_ids: list[
+        Annotated[str, StringConstraints(min_length=1, max_length=80)]
+    ] = Field(default_factory=list, max_length=20)
+    reasoning: ReviewText
+
+
+class ReviewInput(StrictModel):
+    expected_revision: Revision
+    plan_id: str = Field(min_length=1, max_length=80)
+    criteria: list[CriterionAssessment] = Field(min_length=1, max_length=8)
+    limitations: ReviewText
+    confirm_achievement: StrictBool = False
+
+
+class GoalReview(StrictModel):
+    review_id: str
+    at: str
+    plan_id: str
+    plan_version: int
+    basis_fingerprint: str
+    source_revision: int
+    criteria: list[CriterionAssessment]
+    limitations: str
+    confirmed_achievement: bool
+
+
+class CheckInData(StrictModel):
+    period_start: date
+    period_end: date
+    results: ReviewText
+    learnings: ReviewText
+    blockers: str = Field(default="", max_length=1000)
+    next_priorities: list[ReviewText] = Field(min_length=1, max_length=5)
+    next_review_on: date
+
+    @model_validator(mode="after")
+    def valid_period(self):
+        if not 0 <= (self.period_end - self.period_start).days <= 31:
+            raise ValueError("Review periods must be ordered and at most 31 days.")
+        if self.next_review_on <= self.period_end:
+            raise ValueError("The next review must follow this reporting period.")
+        return self
+
+
+class CheckInInput(CheckInData):
+    expected_revision: Revision
+    plan_id: str = Field(min_length=1, max_length=80)
+
+
+class CheckInRecord(CheckInData):
+    checkin_id: str
+    at: str
+    plan_id: str
+    plan_version: int
+    # Snapshot counts are recorded from storage, never accepted from the browser.
+    task_snapshot: list[dict]
 
 
 class Goal(StrictModel):
@@ -134,6 +219,9 @@ class Workspace(StrictModel):
     goal: Goal | None = None
     plans: list[Plan] = Field(default_factory=list)
     events: list[WorkspaceEvent] = Field(default_factory=list)
+    evidence: list[EvidenceRecord] = Field(default_factory=list)
+    reviews: list[GoalReview] = Field(default_factory=list)
+    checkins: list[CheckInRecord] = Field(default_factory=list)
 
 
 class DraftRequest(StrictModel):

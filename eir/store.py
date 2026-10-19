@@ -29,6 +29,9 @@ class Store:
     def __init__(self, path: Path) -> None:
         self.path = path
         path.parent.mkdir(parents=True, exist_ok=True)
+        self.initialize()
+
+    def initialize(self) -> None:
         with self.connect() as db:
             db.executescript("""
                 CREATE TABLE IF NOT EXISTS ventures (

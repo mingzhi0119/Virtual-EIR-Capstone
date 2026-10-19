@@ -1,6 +1,8 @@
 # Security and private reporting
 
-This is a local, single-user research prototype using fictional venture data. It has no production multi-user authentication/authorization. Do not expose EIR or GOAT through a public interface/tunnel or enter confidential founder data.
+The default app is a local, single-user research prototype using fictional venture data. It has no application-level user accounts or per-user ownership. Do not expose the local EIR or GOAT server through a public interface/tunnel or enter confidential founder data.
+
+The optional [hosted classroom demo](docs/VERCEL_DEMO.md) uses Vercel protection on every deployment, a revocable shareable link, server-side OpenAI credentials, and durable shared PostgreSQL storage. Link holders can view and edit all fictional ventures; forwarding the link forwards access. This setup supports a small classroom demonstration and does not establish confidential multi-tenant isolation or absolute security.
 
 ## Report sensitive issues privately
 

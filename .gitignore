@@ -4,6 +4,8 @@
 !.env.example
 *.pem
 *.key
+/Team3_API.txt
+/vercel-recovery-codes.txt
 
 # Python
 .venv/

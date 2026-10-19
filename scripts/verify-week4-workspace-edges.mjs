@@ -7,7 +7,7 @@ import { chromium } from '../apps/goat/frontend/node_modules/playwright/index.mj
 
 const web = new URL('../eir/web/', import.meta.url)
 const proofFile = new URL('../var/week4-proof/workspace-edges.json', import.meta.url)
-const origin = 'http://workspace-edges.invalid'
+const origin = 'https://workspace-edges.invalid'
 const checks = [], pageErrors = [], blockedRequests = []
 const proof = {
   run_at: new Date().toISOString(),
@@ -40,6 +40,7 @@ try {
     ['/assets/style.css', ['style.css', 'text/css']],
     ['/assets/generated/appearance.css', ['generated/appearance.css', 'text/css']],
     ['/assets/workspace.js', ['workspace.js', 'text/javascript']],
+    ['/assets/reviews.js', ['reviews.js', 'text/javascript']],
   ])
   await page.route('**/*', async route => {
     const url = new URL(route.request().url())
@@ -196,10 +197,56 @@ try {
     await click(named('Confirm and save draft edits'))
     const difference = await history.locator('p').allTextContents()
     const text = difference.join('\n')
-    assert.match(text, /target count 5 → 7/)
+    assert.match(text, /target 5 → 7/)
     assert.doesNotMatch(text, /Added: Interview A|Removed: Interview A|Added: Review B|Removed: Review B/)
     assert.doesNotMatch(text, /dependencies .*→/)
     assert.equal(await page.evaluate(() => window.edgeFixture.plans[2].tasks[0].source_task_id), 'a')
+  })
+  await check('Business task editor adds actions and named prerequisites; pause preserves them and removal clears references', async () => {
+    await click(named('Add an action'))
+    await page.getByLabel('Task 3 title', { exact: true }).fill('Compare customer alternatives')
+    const prerequisites = page.locator('#workspace-simple-tasks fieldset').last()
+    await prerequisites.getByLabel('Interview A', { exact: true }).check()
+    await click(page.locator('#workspace-pause'))
+    await click(page.locator('#workspace-resume'))
+    assert.equal(await page.getByLabel('Task 3 title', { exact: true }).inputValue(), 'Compare customer alternatives')
+    assert.equal(await page.locator('#workspace-simple-tasks fieldset').last().getByLabel('Interview A', { exact: true }).isChecked(), true)
+    page.once('dialog', dialog => dialog.accept())
+    await click(named('Remove task 1'))
+    const tasks = await page.locator('#workspace-tasks-json').evaluate(input => JSON.parse(input.value))
+    assert.equal(tasks.length, 2)
+    assert.deepEqual(tasks.at(-1).dependencies, [])
+    assert.doesNotMatch(await page.locator('#workspace-simple-tasks').innerText(), /revision-a|revision-b|task_id/)
+    page.once('dialog', dialog => dialog.accept())
+    await click(page.locator('#workspace-discard'))
+  })
+  await check('Evidence, review and weekly drafts survive close, pause and resume, and guard navigation', async () => {
+    const evidence = page.locator('#workspace-evidence [data-name="observation"]')
+    await page.getByText('Add an observation or correction', { exact: true }).click()
+    await evidence.fill('Unsaved observation with a source still needed')
+    const reasoning = page.locator('#workspace-review [data-name="reasoning-0"]')
+    const results = page.locator('#workspace-checkin [data-name="results"]')
+    await reasoning.fill('Unsaved criterion reasoning')
+    await results.fill('Unsaved weekly results')
+    await click(page.locator('#close-workspace'))
+    await page.locator('#open-workspace').click()
+    assert.equal(await results.inputValue(), 'Unsaved weekly results')
+    await click(page.locator('#workspace-pause'))
+    assert.equal(await reasoning.isDisabled(), true)
+    assert.equal(await results.inputValue(), 'Unsaved weekly results')
+    await click(page.locator('#workspace-resume'))
+    assert.equal(await reasoning.isEnabled(), true)
+    assert.equal(await evidence.inputValue(), 'Unsaved observation with a source still needed')
+    assert.equal(await reasoning.inputValue(), 'Unsaved criterion reasoning')
+    assert.equal(await results.inputValue(), 'Unsaved weekly results')
+    const message = await page.evaluate(async () => { try { await window.edgeWorkspace.load('v2'); return '' } catch (error) { return error.message } })
+    assert.match(message, /unsaved/)
+    page.once('dialog', dialog => dialog.accept())
+    await click(page.locator('#workspace-discard'))
+    assert.equal(await results.inputValue(), '')
+    assert.equal(await reasoning.inputValue(), '')
+    assert.equal(await evidence.inputValue(), '')
+    assert.equal(await page.evaluate(() => window.edgeWorkspace.hasDraft()), false)
   })
   await check('390px modal fits; no page errors or unmocked network requests', async () => {
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true)

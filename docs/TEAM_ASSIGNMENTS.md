@@ -1,6 +1,6 @@
 # AIN meeting preparation: team assignments
 
-Updated October 16, 2026. AIN meeting: Thursday, October 22. Time and connection details: see the invitation.
+Updated October 19, 2026. AIN meeting: Thursday, October 22. Time and connection details: see the invitation.
 
 ## Objective
 
@@ -10,7 +10,7 @@ Show AIN the working prototype, explain its value to founders and obtain feedbac
 
 | Role | Owner | Required deliverable by Tuesday, October 20 | Acceptance evidence | Current state |
 | --- | --- | --- | --- | --- |
-| Role 1: working demo | Mingzhi Hu | A runnable English fictional example and a concise demonstration sequence covering Persona, Goal/Plan, actual progress and return consultation | The selected version runs; confirmed preference is retained; founder approves the plan; five planned / two completed / three remaining is shown as task progress; working versus planned scope is clear | Pending |
+| Role 1: working demo | Mingzhi Hu | A runnable English fictional example and a concise demonstration sequence covering Persona, Goal/Plan, actual progress and return consultation | The selected version runs; confirmed preference is retained; founder approves the plan; five planned / two completed / three remaining is shown as task progress; working versus planned scope is clear | [Ready for recording](../deliverables/2026-10-22/Readiness-Report.md); final clip review pending |
 | Role 2: recording and integration | Dachen Qu | A 2–4 minute English screen recording, questions linked to relevant screens, and a draft integrated presentation package; a short setup/portable-handoff note | Playable video, readable UI, understandable narration, matching screen/question references and documented setup requirements | Pending |
 | Role 3: AIN workflow and requirements | Precious | A one-page brief with 5–6 focused questions about current coaching, entrepreneur information, intake/forms/frameworks and priorities | Each question includes an example, what needs to be learned and the design decision affected | Pending |
 | Role 4: evaluation | Julian Moyo | A one-page coaching-quality rubric and at least one worked example scored against an actual recorded prototype response | Covers relevance, factual accuracy, evidence limits, actionable advice and communication style; includes the sample/version, score rationale and an improvement suggestion | Pending |
@@ -27,12 +27,15 @@ Dachen coordinates the Wednesday submission and confirms the sender.
 
 ## Role 1: working demo checklist — Mingzhi
 
-- [ ] Identify the application revision, model/runtime and fictional venture used in the demo.
-- [ ] Demonstrate a founder background and an explicitly confirmed or overridden communication preference.
-- [ ] Show a learning goal and an AI draft that the founder can edit, reject or approve.
-- [ ] Show two of five interviews completed, three remaining, and the difference between task progress and evidence of market demand.
-- [ ] Show a return session using saved context; preserve reported work when revising the approved plan.
-- [ ] Hand the working example, concise sequence and known limitations to Dachen for recording; review technical accuracy of the final clip.
+- [x] Identify the application revision, model/runtime and fictional venture used in the demo.
+- [x] Demonstrate a founder background and an explicitly confirmed or overridden communication preference.
+- [x] Show a learning goal and an AI draft that the founder can edit, reject or approve.
+- [x] Show two of five interviews completed, three remaining, and the difference between task progress and evidence of market demand.
+- [x] Show a return session using saved context; preserve reported work when revising the approved plan.
+- [x] Prepare the [working example, concise sequence and known limitations](../deliverables/2026-10-22/README.md) for Dachen's recording handoff. Actual external delivery remains with the team.
+- [ ] Review technical accuracy of Dachen's final exported clip.
+
+October 19 evidence: [real-model rehearsal and restart receipt](../deliverables/2026-10-22/Readiness-Report.md). This records local preparation; Role 2's recording, audio check and integration are not complete yet.
 
 ## Role 2: recording and integration checklist — Dachen
 

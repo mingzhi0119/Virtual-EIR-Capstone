@@ -9,10 +9,13 @@ Updated October 16, 2026. Start with current English guides. Plans, implemented 
 | [Project README](../README.md) | Product, current scope and first start |
 | [Contributing](../CONTRIBUTING.md) | Fork-first workflow and checks |
 | [GitHub setup](GITHUB_SETUP.md) | Canonical upstream and review conventions |
+| [OpenAI demo](OPENAI_DEMO.md) | Private API config, recording startup, recovery and actual API evidence |
+| [Hosted classroom demo](VERCEL_DEMO.md) | Protected Vercel link, cloud persistence, shared limits, monitoring and recovery |
 | [Local run](LOCAL_RUN.md) | Install, demo, isolated tests and backups |
 | [Architecture](ARCHITECTURE.md) | Request flow and component responsibilities |
 | [Team roadmap](TEAM_ROADMAP.md) | Current feature gates and next deliverables |
 | [Team assignments](TEAM_ASSIGNMENTS.md) | Named owners, October 20–22 deadlines and acceptance checklists |
+| [October 22 demo preparation](../deliverables/2026-10-22/README.md) | Role 1 runnable case, timed English narration, recording handoff and October 19 evidence |
 | [October 16 faculty actions](meetings/2026-10-16-faculty-actions.md) | Liza's guidance, AIN meeting preparation and scope boundaries |
 | [IP and reuse](IP_AND_REUSE.md) | Provenance, licensing scope and commercial permission |
 | [Security](../SECURITY.md) | Private reporting and deployment limits |

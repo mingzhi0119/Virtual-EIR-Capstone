@@ -1,0 +1,29 @@
+{
+  "model": "gemma4:26b",
+  "profile": {
+    "name": "Campus Dinner Discovery (fictional)",
+    "customer": "Graduate students studying on campus in the evening",
+    "problem": "Getting an affordable dinner during evening study may be inconvenient",
+    "stage": "idea",
+    "founder_background": "Engineer",
+    "communication_preference": "business",
+    "assumptions": ["Students care most about delivery speed; untested founder assumption"],
+    "evidence": [],
+    "actions": []
+  },
+  "initial_message": "I am the founder, not an interview participant. I am exploring dinner access for evening graduate students. I have not interviewed anyone. Speed matters most is only my assumption. I can interview five students this week, with no spending or product build. Prepare my interview guide: label a section Questions to ask students, then give two quoted, verbatim neutral questions I should ask interviewees about their actual last dinner purchase and alternatives. Address these questions to interviewees, not to me. Then suggest one discovery action for me as founder. Use my saved communication preference. In English, under 130 words. Do not change saved state.",
+  "goal": {
+    "objective": "Learn whether evening graduate students face a recurring dinner-access problem",
+    "success_criteria": [
+      "Complete five interviews and distinguish observations from assumptions",
+      "Write a cautious evidence review; interview activity alone is not market validation"
+    ],
+    "constraints": "At most five student interviews; no product build or spending. Propose exactly one task with target_count 5: interview five students about their last dinner purchase and alternatives. Evidence review is a later step. Fictional demonstration only."
+  },
+  "task_title": "Interview five evening students about their last dinner purchase and alternatives",
+  "plan_rationale": "Founder-reviewed discovery plan. Five interviews are an initial convenience sample; task activity does not establish market demand. Review the evidence after the remaining interviews.",
+  "report": "Fictional founder report: two interviews completed. Both students mentioned price more than speed. Convenience sample n=2; not representative, independently verified, or evidence of market demand. Three interviews remain.",
+  "followup_message": "Review my approved Goal & Plan and its reported result. I am the founder, not an interview participant. State planned, completed and remaining interview counts. Distinguish the untested speed assumption from the reported price observation. Explain the sample limit and propose one neutral question about the next customer's actual last dinner purchase. Use my saved communication preference. Do not change saved state. In English, under 130 words.",
+  "revised_task_title": "Interview five students; ask the remaining three about actual dinner costs and alternatives",
+  "revised_rationale": "The fictional two-person report suggests a question about price, not a validated conclusion. Retain the two completed interviews and ask the remaining three about actual dinner costs and alternatives."
+}

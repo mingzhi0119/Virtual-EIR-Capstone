@@ -18,6 +18,7 @@ async function api(path, method = 'GET', body) {
   return data
 }
 function option(value, text) { const node = document.createElement('option'); node.value = value; node.textContent = text; return node }
+const modelLabels = { 'gpt-5.6-luna': 'GPT-5.6 Luna', 'gpt-5.6-terra': 'GPT-5.6 Terra', 'gpt-5.6-sol': 'GPT-5.6 Sol', 'gpt-4.1-mini': 'GPT-4.1 mini' }
 function editable() {
   if (!venture) throw Error('Create or select a venture first.')
   let profile
@@ -47,10 +48,9 @@ function renderFields(profile) {
 function render() {
   if (!venture) return
   $('profile').value = JSON.stringify(venture.profile, null, 2); renderFields(venture.profile)
-  $('revision').textContent = `Confirmed revision ${venture.revision} · Venture ${venture.venture_id}`
   $('chat-title').textContent = venture.profile.name
   const action = venture.profile.actions[0]
-  $('context-summary').textContent = action ? `Saved context · ${action.target_count} planned / ${action.completed_count} completed / ${Math.max(0, action.target_count - action.completed_count)} remaining · Revision ${venture.revision}` : `Saved venture context · ${venture.profile.stage} stage · Revision ${venture.revision}`
+  $('context-summary').textContent = action ? `Saved context · ${action.target_count} planned / ${action.completed_count} completed / ${Math.max(0, action.target_count - action.completed_count)} remaining` : `Saved venture context · ${venture.profile.stage} stage`
   markDraft(); renderTurns()
 }
 function renderTurns() {
@@ -66,7 +66,7 @@ function renderTurns() {
     else content.textContent = turn.content
     node.append(label, content); box.append(node)
   }
-  $('sessionmeta').textContent = session ? `Session ${session.session_id} · ${session.turns.length / 2} exchanges` : ''
+  $('sessionmeta').textContent = session ? `${session.turns.length / 2} exchanges` : ''
   $('conversation').scrollTop = $('conversation').scrollHeight
 }
 function renderSessionNavigation() {
@@ -142,7 +142,7 @@ $('save').onclick = () => run(async () => {
   const profile = editable(); venture = await api(`/ventures/${venture.venture_id}`, 'PUT', { profile, expected_revision: venture.revision })
   const selected = [...$('ventures').options].find(item => item.value === venture.venture_id)
   if (selected) selected.textContent = venture.profile.name
-  render(); status('Profile confirmed and saved. The next model call will use this revision.')
+  render(); status('Venture profile saved. Your coach will use this context in your next conversation.')
 })
 function draft(profile, text) { $('profile').value = JSON.stringify(profile, null, 2); renderFields(profile); markDraft(); status(text) }
 $('plan').onclick = () => run(async () => {
@@ -175,12 +175,12 @@ $('composer').onsubmit = event => { event.preventDefault(); run(async () => {
   if (!venture) throw Error('Create or select a venture first.')
   requireSaved(); if (workspaceUI.hasDraft()) throw Error('Confirm or discard unsaved Goal & Plan changes before asking the coach.'); const message = $('message').value.trim()
   if (!message) throw Error('Enter a message before sending.')
-  if (!$('models').value) throw Error('No installed model available. Check GOAT and Ollama, then retry model discovery.')
+  if (!$('models').value) throw Error('Choose a coaching model, or refresh the list in Appearance.')
   if (!session) retainSession(await api(`/ventures/${venture.venture_id}/sessions`, 'POST'))
-  status('Asking the local model through GOAT AI… Your confirmed profile will not be changed.')
+  status('Your coach is considering your question…')
   const result = await api(`/ventures/${venture.venture_id}/sessions/${session.session_id}/chat`, 'POST', { message, model: $('models').value })
   retainSession(result.session); $('message').value = ''
-  const saved = `Reply saved · Profile revision ${result.context_revision} · ${result.elapsed_seconds}s. Review suggestions before updating facts.`
+  const saved = `Reply saved · ${modelLabels[$('models').value] || $('models').value} · ${result.elapsed_seconds}s. Review suggestions before updating facts.`
   try { await refreshSessions(session.session_id) } catch (error) { status(`${saved} List refresh failed: ${error.message}`, true); return }
   status(saved)
 }) }
@@ -200,14 +200,14 @@ for (const name of ['profile', 'appearance']) {
 }
 window.addEventListener('beforeunload', event => { try { if (dirty() || $('message').value.trim()) { event.preventDefault(); event.returnValue = '' } } catch { event.preventDefault(); event.returnValue = '' } })
 async function discoverModels() {
-  const list = (await api('/models')).models; $('models').replaceChildren(...list.map(model => option(model, model)))
+  const list = (await api('/models')).models; $('models').replaceChildren(...list.map(model => option(model, modelLabels[model] || model)))
   if (list.includes('gemma4:26b')) $('models').value = 'gemma4:26b'
-  if (!list.length) throw Error('No installed model available. Check Ollama and retry model discovery.')
+  if (!list.length) throw Error('Coaching is currently unavailable. Refresh coaching models in Appearance and try again.')
 }
-$('refresh-models').onclick = () => run(async () => { await discoverModels(); status('Local model list refreshed.') })
+$('refresh-models').onclick = () => run(async () => { await discoverModels(); status('Model list refreshed.') })
 initializeAppearance()
 await run(async () => {
   const results = await Promise.allSettled([refreshVentures(), discoverModels()]); const failures = results.filter(result => result.status === 'rejected')
   if (failures.length) status(failures.map(result => result.reason.message).join(' '), true)
-  else status(venture ? 'Venture restored. You can continue the conversation in English.' : 'Local services connected. Create a fictional venture to begin.')
+  else status(venture ? 'Venture restored. You can continue the conversation.' : 'Your workspace is ready. Create a fictional venture to begin.')
 })

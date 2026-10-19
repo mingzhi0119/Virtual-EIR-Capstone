@@ -2,6 +2,8 @@
 
 Updated October 16, 2026. Run commands from the repository root. Older dated archives describe earlier snapshots, not today's feature acceptance.
 
+For the optional official OpenAI recording mode, follow [OpenAI demo setup](OPENAI_DEMO.md). That mode uses the existing runtime without starting GOAT/Ollama. The local-model instructions below remain the default.
+
 ## Prerequisites
 
 - Windows, PowerShell, Git, Python 3.14 available through `py -3.14`, and Node.js 24/npm.

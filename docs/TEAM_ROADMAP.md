@@ -1,6 +1,6 @@
 # Current team roadmap
 
-Updated October 16, 2026.
+Updated October 19, 2026.
 
 ## Delivered foundation
 
@@ -10,6 +10,8 @@ Updated October 16, 2026.
 - [x] Goal/Plan slice: draft → edit → approve → report → versioned replan retaining reports.
 - [x] Deterministic, real-model and browser evidence with disclosed failures.
 - [x] Week 4 English slides, report, speaker script and Persona comparison.
+- [x] Source-linked evidence review, explicit founder-confirmed goal closure, reopening and correction history.
+- [x] Structured weekly check-ins, task snapshots, next-review dates and bounded context in new consultations.
 
 Evidence: [report](../deliverables/2026-10-16/Week4-Progress-Report.md), [Persona review](../deliverables/2026-10-16/Persona-Review.md), and [fictional records](../deliverables/2026-10-16/evidence/). Foundation delivery does not close full R25/R26 scope.
 
@@ -23,12 +25,12 @@ Immediate priority: [prepare for the October 22 AIN meeting](TEAM_ASSIGNMENTS.md
 | Coaching workflow discovery | Precious: one-page brief with 5–6 focused questions, examples and affected decisions | Assigned, due October 20; ask what exists rather than assuming complete case archives/manuals; AIN answers remain pending |
 | Coaching evaluation preparation | Julian: one-page rubric and at least one scored actual recorded response | Pending, due October 20; explain scores, limitations and proposed improvements |
 | R25 quality | Correct founder/customer confusion, hypothetical payment probing, unsupported inference, typos and verbosity | Open; matched cases plus human rubric review, not just keyword checks |
-| Remaining R26 | Milestones, owners/dates, criterion/evidence review and supported goal closure | Open; retain history and confirmation, never equate activity with validation |
-| R29 Weekly Check-in | Structured results, blockers and next priorities | Planned; ordinary follow-up is not this feature |
-| R27 Experiment Designer + R28 Evidence Board | Linked hypothesis, experiment, observation, counterevidence and sample limits | Planned; no automatic success declaration |
+| Remaining R26 | Milestones, task owners/dates; broader planning acceptance | Evidence-linked criterion review and explicit goal closure now implemented and exercised locally/on Vercel; milestone and ownership fields remain open |
+| R29 Weekly Check-in | Structured results, learning, blockers, next priorities and next-review date | Implemented with saved task snapshots, history and new-session model context; automatic reminders are not implemented |
+| R27 Experiment Designer + R28 Evidence Board | Linked hypothesis, experiment, observation, counterevidence and sample limits | Source/date/sample/limitations, corrections and criterion-linked evidence now implemented; experiment design and the full hypothesis/experiment graph remain open |
 | R31 Decision Lab, R30 Pitch Practice, R32 Mentor Brief | Alternatives, labeled simulated practice and reviewable handoff summary | Planned as separate slices; no automatic sending or invented evidence |
 | R33 integrated evaluation | Multi-case regression, coaching review, usability and failures | Planned; each feature needs its own evidence |
-| Portable runnable handoff | Reproducible execution beyond the author's laptop with model/resource and operating instructions | Pending; Docker is one option, not a delivered feature. Resolve security, hosting, costs and maintenance |
+| Portable runnable handoff | Reproducible execution beyond the author's laptop with model/resource and operating instructions | Invitation-only Vercel use is verified; independent successor deployment and maintenance handoff remain open. Docker is optional |
 
 Re-estimate the proposed Week 5–8 schedule after AIN feedback. Admin-editable Personas, specialist domains, web search, reminders, cross-project matching and a full human-response loop are candidates for later prioritization.
 

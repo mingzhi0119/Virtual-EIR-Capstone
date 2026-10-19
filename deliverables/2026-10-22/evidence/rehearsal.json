@@ -1,0 +1,387 @@
+{
+  "run_at": "2026-10-19T14:24:09.465Z",
+  "revision": "62fedfac3491c1af87b8eb360d37f7399c4cc08a",
+  "model": "gemma4:26b",
+  "fictional": true,
+  "checks": [
+    "Fictional profile saved; explicit Business preference overrides Engineer background; legacy action counters unused.",
+    "Real English initial consultation; confirmed state unchanged by model.",
+    "Real AI plan generated (1 task(s)); founder reviewed a single five-interview task; draft has no confirmed goal or completed work.",
+    "Founder confirms 2/5 in_progress; three remaining by arithmetic; observation and n=2 limit stored in workspace report.",
+    "New session reads saved Business preference and workspace report; actual reply includes 5/2/3, price observation and sample limits; state unchanged.",
+    "Approved v2 retains 2/5, unchanged v1 history, saved preference and two consultations; no browser runtime errors."
+  ],
+  "timings": {
+    "initial_reply": 7.521,
+    "plan_seconds": 9.25,
+    "followup_reply": 8.508
+  },
+  "raw_task_count": 1,
+  "initial_reply": {
+    "session": {
+      "session_id": "5c691e25-824a-4a56-8263-e6aad0eee9c2",
+      "venture_id": "795211d7-c670-4e62-a59a-3923407fcc87",
+      "created_at": "2026-10-19T14:24:10.381825+00:00",
+      "turns": [
+        {
+          "role": "user",
+          "content": "I am the founder, not an interview participant. I am exploring dinner access for evening graduate students. I have not interviewed anyone. Speed matters most is only my assumption. I can interview five students this week, with no spending or product build. Prepare my interview guide: label a section Questions to ask students, then give two quoted, verbatim neutral questions I should ask interviewees about their actual last dinner purchase and alternatives. Address these questions to interviewees, not to me. Then suggest one discovery action for me as founder. Use my saved communication preference. In English, under 130 words. Do not change saved state."
+        },
+        {
+          "role": "assistant",
+          "content": "To help you test your assumption regarding delivery speed, here is a draft guide for your first five interviews.\n\n**Questions to ask students**\n* \"Can you walk me through what you ate for dinner the last time you were studying on campus in the evening?\"\n* \"What other options did you consider before deciding on that specific meal?\"\n\n**Discovery Action**\nConduct 5 interviews with graduate students currently studying on campus. Focus on their recent actual behavior and alternatives to identify if \"speed\" is truly the primary pain point or if cost or variety is more significant. Record which specific friction points they mention when describing their last meal.\n\nPlease confirm if you would like to save this interview plan to your profile."
+        }
+      ]
+    },
+    "reply": "To help you test your assumption regarding delivery speed, here is a draft guide for your first five interviews.\n\n**Questions to ask students**\n* \"Can you walk me through what you ate for dinner the last time you were studying on campus in the evening?\"\n* \"What other options did you consider before deciding on that specific meal?\"\n\n**Discovery Action**\nConduct 5 interviews with graduate students currently studying on campus. Focus on their recent actual behavior and alternatives to identify if \"speed\" is truly the primary pain point or if cost or variety is more significant. Record which specific friction points they mention when describing their last meal.\n\nPlease confirm if you would like to save this interview plan to your profile.",
+    "context_revision": 2,
+    "elapsed_seconds": 7.521,
+    "goat_session_id": "eir-5c691e25-824a-4a56-8263-e6aad0eee9c2"
+  },
+  "generated_plan": {
+    "revision": 1,
+    "goal": null,
+    "plans": [
+      {
+        "plan_id": "3de07b92-ba61-414d-93ae-1f7d0297b428",
+        "version": 1,
+        "status": "draft",
+        "rationale": "The objective is to move from the founder's assumption regarding delivery speed to understanding the actual frequency and nature of the dinner-access problem. Since the current state lacks evidence, the first step is to observe recent actual behavior through a small, non-representative sample of five interviews to identify patterns in how students currently solve the problem.",
+        "tasks": [
+          {
+            "task_id": "3e74d019-3f33-4b5c-95a5-05c1ad3206e4",
+            "source_task_id": null,
+            "title": "Interview 5 graduate students about their most recent evening meal purchase and any alternatives they considered",
+            "target_count": 5,
+            "completed_count": 0,
+            "status": "not_started",
+            "blocker": "",
+            "result": "",
+            "dependencies": []
+          }
+        ],
+        "goal": {
+          "objective": "Learn whether evening graduate students face a recurring dinner-access problem",
+          "success_criteria": [
+            "Complete five interviews and distinguish observations from assumptions",
+            "Write a cautious evidence review; interview activity alone is not market validation"
+          ],
+          "constraints": "At most five student interviews; no product build or spending. Propose exactly one task with target_count 5: interview five students about their last dinner purchase and alternatives. Evidence review is a later step. Fictional demonstration only.",
+          "status": "active",
+          "target_date": null
+        },
+        "source_plan_id": null,
+        "source_plan_revision": null,
+        "source_plan_fingerprint": null
+      }
+    ],
+    "events": [
+      {
+        "revision": 1,
+        "kind": "plan_drafted",
+        "at": "2026-10-19T14:24:27.739625+00:00",
+        "source": "model_proposal",
+        "plan_id": "3de07b92-ba61-414d-93ae-1f7d0297b428",
+        "task_id": null,
+        "detail": {}
+      }
+    ]
+  },
+  "followup_reply": {
+    "session": {
+      "session_id": "191b3732-7199-445e-8b89-88720f6dc9be",
+      "venture_id": "795211d7-c670-4e62-a59a-3923407fcc87",
+      "created_at": "2026-10-19T14:24:28.785161+00:00",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Review my approved Goal & Plan and its reported result. I am the founder, not an interview participant. State planned, completed and remaining interview counts. Distinguish the untested speed assumption from the reported price observation. Explain the sample limit and propose one neutral question about the next customer's actual last dinner purchase. Use my saved communication preference. Do not change saved state. In English, under 130 words."
+        },
+        {
+          "role": "assistant",
+          "content": "You have 5 interviews planned, 2 completed, and 3 remaining.\n\nYour initial assumption is that students prioritize delivery speed. However, your reported observations from the first two interviews suggest that price may be a more significant concern. Note that these two interviews represent a small, biased sample and cannot be used to generalize the needs of all graduate students.\n\nTo continue your research, I recommend conducting one more interview. Ask the participant: \"What was the last dinner you purchased while studying on campus, and how did you decide on that specific option?\" This avoids leading the participant and focuses on actual behavior.\n\nPlease confirm if you would like to save these observations to your profile."
+        }
+      ]
+    },
+    "reply": "You have 5 interviews planned, 2 completed, and 3 remaining.\n\nYour initial assumption is that students prioritize delivery speed. However, your reported observations from the first two interviews suggest that price may be a more significant concern. Note that these two interviews represent a small, biased sample and cannot be used to generalize the needs of all graduate students.\n\nTo continue your research, I recommend conducting one more interview. Ask the participant: \"What was the last dinner you purchased while studying on campus, and how did you decide on that specific option?\" This avoids leading the participant and focuses on actual behavior.\n\nPlease confirm if you would like to save these observations to your profile.",
+    "context_revision": 2,
+    "elapsed_seconds": 8.508,
+    "goat_session_id": "eir-191b3732-7199-445e-8b89-88720f6dc9be"
+  },
+  "final_workspace": {
+    "revision": 7,
+    "goal": {
+      "objective": "Learn whether evening graduate students face a recurring dinner-access problem",
+      "success_criteria": [
+        "Complete five interviews and distinguish observations from assumptions",
+        "Write a cautious evidence review; interview activity alone is not market validation"
+      ],
+      "constraints": "At most five student interviews; no product build or spending. Propose exactly one task with target_count 5: interview five students about their last dinner purchase and alternatives. Evidence review is a later step. Fictional demonstration only.",
+      "status": "active",
+      "target_date": null
+    },
+    "plans": [
+      {
+        "plan_id": "3de07b92-ba61-414d-93ae-1f7d0297b428",
+        "version": 1,
+        "status": "approved",
+        "rationale": "Founder-reviewed discovery plan. Five interviews are an initial convenience sample; task activity does not establish market demand. Review the evidence after the remaining interviews.",
+        "tasks": [
+          {
+            "task_id": "3e74d019-3f33-4b5c-95a5-05c1ad3206e4",
+            "source_task_id": null,
+            "title": "Interview five evening students about their last dinner purchase and alternatives",
+            "target_count": 5,
+            "completed_count": 2,
+            "status": "in_progress",
+            "blocker": "",
+            "result": "Fictional founder report: two interviews completed. Both students mentioned price more than speed. Convenience sample n=2; not representative, independently verified, or evidence of market demand. Three interviews remain.",
+            "dependencies": []
+          }
+        ],
+        "goal": {
+          "objective": "Learn whether evening graduate students face a recurring dinner-access problem",
+          "success_criteria": [
+            "Complete five interviews and distinguish observations from assumptions",
+            "Write a cautious evidence review; interview activity alone is not market validation"
+          ],
+          "constraints": "At most five student interviews; no product build or spending. Propose exactly one task with target_count 5: interview five students about their last dinner purchase and alternatives. Evidence review is a later step. Fictional demonstration only.",
+          "status": "active",
+          "target_date": null
+        },
+        "source_plan_id": null,
+        "source_plan_revision": null,
+        "source_plan_fingerprint": null
+      },
+      {
+        "plan_id": "604e571e-43a6-426c-89fb-501ffff56ff1",
+        "version": 2,
+        "status": "approved",
+        "rationale": "The fictional two-person report suggests a question about price, not a validated conclusion. Retain the two completed interviews and ask the remaining three about actual dinner costs and alternatives.",
+        "tasks": [
+          {
+            "task_id": "0a4c32f0-23b8-4bff-9972-c7abecc20a71",
+            "source_task_id": "3e74d019-3f33-4b5c-95a5-05c1ad3206e4",
+            "title": "Interview five students; ask the remaining three about actual dinner costs and alternatives",
+            "target_count": 5,
+            "completed_count": 2,
+            "status": "in_progress",
+            "blocker": "",
+            "result": "Fictional founder report: two interviews completed. Both students mentioned price more than speed. Convenience sample n=2; not representative, independently verified, or evidence of market demand. Three interviews remain.",
+            "dependencies": []
+          }
+        ],
+        "goal": {
+          "objective": "Learn whether evening graduate students face a recurring dinner-access problem",
+          "success_criteria": [
+            "Complete five interviews and distinguish observations from assumptions",
+            "Write a cautious evidence review; interview activity alone is not market validation"
+          ],
+          "constraints": "At most five student interviews; no product build or spending. Propose exactly one task with target_count 5: interview five students about their last dinner purchase and alternatives. Evidence review is a later step. Fictional demonstration only.",
+          "status": "active",
+          "target_date": null
+        },
+        "source_plan_id": "3de07b92-ba61-414d-93ae-1f7d0297b428",
+        "source_plan_revision": 4,
+        "source_plan_fingerprint": "2aaedfb959dcdbd96492d954e509cb8fa0530c002e67e96f21968fc8a2aab523"
+      }
+    ],
+    "events": [
+      {
+        "revision": 1,
+        "kind": "plan_drafted",
+        "at": "2026-10-19T14:24:27.739625+00:00",
+        "source": "model_proposal",
+        "plan_id": "3de07b92-ba61-414d-93ae-1f7d0297b428",
+        "task_id": null,
+        "detail": {}
+      },
+      {
+        "revision": 2,
+        "kind": "draft_edited",
+        "at": "2026-10-19T14:24:27.917424+00:00",
+        "source": "founder",
+        "plan_id": "3de07b92-ba61-414d-93ae-1f7d0297b428",
+        "task_id": null,
+        "detail": {
+          "source_plan_id": "3de07b92-ba61-414d-93ae-1f7d0297b428"
+        }
+      },
+      {
+        "revision": 3,
+        "kind": "plan_approved",
+        "at": "2026-10-19T14:24:28.117452+00:00",
+        "source": "founder",
+        "plan_id": "3de07b92-ba61-414d-93ae-1f7d0297b428",
+        "task_id": null,
+        "detail": {}
+      },
+      {
+        "revision": 4,
+        "kind": "task_updated",
+        "at": "2026-10-19T14:24:28.335467+00:00",
+        "source": "founder",
+        "plan_id": "3de07b92-ba61-414d-93ae-1f7d0297b428",
+        "task_id": "3e74d019-3f33-4b5c-95a5-05c1ad3206e4",
+        "detail": {
+          "before": {
+            "task_id": "3e74d019-3f33-4b5c-95a5-05c1ad3206e4",
+            "source_task_id": null,
+            "title": "Interview five evening students about their last dinner purchase and alternatives",
+            "target_count": 5,
+            "completed_count": 0,
+            "status": "not_started",
+            "blocker": "",
+            "result": "",
+            "dependencies": []
+          },
+          "after": {
+            "task_id": "3e74d019-3f33-4b5c-95a5-05c1ad3206e4",
+            "source_task_id": null,
+            "title": "Interview five evening students about their last dinner purchase and alternatives",
+            "target_count": 5,
+            "completed_count": 2,
+            "status": "in_progress",
+            "blocker": "",
+            "result": "Fictional founder report: two interviews completed. Both students mentioned price more than speed. Convenience sample n=2; not representative, independently verified, or evidence of market demand. Three interviews remain.",
+            "dependencies": []
+          }
+        }
+      },
+      {
+        "revision": 5,
+        "kind": "plan_replanned",
+        "at": "2026-10-19T14:24:37.559330+00:00",
+        "source": "founder",
+        "plan_id": "604e571e-43a6-426c-89fb-501ffff56ff1",
+        "task_id": null,
+        "detail": {
+          "source_plan_id": "3de07b92-ba61-414d-93ae-1f7d0297b428"
+        }
+      },
+      {
+        "revision": 6,
+        "kind": "draft_edited",
+        "at": "2026-10-19T14:24:37.608197+00:00",
+        "source": "founder",
+        "plan_id": "604e571e-43a6-426c-89fb-501ffff56ff1",
+        "task_id": null,
+        "detail": {
+          "source_plan_id": "604e571e-43a6-426c-89fb-501ffff56ff1"
+        }
+      },
+      {
+        "revision": 7,
+        "kind": "plan_approved",
+        "at": "2026-10-19T14:24:37.673911+00:00",
+        "source": "founder",
+        "plan_id": "604e571e-43a6-426c-89fb-501ffff56ff1",
+        "task_id": null,
+        "detail": {}
+      }
+    ]
+  },
+  "profile": {
+    "venture_id": "795211d7-c670-4e62-a59a-3923407fcc87",
+    "profile": {
+      "name": "Campus Dinner Discovery (fictional)",
+      "customer": "Graduate students studying on campus in the evening",
+      "problem": "Getting an affordable dinner during evening study may be inconvenient",
+      "stage": "idea",
+      "founder_background": "Engineer",
+      "communication_preference": "business",
+      "assumptions": [
+        "Students care most about delivery speed; untested founder assumption"
+      ],
+      "evidence": [],
+      "actions": []
+    },
+    "revision": 2,
+    "updated_at": "2026-10-19T14:24:10.505975+00:00"
+  },
+  "sessions": [
+    {
+      "session_id": "5c691e25-824a-4a56-8263-e6aad0eee9c2",
+      "venture_id": "795211d7-c670-4e62-a59a-3923407fcc87",
+      "created_at": "2026-10-19T14:24:10.381825+00:00",
+      "turns": [
+        {
+          "role": "user",
+          "content": "I am the founder, not an interview participant. I am exploring dinner access for evening graduate students. I have not interviewed anyone. Speed matters most is only my assumption. I can interview five students this week, with no spending or product build. Prepare my interview guide: label a section Questions to ask students, then give two quoted, verbatim neutral questions I should ask interviewees about their actual last dinner purchase and alternatives. Address these questions to interviewees, not to me. Then suggest one discovery action for me as founder. Use my saved communication preference. In English, under 130 words. Do not change saved state."
+        },
+        {
+          "role": "assistant",
+          "content": "To help you test your assumption regarding delivery speed, here is a draft guide for your first five interviews.\n\n**Questions to ask students**\n* \"Can you walk me through what you ate for dinner the last time you were studying on campus in the evening?\"\n* \"What other options did you consider before deciding on that specific meal?\"\n\n**Discovery Action**\nConduct 5 interviews with graduate students currently studying on campus. Focus on their recent actual behavior and alternatives to identify if \"speed\" is truly the primary pain point or if cost or variety is more significant. Record which specific friction points they mention when describing their last meal.\n\nPlease confirm if you would like to save this interview plan to your profile."
+        }
+      ]
+    },
+    {
+      "session_id": "191b3732-7199-445e-8b89-88720f6dc9be",
+      "venture_id": "795211d7-c670-4e62-a59a-3923407fcc87",
+      "created_at": "2026-10-19T14:24:28.785161+00:00",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Review my approved Goal & Plan and its reported result. I am the founder, not an interview participant. State planned, completed and remaining interview counts. Distinguish the untested speed assumption from the reported price observation. Explain the sample limit and propose one neutral question about the next customer's actual last dinner purchase. Use my saved communication preference. Do not change saved state. In English, under 130 words."
+        },
+        {
+          "role": "assistant",
+          "content": "You have 5 interviews planned, 2 completed, and 3 remaining.\n\nYour initial assumption is that students prioritize delivery speed. However, your reported observations from the first two interviews suggest that price may be a more significant concern. Note that these two interviews represent a small, biased sample and cannot be used to generalize the needs of all graduate students.\n\nTo continue your research, I recommend conducting one more interview. Ask the participant: \"What was the last dinner you purchased while studying on campus, and how did you decide on that specific option?\" This avoids leading the participant and focuses on actual behavior.\n\nPlease confirm if you would like to save these observations to your profile."
+        }
+      ]
+    }
+  ],
+  "success": true,
+  "errors": [],
+  "snapshot_checks": [
+    {
+      "scene": "ready",
+      "integrity": "ok",
+      "sessions": 1
+    },
+    {
+      "scene": "draft",
+      "integrity": "ok",
+      "sessions": 1
+    },
+    {
+      "scene": "approved",
+      "integrity": "ok",
+      "sessions": 1
+    },
+    {
+      "scene": "progress",
+      "integrity": "ok",
+      "sessions": 1
+    },
+    {
+      "scene": "followup",
+      "integrity": "ok",
+      "sessions": 2
+    },
+    {
+      "scene": "final",
+      "integrity": "ok",
+      "sessions": 2
+    }
+  ],
+  "restart_check": {
+    "scene": "ready",
+    "one_saved_consultation": true,
+    "no_saved_goal": true,
+    "new_take": true
+  },
+  "word_counts": {
+    "initial_reply": 122,
+    "followup_reply": 115
+  },
+  "artifact_hashes": {
+    "deliverables/2026-10-22/demo-inputs.json": "a6eda5c0a101ab4634dc841c8371b31c769d09009c3e77c05893cc3c5b2282a1",
+    "scripts/prepare-role1-demo.mjs": "e990d8b4925bc936a7967dc3925d259a9890fac6048477e29be6a052083622fb",
+    "scripts/start-role1-demo.ps1": "9bae9898ed60ed6d7658e5cef83944e1f3aa0dd7892a492433996d22ab1eba9f"
+  },
+  "launcher_boundary_check": {
+    "reserved_port_stop_refused": true,
+    "live_and_recording_services_healthy_after_refusal": true
+  }
+}

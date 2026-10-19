@@ -140,8 +140,49 @@ class FeatureStore:
                     context["tasks"].pop()
                     break
             context["omitted_tasks"] = len(plan.tasks) - len(context["tasks"])
+        if workspace.checkins:
+            checkin = workspace.checkins[-1]
+            context["latest_checkin"] = {
+                "period_end": checkin.period_end.isoformat(),
+                "next_review_on": checkin.next_review_on.isoformat(),
+                "plan_version": checkin.plan_version,
+                "results": short(checkin.results, 70),
+                "learnings": short(checkin.learnings, 70),
+                "blockers": short(checkin.blockers, 60),
+                "next_priorities": [
+                    short(item, 60) for item in checkin.next_priorities[:2]
+                ],
+                "omitted_priorities": max(0, len(checkin.next_priorities) - 2),
+                "partial": True,
+            }
+        if workspace.reviews:
+            review = workspace.reviews[-1]
+            context["latest_goal_review"] = {
+                "plan_version": review.plan_version,
+                "verdicts": [
+                    item.verdict
+                    for item in sorted(
+                        review.criteria, key=lambda item: item.criterion_index
+                    )
+                ],
+                "limitations": short(review.limitations, 60),
+                "current": not any(
+                    item.revision > review.source_revision
+                    and item.kind in {"plan_approved", "task_updated", "evidence_added"}
+                    for item in workspace.events
+                ),
+                "basis": "Founder judgment, not independently verified evidence.",
+            }
         # Reserve space for omission metadata even at the boundary.
         while len(json.dumps(context, ensure_ascii=True)) > 1600 and context["tasks"]:
             context["tasks"].pop()
             context["omitted_tasks"] += 1
+        if len(json.dumps(context, ensure_ascii=True)) > 1600:
+            # Keep both newest reports and numeric state within the shared context cap.
+            context["goal"]["objective"] = short(workspace.goal.objective, 80)
+            context["goal"]["success_criteria"] = [
+                short(item, 40) for item in workspace.goal.success_criteria[:2]
+            ]
+            context["goal"]["constraints"] = short(workspace.goal.constraints, 40)
+            context["partial"] = True
         return context
