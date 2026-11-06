@@ -1,6 +1,6 @@
 # Local setup and verification
 
-Updated October 16, 2026. Run commands from the repository root. Older dated archives describe earlier snapshots, not today's feature acceptance.
+Updated November 5, 2026. Run commands from the repository root. Older dated archives describe earlier snapshots, not today's feature acceptance.
 
 For the optional official OpenAI recording mode, follow [OpenAI demo setup](OPENAI_DEMO.md). That mode uses the existing runtime without starting GOAT/Ollama. The local-model instructions below remain the default.
 
@@ -51,12 +51,16 @@ Stopping preserves data and does not stop Ollama. Backend/prompt edits require r
 2. Open Goal/Plan, enter objective, success criteria and constraints; generate a draft.
 3. Review/edit and explicitly approve it. Generation must not overwrite confirmed state.
 4. Report fictional actual progress. Five planned and two completed means three remaining, not market validation.
-5. Start a follow-up session and review saved progress. This is not the dedicated future Weekly Check-in feature.
+5. Save a structured Weekly Check-in, then start a follow-up session to review saved results and counts.
 6. Use **Revise approved plan · retain reports** for a report-preserving new version. A fresh **Generate AI plan** proposes zero-count work instead; inspect the warning and history.
 
-Profile actions and workspace tasks are separate, not automatically synchronized. Supported goal achievement remains blocked pending evidence review. See the [report](../deliverables/2026-10-16/Week4-Progress-Report.md) and [Persona review](../deliverables/2026-10-16/Persona-Review.md) for quality limitations.
+Profile actions and workspace tasks are separate, not automatically synchronized. Goal achievement requires an evidence-linked review plus explicit founder confirmation. Open **Learn, practice & prepare** for Experiment Designer, Decision Lab, Pitch Practice, Step Readiness and Mentor Brief. Save or generate a draft, inspect it, then confirm; use **Edit a new version** to preserve history. Link actual observations to confirmed experiments in Evidence & sources. Never record simulated pitch feedback as an actual interview.
+
+The [November 5 acceptance report](../deliverables/2026-11-05/Pre-Week8-Implementation.md) contains demonstration steps and isolated validation commands. New backend code requires restarting EIR. Existing cloud demonstrations do not update until explicitly deployed.
 
 ## Deterministic checks
+
+Week 8 adds optional UI recording: set `EIR_UI_RECORD=1` before running `node scripts/verify-pre-week8-ui.mjs` against the isolated port 62618 instance, then clear it. See the [demo guide](../deliverables/2026-11-05/Week8/Demo-Guide.md). The [deployment record](../deliverables/2026-11-05/Week8/Deployment-Record.md) describes the protected cloud release separately; do not treat a local pass as cloud verification.
 
 After installation, without live inference:
 

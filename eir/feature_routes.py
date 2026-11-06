@@ -19,12 +19,20 @@ from eir.feature_store import FeatureStore
 from eir.planning import Planner, WorkspaceInvalid
 from eir.store import Store
 from eir.reviews import Reviews
+from eir.labs import LearningLab
+from eir.lab_models import (
+    ArtifactRequest,
+    ArtifactGenerate,
+    ArtifactConfirm,
+    BriefRequest,
+)
 
 
 def install_workspace_routes(app: FastAPI, store: Store, goat: ModelClient) -> None:
     features = FeatureStore(store)
     planner = Planner(features, goat)
     reviews = Reviews(features)
+    lab = LearningLab(features, goat)
     app.state.feature_store = features
     router = APIRouter(prefix="/api/ventures/{venture_id}/workspace")
 
@@ -71,5 +79,23 @@ def install_workspace_routes(app: FastAPI, store: Store, goat: ModelClient) -> N
     @router.post("/checkins")
     def checkin(venture_id: str, request: CheckInInput) -> Workspace:
         return reviews.checkin(venture_id, request)
+
+    @router.post("/artifacts")
+    def artifact(venture_id: str, request: ArtifactRequest) -> Workspace:
+        return lab.save(venture_id, request)
+
+    @router.post("/artifacts/generate")
+    async def generate_artifact(
+        venture_id: str, request: ArtifactGenerate
+    ) -> Workspace:
+        return await lab.generate(venture_id, request)
+
+    @router.post("/artifacts/confirm")
+    def confirm_artifact(venture_id: str, request: ArtifactConfirm) -> Workspace:
+        return lab.confirm(venture_id, request)
+
+    @router.post("/brief/preview")
+    def brief(venture_id: str, request: BriefRequest) -> dict:
+        return lab.brief(venture_id, request.expected_revision, request.questions)
 
     app.include_router(router)

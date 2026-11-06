@@ -49,9 +49,9 @@
   <div class="row"><button id="theme-reset" class="secondary">Reset defaults</button><button id="refresh-models" class="secondary">Refresh coaching models</button></div><div id="appearance-status" class="hint" role="status" aria-live="polite"></div>
 </dialog>
 <dialog id="workspace-panel" aria-labelledby="workspace-heading">
-  <div class="dialog-heading"><div><span class="eyebrow">TURN INSIGHT INTO ACTION</span><h2 id="workspace-heading">Goal &amp; Plan</h2></div><button id="close-workspace" class="icon-button" aria-label="Close Goal and Plan">×</button></div>
+  <div class="workspace-header"><div class="dialog-heading"><div><span class="eyebrow">TURN INSIGHT INTO ACTION</span><h2 id="workspace-heading">Goal &amp; Plan</h2></div><button id="close-workspace" class="icon-button" aria-label="Close Goal and Plan">×</button></div>
+  <div id="workspace-status" class="hint" role="status" aria-live="polite">Choose a venture to begin.</div></div>
   <p class="dialog-intro">Set a business learning goal, plan a small test, and review what the evidence means for your next decision.</p>
-  <div id="workspace-status" class="hint" role="status" aria-live="polite">Choose a venture to begin.</div>
   <section class="workspace-section" aria-labelledby="workspace-goal-heading"><h3 id="workspace-goal-heading">1 · Define your goal</h3><div class="profile-fields">
     <label>Objective<textarea id="workspace-objective" rows="2" maxlength="1000" placeholder="What do you want to learn or accomplish?"></textarea></label>
     <label>Success criteria · one per line<textarea id="workspace-criteria" rows="3" maxlength="4000" placeholder="What observable result would meet this goal?"></textarea></label>
@@ -63,7 +63,8 @@
   <section class="workspace-section" aria-labelledby="workspace-review-heading"><h3 id="workspace-review-heading">5 · Review goal evidence</h3><div id="workspace-review"></div></section>
   <section class="workspace-section" aria-labelledby="workspace-checkin-heading"><h3 id="workspace-checkin-heading">6 · Weekly check-in</h3><div id="workspace-checkin"></div></section>
   <section class="workspace-section" aria-labelledby="workspace-controls-heading"><h3 id="workspace-controls-heading">Goal controls</h3><p id="workspace-goal-state" class="memory-summary">No confirmed goal.</p><div class="row"><button id="workspace-pause" class="secondary">Confirm pause</button><button id="workspace-resume" class="secondary">Confirm resume</button><button id="workspace-cancel" class="secondary">Confirm cancel goal</button></div></section>
-  <details id="workspace-history"><summary>Plan history &amp; changes</summary><div id="workspace-history-content"></div></details>
+    <section class="workspace-section" aria-labelledby="workspace-labs-heading"><h3 id="workspace-labs-heading">7 · Learn, practice &amp; prepare</h3><p class="hint">Challenge assumptions, compare alternatives and review your next step. Drafts require your confirmation; practice never counts as evidence.</p><div id="workspace-labs"></div></section>
+    <details id="workspace-history"><summary>Plan history &amp; changes</summary><div id="workspace-history-content"></div></details>
   <div class="row workspace-recovery"><button id="workspace-refresh" class="secondary">Reload saved workspace</button><button id="workspace-discard" class="secondary">Discard unsaved changes</button></div><p class="hint">Save or discard your changes before switching ventures or conversations. If someone else updated this venture, reload the latest saved work.</p>
 </dialog>
 <div id="sessionmeta" class="sr-only"></div>

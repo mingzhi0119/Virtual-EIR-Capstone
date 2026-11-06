@@ -1,0 +1,18 @@
+{
+  "checks": [
+    "Missing fields, invalid participant counts and non-JSON service errors retain edits with readable guidance",
+    "Experiment saved and confirmed through the browser without changing 2/5 progress",
+    "Counterevidence linked to experiment and hypothesis with source and sample limits",
+    "Custom mentor questions survive artifact saves, confirmations and tool changes",
+    "Decision alternatives retain unknown costs",
+    "Simulated pitch and revised pitch persist as separate versions",
+    "Stage review saves reasons and gaps without closing the goal",
+    "Unsaved learning draft survives pause/resume and can be explicitly discarded",
+    "Reviewed mentor brief downloads with exact counts and simulation warning",
+    "Profile edits in another client invalidate the reviewed export",
+    "Added task and milestone/owner metadata save to a new approved plan while retaining 2/5 reports",
+    "3 themes × light/dark × desktop/390px fit without horizontal overflow"
+  ],
+  "errors": [],
+  "passed": true
+}

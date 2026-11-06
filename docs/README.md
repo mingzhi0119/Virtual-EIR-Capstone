@@ -1,6 +1,10 @@
 # Documentation index
 
-Updated October 19, 2026. Start with current English guides. Plans, implemented features, recorded outputs and acceptance decisions are different evidence types.
+Week 8: [integrated evaluation report](../deliverables/2026-11-05/Week8/Week8-Report.md), [recording guide](../deliverables/2026-11-05/Week8/Demo-Guide.md) and [fresh Persona findings](../deliverables/2026-11-05/Week8/Persona-Review.md). Technical completion and independent coaching approval are tracked separately.
+
+Latest review: [November 5 pre-launch quality checks](../deliverables/2026-11-05/Release-Readiness.md), including fixes, 168 passing tests and the protected-fictional-pilot release boundary.
+
+Updated November 5, 2026. Start with the [pre-Week-8 implementation and verification report](../deliverables/2026-11-05/Pre-Week8-Implementation.md). Plans, implemented features, recorded outputs and expert acceptance decisions are different evidence types.
 
 ## Current English guides
 

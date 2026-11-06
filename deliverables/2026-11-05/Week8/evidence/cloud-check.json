@@ -1,0 +1,56 @@
+{
+  "at": "2026-11-05T18:50:24.465Z",
+  "checks": [
+    "All original fields in seven ventures/workspaces match the pre-release snapshot; new schema defaults are recorded.",
+    "Existing invitation works; unauthenticated records remain protected.",
+    "Deployed learning interface matches the release source.",
+    "Hosted model plan approved and two-of-five progress persisted in a new fictional case.",
+    "New hosted advice contract generated a draft, retained founder inputs and exported an exact-count brief.",
+    "Cloud print view and phone layout pass; original records unchanged; zero browser errors."
+  ],
+  "modelCalls": 2,
+  "schemaAddedFields": [
+    "records[].workspace.artifacts",
+    "records[].workspace.plans[].tasks[].milestone",
+    "records[].workspace.plans[].tasks[].owner",
+    "records[].workspace.plans[].tasks[].due_date",
+    "records[].workspace.plans[].tasks[].effort",
+    "records[].workspace.plans[].tasks[].completion_criteria",
+    "records[].workspace.plans[].tasks[].expected_evidence",
+    "records[].workspace.evidence[].experiment_id",
+    "records[].workspace.evidence[].stance",
+    "records[].workspace.evidence[].origin"
+  ],
+  "currentSnapshotHash": "ea20b433a6a9bfd46d7d2b1e47ac620df71641720a26440f28011fb27230fde0",
+  "health": {
+    "status": "ok",
+    "mode": "shared-fictional-demo"
+  },
+  "venture_id": "4027e650-3dc5-43de-8f33-cd64664f75ea",
+  "model": "gpt-5.6-luna",
+  "brief": "# VIRTUAL EIR — MENTOR BRIEF\nReview before sharing. Founder reports; not independently verified.\nPrepared: 2026-11-05T18:50:39.522478+00:00\nVenture: Week 8 cloud acceptance — fictional\nStage: idea\nCustomer: Evening graduate students\nProblem: Dinner purchase pathway is unknown\n\n## CONFIRMED GOAL\nIdentify who uses, pays for and approves dinner purchases\nStatus: active\n\n## TASK ACTIVITY (not market validation)\nPlan version: 1\nConduct and document five exploratory interviews with eveni…: 5 planned / 2 completed / 3 remaining; in progress\nOwner: Unassigned; milestone: Five interviews completed with source a…; due: Not set\nResult: Fictional: two convenience interviews completed; price mattered more than speed.; blocker: None reported\nReview the interview records and summarize role patterns, e…: 1 planned / 0 completed / 1 remaining; not started\nOwner: Unassigned; milestone: Role map and evidence gaps prepared; due: Not set\nResult: Not reported; blocker: None reported\n\n## OBSERVATIONS AND COUNTEREVIDENCE\nNo observations recorded.\n\n## LEARNING (recommendations, not new facts)\nexperiment: Find the real buyer — The plan has five interviews total: two are reported complete and thr…\n\n## QUESTIONS FOR A HUMAN MENTOR\nWhich buyer assumption needs the next interview?\n\nNo automatic sending. No accelerator/funding decision is made by this prototype.\nCompact selection: shortened fields use …; full records and additional questions stay in the workspace/editor. Review the full evidence before decisions.",
+  "experiment": {
+    "kind": "experiment",
+    "title": "Find the real buyer",
+    "hypothesis": "Students both use and pay for dinner",
+    "task_id": "5dc32fb0-05fc-46a7-ac94-8e977db08800",
+    "audience": "Three evening graduate students who recently bought dinner, including cases where someone else paid or approved the purchase",
+    "method": "interview",
+    "capacity": 3,
+    "questions": [
+      "Describe your most recent dinner purchase: when, where, what did you choose, and what alternatives did you reject?",
+      "Who used the dinner, who selected it, who paid, and who—if anyone—approved the purchase?",
+      "What was the actual price, payment method, and any budget or reimbursement constraint?",
+      "What caused you to choose or reject each alternative? Record observed behavior, not hypothetical willingness to pay."
+    ],
+    "measures": [
+      "For each of the three interviews, record the recent purchase, user, selector, payer, approver, price, payment method, and rejected alternatives.",
+      "Record whether the student both used and paid for dinner; preserve exceptions where roles differ.",
+      "Record repeated role patterns, notable exceptions, and unclear answers separately."
+    ],
+    "decision_rule": "After completing the three remaining interviews, treat the hypothesis as supported only for this small convenience sample if all three provide concrete recent examples in which the student both used and paid for dinner. If any participant reports a different payer or approver, revise the hypothesis to separate user, buyer, and approver roles. This is not market validation.",
+    "limitations": "The plan has five interviews total: two are reported complete and three remain. These are founder-reported, fictional convenience interviews with evening students, so the sample is small, selected, and unable to generalize. The two existing reports indicate price mattered more than speed, but do not establish who pays or approves. Task completion is not business validation.",
+    "status": "planned"
+  },
+  "passed": true
+}

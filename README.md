@@ -4,10 +4,11 @@ A continuity-focused AI coaching prototype for early-stage entrepreneurs: unders
 
 **Canonical upstream:** [mingzhi0119/Virtual-EIR-Capstone](https://github.com/mingzhi0119/Virtual-EIR-Capstone). Fork this repository and submit pull requests here.
 
-Updated October 16, 2026. Built for a University of Rochester MSAIB Capstone exploring the Ain Center use case. This is a proof of concept, not an Ain-approved production product.
+Updated November 5, 2026. Built for a University of Rochester MSAIB Capstone exploring the Ain Center use case. This is a proof of concept, not an Ain-approved production product.
 
 ## See the work
 
+- [Week 8 integrated evaluation](deliverables/2026-11-05/Week8/Week8-Report.md), [English workflow recording](deliverables/2026-11-05/Week8/Integrated-Workflow.mp4), and [current Persona findings](deliverables/2026-11-05/Week8/Persona-Review.md).
 - [Week 4 presentation](deliverables/2026-10-16/Virtual-EIR-Week4.pptx): ten editable English slides.
 - [Progress report](deliverables/2026-10-16/Week4-Progress-Report.md), [speaker script](deliverables/2026-10-16/Week4-Speaker-Script.md), and [Persona evaluation](deliverables/2026-10-16/Persona-Review.md).
 - [Curated fictional test evidence](deliverables/2026-10-16/evidence/).
@@ -15,9 +16,11 @@ Updated October 16, 2026. Built for a University of Rochester MSAIB Capstone exp
 
 All published venture examples and interview results are fictional. Recorded outputs demonstrate particular runs, not a live service or a guarantee of coaching quality.
 
-## Next AIN meeting: October 22
+## November 5 implementation
 
-Mingzhi owns the working demo; Dachen owns recording, integration and submission coordination; Precious owns workflow/requirements questions; Julian owns the evaluation rubric and worked example. Everyone submits by October 20; assemble and send to Liza October 21; meet AIN October 22. See the [team assignments](docs/TEAM_ASSIGNMENTS.md) and [faculty meeting summary](docs/meetings/2026-10-16-faculty-actions.md).
+The planned Week 5–7 workflows are implemented in this checkout: plan milestones/owners/dates, Experiment Designer, linked Evidence Board, Weekly Check-in, Decision Lab, Pitch Practice and a reviewable Mentor Brief export. Step Readiness adds a provisional AI judgment with reasons, gaps and a next step, following the October 22 discussion. Open **Goal & Plan → Learn, practice & prepare**. See the [implementation and acceptance report](deliverables/2026-11-05/Pre-Week8-Implementation.md).
+
+Deployed November 5 to the [protected Vercel demo](https://virtual-eir-demo.vercel.app), with the existing invitation and records retained. See the [verified release record](deliverables/2026-11-05/Week8/Deployment-Record.md). The [implementation report](deliverables/2026-11-05/Pre-Week8-Implementation.md#robertos-directions-translated-into-behavior) maps the October 22 feedback to delivered behavior and remaining dependencies; the detailed internal meeting record is retained privately.
 
 ## What works today
 
@@ -32,7 +35,7 @@ Mingzhi owns the working demo; Dachen owns recording, integration and submission
 
 The Week 4 delivery records 79 automated tests, 10 real-model workflow groups, 21 legacy UI groups, and 8 mock-network edge groups passing. The [preceding baseline's CI run](https://github.com/mingzhi0119/Virtual-EIR-Capstone/actions/runs/38920734078) also passed. See the [report](deliverables/2026-10-16/Week4-Progress-Report.md) for scope and disclosed failures.
 
-**Still open:** strict Persona coaching-quality acceptance; full Goal/Plan milestones, owners/dates, evidence-based criteria review and supported goal closure; all six dedicated feature workflows; Ain validation; production security and portable runnable handoff. Ordinary follow-up is not the planned Weekly Check-in feature. See the [current roadmap](docs/TEAM_ROADMAP.md).
+**Still open:** independent Persona/coaching-quality acceptance, official Foundry criteria/materials, EIR field evaluation, Blackboard integration, production security and successor deployment. Automated checks and fictional model runs do not establish expert approval. See the [current roadmap](docs/TEAM_ROADMAP.md).
 
 ## Run locally
 

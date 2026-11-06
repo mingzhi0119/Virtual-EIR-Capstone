@@ -173,6 +173,57 @@ class FeatureStore:
                 ),
                 "basis": "Founder judgment, not independently verified evidence.",
             }
+        if workspace.artifacts:
+            from eir.labs import applicable_artifacts, current_artifacts
+
+            artifacts = applicable_artifacts(workspace)
+            excluded = len(current_artifacts(workspace)) - len(artifacts)
+            if excluded:
+                context["stale_or_earlier_plan_learning_omitted"] = excluded
+            if artifacts:
+                latest = artifacts[-1]
+                data = latest.data
+                summary = (
+                    getattr(data, "recommendation", None)
+                    or getattr(data, "next_step", None)
+                    or getattr(data, "hypothesis", None)
+                    or data.revised_pitch
+                )
+                context["latest_learning"] = {
+                    "kind": data.kind,
+                    "title": short(data.title, 50),
+                    "summary": short(summary, 100),
+                    "basis": "Saved proposal; simulation is not evidence.",
+                    "partial": True,
+                }
+        if workspace.evidence:
+            from eir.reviews import active_evidence
+
+            observation = active_evidence(workspace)[-1]
+            context["latest_observation"] = {
+                "observation": short(observation.observation, 100),
+                "sample_size": observation.sample_size,
+                "stance": observation.stance,
+                "limitation": short(observation.limitation, 60),
+                "partial": True,
+            }
+        # Keep one numeric activity snapshot even when text/history consumes the cap.
+        focus = next(
+            (
+                task
+                for plan in plans[-1:]
+                for task in plan.tasks
+                if task.target_count > 1
+            ),
+            None,
+        )
+        if focus:
+            context["focus_activity"] = {
+                "title": short(focus.title, 60),
+                "planned": focus.target_count,
+                "completed": focus.completed_count,
+                "remaining": focus.target_count - focus.completed_count,
+            }
         # Reserve space for omission metadata even at the boundary.
         while len(json.dumps(context, ensure_ascii=True)) > 1600 and context["tasks"]:
             context["tasks"].pop()
@@ -185,4 +236,28 @@ class FeatureStore:
             ]
             context["goal"]["constraints"] = short(workspace.goal.constraints, 40)
             context["partial"] = True
+        if (
+            len(json.dumps(context, ensure_ascii=True)) > 1600
+            and "latest_learning" in context
+        ):
+            context["latest_learning"] = {
+                "kind": context["latest_learning"]["kind"],
+                "basis": "Saved proposal; simulation is not evidence.",
+                "partial": True,
+            }
+        if len(json.dumps(context, ensure_ascii=True)) > 1600:
+            context["goal"]["success_criteria"] = []
+            context["goal"]["criteria_omitted"] = len(workspace.goal.success_criteria)
+            if "latest_checkin" in context:
+                context["latest_checkin"].pop("next_priorities", None)
+                context["latest_checkin"]["omitted_priorities"] = len(
+                    workspace.checkins[-1].next_priorities
+                )
+        if len(json.dumps(context, ensure_ascii=True)) > 1600:
+            # Reports remain available in full in the workspace; signal omissions.
+            for key in ("latest_goal_review", "latest_checkin"):
+                if key in context:
+                    for field in ("basis", "limitations", "results", "learnings"):
+                        context[key].pop(field, None)
+                    context[key]["partial"] = True
         return context

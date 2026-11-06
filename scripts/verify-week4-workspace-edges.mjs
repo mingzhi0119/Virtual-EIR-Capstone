@@ -41,6 +41,7 @@ try {
     ['/assets/generated/appearance.css', ['generated/appearance.css', 'text/css']],
     ['/assets/workspace.js', ['workspace.js', 'text/javascript']],
     ['/assets/reviews.js', ['reviews.js', 'text/javascript']],
+    ['/assets/labs.js', ['labs.js', 'text/javascript']],
   ])
   await page.route('**/*', async route => {
     const url = new URL(route.request().url())

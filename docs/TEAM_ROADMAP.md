@@ -1,6 +1,26 @@
 # Current team roadmap
 
-Updated October 19, 2026.
+Updated November 5, 2026. This section supersedes the historical October 19 status below. Week 5–7 implementation is available locally; the [acceptance report](../deliverables/2026-11-05/Pre-Week8-Implementation.md) records checks, model limitations and demonstration steps. The original week windows are sequencing proposals, not revised faculty deadlines.
+
+| Requirement | Available behavior | Boundary |
+| --- | --- | --- |
+| R25 Persona | Four styles, override, persistent context; stronger founder/user/buyer and assumption-challenge instructions | Independent quality acceptance remains open |
+| R26 Goal and Plan | Milestones, task owners/dates, effort, completion/evidence criteria, versioned plans and exact progress; existing evidence review and explicit closure | Task activity is not market validation; missing metadata stays unknown |
+| R27 Experiment Designer | Goal/task-linked hypothesis, neutral questions, measures, capacity, decision rule and limitations; founder or model-advised draft | Explicit confirmation; no inferred execution or duplicate tasks |
+| R28 Evidence Board | Sources, dates, sample limits, experiment links, supportive/contrary/unclear observations and correction history | Simulated artifacts cannot be observation sources; changed evidence makes reviews stale |
+| R29 Weekly Check-in | Results, learning, blockers, priorities, review date and server-read task snapshot | No automatic reminders or progress updates |
+| R31 Decision Lab | Two/three alternatives, retained costs/assumptions, risks, gaps, tests and versioned advice | Unknown costs remain unknown; no automatic decision |
+| R30 Pitch Practice | Simulated audience, questions, five feedback dimensions and original/revised pitch history | Simulation stays out of evidence and progress |
+| R32 Mentor Brief | Compact English preview, exact counts, selected sources/limits and three questions; reviewed Markdown export and one-page A4 print view | Selection disclosed; no automatic sending |
+| Ordinary-step readiness | Material and criteria plus linked observations yield a provisional judgment, reasons, gaps and next step | Not goal closure, Ain approval, funding or accelerator admission |
+
+Week 8 S11/R33 technical evaluation and internal archive are complete: fresh three-stage workflows, eight Persona outputs, browser/phone checks and an English recording. The [Week 8 report](../deliverables/2026-11-05/Week8/Week8-Report.md) preserves observed coaching failures. Expert review and actual-founder evaluation remain separate open gates. Blackboard requires coordination with Liza; official Foundry/24-step materials and EIR participation are still external dependencies. Do not reconstruct missing official criteria or treat mentor alerts/a maintained general knowledge base as first-version prerequisites. See the [implementation mapping](../deliverables/2026-11-05/Pre-Week8-Implementation.md#robertos-directions-translated-into-behavior); the detailed internal meeting record is retained privately.
+
+Mingzhi remains implementation lead. The November 5 release is [deployed and verified on protected Vercel](../deliverables/2026-11-05/Week8/Deployment-Record.md). This update does not assign new work or deadlines to teammates.
+
+## Historical October 19 status
+
+The following is the preserved planning record, not the current feature status.
 
 ## Delivered foundation
 

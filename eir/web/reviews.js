@@ -32,7 +32,8 @@ export function initializeReviews({ getWorkspace, approved, node, field, input, 
     for (const item of evidence) {
       const details = node('details', undefined, 'review-record')
       details.append(node('summary', `${item.observed_on} · ${item.observation}`))
-      details.append(node('p', `Source: ${item.source}\nSample: ${item.sample_size ?? 'Not specified'}\nLimit: ${item.limitation}\nRecorded: ${item.at}${item.supersedes_id ? '\nCorrects an earlier record; original retained in history.' : ''}`, 'memory-summary'))
+      const experiment = (getWorkspace().artifacts || []).find(a => a.artifact_id === item.experiment_id)
+      details.append(node('p', `Source: ${item.source}\nSample: ${item.sample_size ?? 'Not specified'}\nStance: ${item.stance || 'unclear'}\nHypothesis: ${experiment?.data.hypothesis || 'Not linked'}\nExperiment: ${experiment?.data.title || 'Not linked'}\nLimit: ${item.limitation}\nRecorded: ${item.at}${item.supersedes_id ? '\nCorrects an earlier record; original retained in history.' : ''}`, 'memory-summary'))
       box.append(details)
     }
     if (!evidence.length) box.append(node('p', 'No evidence recorded for review yet.', 'hint'))
@@ -44,10 +45,14 @@ export function initializeReviews({ getWorkspace, approved, node, field, input, 
     control(add, 'Sample size · leave blank if not applicable', sample, 'sample_size')
     text(add, 'Limitations · what does this evidence not establish?', 'limitation')
     control(add, 'Related task · optional', select([['', 'No specific task'], ...(plan?.tasks || []).map(task => [task.task_id, task.title])]), 'task_id')
+    const artifacts = (getWorkspace().artifacts || []).filter(a => a.status === 'confirmed'), superseded = new Set(artifacts.map(a => a.supersedes_id))
+    const experiments = artifacts.filter(a => a.data.kind === 'experiment' && a.plan_id === plan?.plan_id && !superseded.has(a.artifact_id))
+    control(add, 'Experiment / hypothesis · optional', select([['', 'No experiment link'], ...experiments.map(a => [a.artifact_id, a.data.title])]), 'experiment_id')
+    control(add, 'How does this observation relate to the hypothesis?', select([['unclear', 'Unclear'], ['supports', 'Supports'], ['contradicts', 'Contradicts']]), 'stance')
     control(add, 'Correct an earlier observation · optional', select([['', 'New observation'], ...evidence.map(item => [item.evidence_id, item.observation])]), 'supersedes_id')
     add.append(button('Confirm evidence', async () => {
       const value = values('evidence')
-      await save('evidence', '/evidence', { ...value, sample_size: value.sample_size === '' ? null : Number(value.sample_size), task_id: value.task_id || null, supersedes_id: value.supersedes_id || null }, 'Observation saved with its source and limitations. Earlier reviews may need updating.')
+      await save('evidence', '/evidence', { ...value, sample_size: value.sample_size === '' ? null : Number(value.sample_size), task_id: value.task_id || null, experiment_id: value.experiment_id || null, supersedes_id: value.supersedes_id || null }, 'Observation saved with its source and limitations. Earlier reviews may need updating.')
     }, 'primary'))
     const corrected = (getWorkspace().evidence || []).filter(item => !evidence.includes(item))
     if (corrected.length) {

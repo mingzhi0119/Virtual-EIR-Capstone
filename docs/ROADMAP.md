@@ -1,5 +1,7 @@
 # GOAT AI → Virtual EIR 路线图
 
+**November 5 current implementation:** the Week 5–7 product workflows are implemented locally, including R26 remaining planning fields and R27–R32. Roberto's October 22 feedback adds a provisional ordinary-step judgment with reasons; official Foundry criteria, Blackboard and expert acceptance remain external dependencies. Use the [current roadmap](TEAM_ROADMAP.md) and [acceptance report](../deliverables/2026-11-05/Pre-Week8-Implementation.md). The dated unchecked lists below remain historical records.
+
 日期阅读说明：以下 2026-10-08/09 内容保留当时基线；其中“本轮仅规划”“未实现”和原始勾选状态指当时工作。当前实现进度见文末 **9. October 16 current status**，不将历史规划倒写成当时已实现。
 
 更新日期：2026-10-08。本文是 Capstone 工作计划；没有修改 GOAT AI 原仓库路线图，也没有承诺各后续阶段的固定日期。

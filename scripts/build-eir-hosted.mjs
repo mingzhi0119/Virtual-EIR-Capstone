@@ -8,13 +8,14 @@ import { fileURLToPath } from 'node:url'
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const out = path.join(root, 'var/eir-hosted')
 execFileSync(process.execPath, [path.join(root, 'scripts/build-eir-ui.mjs')], { cwd: root, stdio: 'inherit' })
-const python = ['__init__', 'app', 'coaching', 'models', 'store', 'runtime', 'openai_client', 'personas', 'feature_models', 'feature_store', 'feature_routes', 'planning', 'reviews', 'postgres_store', 'hosted']
-const web = ['index.html', 'style.css', 'app.js', 'workspace.js', 'reviews.js', 'generated/appearance.js', 'generated/appearance.css']
+const python = ['__init__', 'app', 'coaching', 'models', 'store', 'runtime', 'openai_client', 'personas', 'feature_models', 'feature_store', 'feature_routes', 'planning', 'reviews', 'lab_models', 'labs', 'postgres_store', 'hosted']
+const web = ['index.html', 'style.css', 'app.js', 'workspace.js', 'reviews.js', 'labs.js', 'generated/appearance.js', 'generated/appearance.css']
 const files = [
   ...python.map(name => [`eir/${name}.py`, `eir/${name}.py`]),
   ...web.map(name => [`eir/web/${name}`, `eir/web/${name}`]),
   ['eir/prompts/coach.txt', 'eir/prompts/coach.txt'],
   ['hosting/main.py', 'main.py'], ['hosting/requirements.txt', 'requirements.txt'],
+  ['hosting/pyproject.toml', 'pyproject.toml'],
   ['hosting/vercel.json', 'vercel.json'],
 ]
 const allowed = new Set(files.map(([, target]) => target))
@@ -23,7 +24,7 @@ for (const [source, target] of files) {
   if (target === 'vercel.json') {
     const config = JSON.parse(await readFile(path.join(root, source), 'utf8'))
     // The CLI bundle already contains built assets and has no parent checkout.
-    config.buildCommand = ''
+    config.buildCommand = 'python -c "print(\'EIR assets were built before upload\')"'
     await writeFile(path.join(out, target), `${JSON.stringify(config, null, 2)}\n`)
   } else {
     await copyFile(path.join(root, source), path.join(out, target))
