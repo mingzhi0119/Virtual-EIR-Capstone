@@ -8,7 +8,7 @@ import httpx
 import pytest
 
 from eir.app import create_app
-from eir.coaching import GoatClient
+from eir.coaching import GoatClient, coaching_context
 from eir.models import ChatInput, Profile
 from eir.planning import PLANNING_INSTRUCTIONS
 from eir.store import Store
@@ -24,6 +24,23 @@ def legacy_profile():
         "evidence": [],
         "actions": [],
     }
+
+
+@pytest.mark.parametrize(
+    "style", ["technical", "experiential", "academic", "business", "general"]
+)
+@pytest.mark.parametrize("instructions", ["", PLANNING_INSTRUCTIONS])
+def test_full_workspace_budget_fits_each_persona(tmp_path, style, instructions):
+    profile = Profile.model_validate(
+        legacy_profile() | {"communication_preference": style}
+    )
+    venture = Store(tmp_path / "context.sqlite3").create(profile)
+    workspace = {"selection": "x" * 1570}
+    assert len(json.dumps(workspace)) <= 1600
+    context = coaching_context(venture, instructions, workspace)
+    assert len(context) <= 8000
+    assert "Always respond in English" in context
+    assert "context_selection" in context
 
 
 def test_exact_legacy_limit_loads_list_and_health(tmp_path):

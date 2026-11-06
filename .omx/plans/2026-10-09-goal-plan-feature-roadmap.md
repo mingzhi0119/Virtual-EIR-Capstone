@@ -1,5 +1,9 @@
 # Virtual EIR: Goal + Plan and six-feature implementation roadmap
 
+Week 8 receipt, November 5: **S11/R33 technical integration and internal archive complete**. See the [Week 8 report](../../deliverables/2026-11-05/Week8/Week8-Report.md) for three fresh workflows, eight Persona outputs, English recording, regression checks and disclosed failures. Independent EIR acceptance remains open. Dated checkboxes below remain the historical plan.
+
+November 5 update: Week 5–7 software slices are implemented locally. The [implementation report](../../deliverables/2026-11-05/Pre-Week8-Implementation.md) supersedes dated pending-feature labels below and records validation, failures and remaining expert/external dependencies. The original checklist is preserved as history.
+
 Historical baseline: the October 9 planning-only status, requirements and original checklist below are preserved. The appended **October 16 current status** is the current implementation record; the original proposed release windows are not actual completion dates or faculty deadlines.
 
 Planning date: October 9, 2026 (America/New_York). Status: scope selected by Mingzhi; implementation not started. Week 4 is the user-confirmed course week. Later week labels/windows below are proposed sequencing, not faculty deadlines or a promise of finishing every feature this week.

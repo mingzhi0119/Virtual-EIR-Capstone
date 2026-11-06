@@ -1,5 +1,6 @@
 // EIR-only UI. The host supplies its existing API, local model and shared run lock.
 import { initializeReviews } from './reviews.js'
+import { initializeLabs } from './labs.js'
 export function initializeWorkspace({ api, getVenture, getModel, requireSaved, onStatus, run }) {
   const $ = id => document.getElementById(id)
   const panel = $('workspace-panel')
@@ -11,6 +12,7 @@ export function initializeWorkspace({ api, getVenture, getModel, requireSaved, o
   const approved = () => sortedPlans().filter(p => p.status === 'approved').at(-1)
   const proposed = () => sortedPlans().filter(p => p.status === 'draft' && p.version > (approved()?.version || 0)).at(-1)
   const reviews = initializeReviews({ getWorkspace: () => workspace, approved, node, field, input, textarea, button, ensureClean, mutate })
+  const labs = initializeLabs({ getWorkspace: () => workspace, approved, getModel, node, field, input, textarea, button, ensureClean, mutate, api, getPath: suffix => path(suffix), setStatus: say })
   const form = () => ({ objective: $('workspace-objective').value.trim(), success_criteria: $('workspace-criteria').value.split('\n').map(s => s.trim()).filter(Boolean), constraints: $('workspace-constraints').value.trim() })
   const formText = () => JSON.stringify(form())
   const goalDirty = () => !!workspace && formText() !== formBaseline
@@ -18,7 +20,7 @@ export function initializeWorkspace({ api, getVenture, getModel, requireSaved, o
   const draftDirty = () => draftText() !== draftBaseline
   const taskValue = controls => ({ completed_count: controls.count.value === '' ? null : Number(controls.count.value), status: controls.status.value, blocker: controls.blocker.value, result: controls.result.value })
   const changedTasks = () => [...taskEditors].filter(([id, c]) => JSON.stringify(taskValue(c)) !== taskBaselines.get(id))
-  function hasDraft() { return !!workspace && (goalDirty() || draftDirty() || changedTasks().length > 0 || reviews.hasDraft()) }
+  function hasDraft() { return !!workspace && (goalDirty() || draftDirty() || changedTasks().length > 0 || reviews.hasDraft() || labs.hasDraft()) }
   function say(message, error = false) {
     $('workspace-status').textContent = message
     $('workspace-status').classList.toggle('error', error)
@@ -42,6 +44,7 @@ export function initializeWorkspace({ api, getVenture, getModel, requireSaved, o
   }
   function ensureClean(except) {
     reviews.ensureClean(except)
+    labs.ensureClean(except)
     if (except !== 'goal' && goalDirty()) throw Error('Your goal edits need a new AI proposal. Generate it or discard local edits first.')
     if (except !== 'draft' && draftDirty()) throw Error('Confirm and save draft edits or discard them first.')
     if (changedTasks().some(([id]) => id !== except)) throw Error('Confirm each edited task report or discard local edits first.')
@@ -61,6 +64,7 @@ export function initializeWorkspace({ api, getVenture, getModel, requireSaved, o
     $('workspace-discard').disabled ||= !hasDraft()
     $('workspace-draft-dot').hidden = !hasDraft()
     reviews.updateLocks()
+    labs.updateLocks()
     panel.setAttribute('aria-busy', String(locked))
   }
   async function dispatch(action) {
@@ -82,10 +86,12 @@ export function initializeWorkspace({ api, getVenture, getModel, requireSaved, o
         simple: [...$('workspace-simple-tasks').children].map(row => [...row.querySelectorAll('input')].map(control => control.value)) } : null,
       tasks: changedTasks().filter(([id]) => id !== confirmedTaskId).map(([id, controls]) => [id, Object.fromEntries(Object.entries(controls).map(([key, control]) => [key, control.value]))]),
       reviews: reviews.capture(confirmedReviewForm),
+      labs: labs.capture(confirmedReviewForm),
     }
   }
   function restoreLocalEdits(edits) {
     reviews.restore(edits.reviews)
+    labs.restore(edits.labs)
     if (edits.goal) ['objective', 'criteria', 'constraints'].forEach((key, index) => { $(`workspace-${key}`).value = edits.goal[index] })
     if (edits.draft && edits.draft.planId === proposed()?.plan_id) {
       $('workspace-rationale').value = edits.draft.rationale; $('workspace-tasks-json').value = edits.draft.json
@@ -104,8 +110,9 @@ export function initializeWorkspace({ api, getVenture, getModel, requireSaved, o
   }
   async function mutate(suffix, method, body, message, preserveLocal = false, confirmedTaskId, confirmedReviewForm) {
     const edits = preserveLocal ? captureLocalEdits(confirmedTaskId, confirmedReviewForm) : null
+    const mentorEdits = preserveLocal ? null : labs.capture('lab')
     const result = await api(path(suffix), method, { ...body, expected_revision: workspace.revision })
-    workspace = result; render(); if (edits) restoreLocalEdits(edits); say(message)
+    workspace = result; render(); if (edits) restoreLocalEdits(edits); else if (mentorEdits) { labs.restore(mentorEdits); updateLocks() } say(message)
   }
   function contextSummary() {
     if (!workspace) return 'Goal & Plan not loaded.'
@@ -143,6 +150,12 @@ export function initializeWorkspace({ api, getVenture, getModel, requireSaved, o
       title.oninput = () => patchTask(index, 'title', title.value)
       target.oninput = () => patchTask(index, 'target_count', Number(target.value))
       row.append(field(`Task ${index + 1} title`, title), field('Target count', target)); box.append(row)
+      for (const [key, label, type] of [['milestone', 'Milestone', 'text'], ['owner', 'Owner · blank if unassigned', 'text'], ['due_date', 'Due date · optional', 'date'], ['effort', 'Effort / capacity', 'text'], ['completion_criteria', 'Task completion criteria', 'text'], ['expected_evidence', 'Expected evidence', 'text']]) {
+        const control = input(task[key], type)
+        control.maxLength = ({ milestone: 200, owner: 120, effort: 200, completion_criteria: 500, expected_evidence: 500 })[key] || 10
+        control.oninput = () => patchTask(index, key, control.value || (key === 'due_date' ? null : ''))
+        row.append(field(label, control))
+      }
       box.append(button(`Remove task ${index + 1}`, async () => {
         const current = draftTasks()
         if (current.length === 1) throw Error('Keep at least one action in your plan.')
@@ -166,7 +179,7 @@ export function initializeWorkspace({ api, getVenture, getModel, requireSaved, o
     box.append(button('Add an action', async () => {
       const current = draftTasks()
       if (current.length >= 12) throw Error('Keep your plan to twelve actions or fewer.')
-      current.push({ task_id: crypto.randomUUID(), title: 'New action', target_count: 1, completed_count: 0, status: 'not_started', blocker: '', result: '', dependencies: [] })
+      current.push({ task_id: `new-${crypto.randomUUID()}`, title: 'New action', target_count: 1, completed_count: 0, status: 'not_started', blocker: '', result: '', dependencies: [] })
       $('workspace-tasks-json').value = JSON.stringify(current); renderSimpleTasks(current)
     }))
     updateLocks()
@@ -209,6 +222,10 @@ export function initializeWorkspace({ api, getVenture, getModel, requireSaved, o
     const completed = plan.tasks.filter(t => t.status === 'done').length
     const cancelled = plan.tasks.filter(t => t.status === 'cancelled').length
     box.append(node('p', `Approved v${plan.version} · ${completed}/${plan.tasks.length} tasks done · ${cancelled} cancelled`, 'workspace-badge'))
+    for (const milestone of new Set(plan.tasks.map(t => t.milestone).filter(Boolean))) {
+      const grouped = plan.tasks.filter(t => t.milestone === milestone)
+      box.append(node('p', `${milestone}: ${grouped.filter(t => t.status === 'done').length}/${grouped.length} tasks done · ${grouped.filter(t => t.status === 'blocked').length} blocked · task activity only`, 'memory-summary'))
+    }
     if (workspace.goal?.status !== 'active') box.append(node('p', 'Task reports are read-only while this goal is not active. Resume a paused goal to continue; local report drafts are retained.', 'hint'))
     box.append(button('Revise approved plan · retain reports', async () => {
       ensureClean()
@@ -218,6 +235,7 @@ export function initializeWorkspace({ api, getVenture, getModel, requireSaved, o
     for (const task of plan.tasks) {
       const card = node('div', undefined, 'workspace-task')
       card.append(node('h4', task.title), node('p', countText(task), 'memory-summary'))
+      card.append(node('p', `Milestone: ${task.milestone || 'Not set'} · Owner: ${task.owner || 'Unassigned'} · Due: ${task.due_date || 'Not set'}\nEffort: ${task.effort || 'Not set'}\nCompletion: ${task.completion_criteria || 'Target count and written result'}\nExpected evidence: ${task.expected_evidence || 'Not specified'}`, 'memory-summary'))
       if (task.target_count > 0) {
         const meter = node('progress'); meter.max = task.target_count; meter.value = task.completed_count
         meter.setAttribute('aria-label', `${task.title}: ${countText(task)}`); card.append(meter)
@@ -266,7 +284,7 @@ export function initializeWorkspace({ api, getVenture, getModel, requireSaved, o
           if (!old) changes.push(`Added: ${t.title} (target ${t.target_count}).`)
           else {
             matched.add(old.task_id)
-            const fields = ['title', 'target_count', 'completed_count', 'status', 'blocker', 'result', 'dependencies']
+            const fields = ['title', 'target_count', 'completed_count', 'status', 'blocker', 'result', 'dependencies', 'milestone', 'owner', 'due_date', 'effort', 'completion_criteria', 'expected_evidence']
             const comparable = { ...t, dependencies: t.dependencies.map(previousDependency) }
             const changed = fields.filter(key => JSON.stringify(old[key]) !== JSON.stringify(comparable[key]))
             if (changed.length) changes.push(`${t.title}: ${changed.map(key => `${({ target_count: 'target', completed_count: 'completed', dependencies: 'prerequisites' })[key] || key} ${key === 'dependencies' ? 'updated' : `${String(old[key]).replaceAll('_', ' ')} → ${String(comparable[key]).replaceAll('_', ' ')}`}`).join('; ')}.`)
@@ -289,7 +307,7 @@ export function initializeWorkspace({ api, getVenture, getModel, requireSaved, o
     $('workspace-constraints').value = candidate?.constraints || ''
     $('workspace-goal-state').textContent = goal ? `Goal: ${goal.status}${goal.target_date ? ` · Target date: ${goal.target_date}` : ''}. No automatic achievement.` : 'No confirmed goal.'
     $('workspace-summary').textContent = contextSummary()
-    formBaseline = formText(); renderDraft(); draftBaseline = draftText(); renderTasks(); renderHistory(); reviews.render(); updateLocks()
+    formBaseline = formText(); renderDraft(); draftBaseline = draftText(); renderTasks(); renderHistory(); reviews.render(); labs.render(); updateLocks()
   }
   async function load(id) {
     if (hasDraft()) throw Error('You have unsaved Goal & Plan changes. Confirm or discard them before navigating or reloading.')
@@ -300,6 +318,7 @@ export function initializeWorkspace({ api, getVenture, getModel, requireSaved, o
     if (workspace) { render(); say('Saved Goal & Plan workspace loaded.') }
     else {
       reviews.render()
+      labs.render()
       taskEditors.clear(); taskBaselines.clear(); formBaseline = ''; draftBaseline = ''
       for (const name of ['objective', 'criteria', 'constraints']) $(`workspace-${name}`).value = ''
       for (const name of ['draft', 'tasks', 'history-content']) $(`workspace-${name}`).replaceChildren()

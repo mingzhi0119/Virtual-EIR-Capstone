@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import argparse
 import json
 import re
 import sys
@@ -19,7 +20,10 @@ from eir.store import Store  # noqa: E402
 
 
 async def main() -> None:
-    out = ROOT / "var/week4-proof"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output", default="var/week4-proof")
+    args = parser.parse_args()
+    out = ROOT / args.output
     out.mkdir(parents=True, exist_ok=True)
     store = Store(out / "personas.sqlite3")
     goat = GoatClient("http://127.0.0.1:62606")

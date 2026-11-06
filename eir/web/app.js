@@ -12,9 +12,16 @@ function status(text, error = false) {
   for (const id of ['status', 'profile-status', 'appearance-status']) { $(id).textContent = text; $(id).classList.toggle('error', error) }
 }
 async function api(path, method = 'GET', body) {
-  const response = await fetch('/api' + path, { method, headers: body ? { 'Content-Type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined })
-  const data = await response.json()
-  if (!response.ok) throw Error(typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail))
+  let response
+  try { response = await fetch('/api' + path, { method, headers: body ? { 'Content-Type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined }) }
+  catch { throw Error('Unable to reach the service. Check your connection, then retry.') }
+  let data
+  try { data = await response.json() }
+  catch { throw Error('The service returned an unreadable response. It may be waking up or require sign-in. Retry after checking access.') }
+  if (!response.ok) {
+    const detail = typeof data.detail === 'string' ? data.detail : Array.isArray(data.detail) ? data.detail.slice(0, 3).map(item => `${item.loc?.filter(part => !['body', 'data'].includes(part)).join(' ').replaceAll('_', ' ') || 'Input'}: ${item.msg}`).join('; ') : 'The request could not be completed. Retry or reload the saved workspace.'
+    throw Error(detail)
+  }
   return data
 }
 function option(value, text) { const node = document.createElement('option'); node.value = value; node.textContent = text; return node }

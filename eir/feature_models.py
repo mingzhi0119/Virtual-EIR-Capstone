@@ -5,9 +5,16 @@ from __future__ import annotations
 from typing import Annotated, Literal
 from datetime import date
 
-from pydantic import Field, StrictBool, StringConstraints, model_validator
+from pydantic import (
+    Field,
+    StrictBool,
+    StringConstraints,
+    model_validator,
+    field_validator,
+)
 
 from eir.models import StrictModel
+from eir.lab_models import ArtifactRecord
 
 Count = Annotated[int, Field(strict=True, ge=0, le=10000)]
 Revision = Annotated[int, Field(strict=True, ge=0)]
@@ -26,6 +33,9 @@ class EvidenceData(StrictModel):
     limitation: ReviewText
     task_id: str | None = Field(default=None, max_length=80)
     supersedes_id: str | None = Field(default=None, max_length=80)
+    experiment_id: str | None = Field(default=None, max_length=80)
+    stance: Literal["supports", "contradicts", "unclear"] = "unclear"
+    origin: Literal["founder_observation"] = "founder_observation"
 
 
 class EvidenceInput(EvidenceData):
@@ -125,9 +135,29 @@ class Task(StrictModel):
     blocker: str = Field(default="", max_length=500)
     result: str = Field(default="", max_length=1000)
     dependencies: list[str] = Field(default_factory=list, max_length=12)
+    milestone: str = Field(default="", max_length=200)
+    owner: str = Field(default="", max_length=120)
+    due_date: str | None = Field(default=None, max_length=10)
+    effort: str = Field(default="", max_length=200)
+    completion_criteria: str = Field(default="", max_length=500)
+    expected_evidence: str = Field(default="", max_length=500)
+
+    @field_validator(
+        "milestone",
+        "owner",
+        "effort",
+        "completion_criteria",
+        "expected_evidence",
+        mode="before",
+    )
+    @classmethod
+    def unknown_metadata(cls, value):
+        return "" if value is None else value
 
     @model_validator(mode="after")
     def valid_progress(self) -> Task:
+        if self.due_date is not None:
+            date.fromisoformat(self.due_date)
         if self.target_count < 1:
             raise ValueError("target_count must be at least 1.")
         if self.completed_count > self.target_count:
@@ -222,6 +252,7 @@ class Workspace(StrictModel):
     evidence: list[EvidenceRecord] = Field(default_factory=list)
     reviews: list[GoalReview] = Field(default_factory=list)
     checkins: list[CheckInRecord] = Field(default_factory=list)
+    artifacts: list[ArtifactRecord] = Field(default_factory=list)
 
 
 class DraftRequest(StrictModel):

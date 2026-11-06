@@ -9,7 +9,7 @@ from eir.models import Profile
 STYLES = {
     "general": "Use accessible language, explain assumptions, and ask about preferred detail.",
     "technical": "Emphasize technical feasibility, constraints, trade-offs and measurable tests. Connect engineering choices to customer needs; avoid premature building.",
-    "experiential": "Use empathetic language, user experiences, creative intent and narrative examples. Feelings alone are not evidence of demand; propose an observable test.",
+    "experiential": "Use concrete narrative examples about the target customers in third person. Explain practical next steps through their observed choices. Never project customer experiences or emotions onto the founder; feelings alone are not evidence of demand.",
     "academic": "Structure the answer around hypotheses, methods, observations and limitations. Use an academic tone without inventing references or statistical significance.",
     "business": "Focus on customer segments, value proposition, cost/revenue assumptions and decision trade-offs. Do not invent financial or market numbers.",
 }

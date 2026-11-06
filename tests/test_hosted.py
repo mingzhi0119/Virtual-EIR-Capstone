@@ -87,6 +87,19 @@ def test_hosted_browser_boundary_and_no_private_assets(hosted):
     assert client.post("/api/ventures", content="x" * 65537).status_code == 413
 
 
+def test_learning_generation_uses_hosted_pause_and_attempt_limits(hosted, monkeypatch):
+    client, _, calls = hosted
+    venture = client.post("/api/ventures", json={"name": "Fictional lab"}).json()
+    path = f"/api/ventures/{venture['venture_id']}/workspace/artifacts/generate"
+    monkeypatch.setenv("EIR_DEMO_DISABLED", "1")
+    assert client.post(path, json={}).status_code == 429
+    monkeypatch.delenv("EIR_DEMO_DISABLED")
+    for _ in range(6):
+        assert client.post(path, json={}).status_code == 422
+    assert client.post(path, json={}).status_code == 429
+    assert not calls
+
+
 def test_hosted_real_routes_log_only_usage_and_pause(hosted, caplog, monkeypatch):
     client, store, calls = hosted
     venture = client.post("/api/ventures", json={"name": "Fictional"}).json()

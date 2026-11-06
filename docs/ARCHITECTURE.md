@@ -1,6 +1,8 @@
 # Architecture and extension boundaries
 
-Updated October 19, 2026. This describes the implemented local prototype, not a proposed multi-agent production system.
+Updated November 5, 2026. This describes the implemented local prototype, not a proposed multi-agent production system.
+
+`eir/lab_models.py`, `eir/labs.py` and `eir/web/labs.js` add typed experiment, decision, pitch and step-review artifacts inside the existing revisioned workspace JSON. Artifacts have separate contracts, draft confirmation and immutable revisions. Models generate advice fields; task IDs, original hypotheses, costs, original pitches and execution state remain server-held. Unknown optional task metadata defaults safely, and empty metadata is omitted from plan fingerprints to preserve pre-upgrade drafts. The Mentor Brief is a compact deterministic projection with reviewed Markdown download. Hosted call limits cover artifact generation. See the [acceptance report](../deliverables/2026-11-05/Pre-Week8-Implementation.md).
 
 ## Request flow
 

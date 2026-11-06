@@ -19,3 +19,6 @@
 *.docx binary
 *.pptx binary
 *.xlsx binary
+
+# Preserve the exact bytes covered by the frozen Week 8 evidence manifest.
+deliverables/2026-11-05/Week8/** -text whitespace=trailing-space,space-before-tab,cr-at-eol

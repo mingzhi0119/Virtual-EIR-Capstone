@@ -1,6 +1,20 @@
 # Virtual EIR Weekly Progress Record
 
-Maintainer: Mingzhi Hu. Updated October 19, 2026, America/New_York.
+Maintainer: Mingzhi Hu. Updated November 5, 2026, America/New_York.
+
+## Week 8 — November 2–8 integrated evaluation
+
+November 5 receipt: [Week 8 report](../deliverables/2026-11-05/Week8/Week8-Report.md), [80-second English acceptance recording](../deliverables/2026-11-05/Week8/Integrated-Workflow.mp4), and [Persona review](../deliverables/2026-11-05/Week8/Persona-Review.md). Three fresh complete model workflows and eight fresh Persona outputs are archived with actual failures and limitations. The final scoped suite passes 168 tests with one optional live-database skip; the actual browser run passes 12 groups and 12 theme/viewport combinations.
+
+S11/R33 technical integration and internal evidence archival are complete. Independent EIR/faculty review, R25 coaching-quality acceptance, confidential multi-user operation and independent successor handoff remain open. No review request was sent; no expert feedback was invented. Historical entries below retain their original cut-offs.
+
+The [November 5 Vercel release](../deliverables/2026-11-05/Week8/Deployment-Record.md) is READY and verified at the existing protected address. Six cloud check groups pass, including two actual hosted model-generation calls, print/phone checks and unchanged original records. Packaging failures and the intervening Vercel platform delay are disclosed in the release record.
+
+## November 5 progress
+
+The planned pre-Week-8 workflows are implemented locally: experiment design, linked evidence, decision comparison, simulated pitch practice, mentor brief export and the remaining plan metadata. The dedicated weekly check-in and evidence-to-goal-review workflow remain integrated. Ordinary-step readiness provides a provisional assessment against founder-supplied criteria, matching the October 22 discussion's emphasis on coaching and judgment. See the [dated report](../deliverables/2026-11-05/Pre-Week8-Implementation.md) for actual checks and remaining model/expert-review limitations. This update is not a Vercel deployment, Blackboard integration or EIR endorsement.
+
+## Historical October 19 record
 
 Reporting periods: October 12–18 and October 19–25. This week's cut-off is October 19; later deliverables remain pending. These are calendar weeks; the earlier Week 4 label belongs to the course schedule.
 
