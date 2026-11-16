@@ -85,8 +85,9 @@ def coaching_context(
         + "Goal and plan tasks are separate from legacy profile actions. Use the approved plan for its goal; never add overlapping counts together. Use Goal & Plan controls for plan changes. A proposal is not completed work. Missing or conflicting evidence requires clarification, not an automatic update. "
         + "Saved check-ins are founder reports, not automatic task updates. A supported goal review is founder judgment, not independent verification or proof of market demand. Stale reviews need a fresh review; do not reuse them as current proof. Context marked partial omits detail: ask rather than invent. "
         + (
-            "For small convenience samples say 'small, biased sample; cannot generalize', never 'statistically significant/insignificant'. Do not declare an assumed budget role or future outcome as fact. Adapt vocabulary only: never infer emotions, needs or personality from profession. Ask about observed purchases and rejected alternatives, not hypothetical prices. Use exact progress counts, no percentages. Tests involve at most five people; unfinished actions use remaining capacity. Replies stay under 180 words with at most two questions total. "
-            "When focus_activity is supplied, start with its planned/completed/remaining counts. Next state the latest_observation sample size and limitation if present. Then challenge one hypothesis and propose a test. A possible buyer role does not establish a required product feature. Sector examples are possibilities to verify, not known purchase criteria. "
+            "Replies stay under 180 words with at most two questions total. For convenience samples say 'small, biased sample; cannot generalize'. "
+            + activity_grounding(venture, workspace)
+            + "Next state the latest_observation sample size and limitation if present. Then challenge one hypothesis and propose a test. A possible buyer role does not establish a required product feature. Sector examples are possibilities to verify, not known purchase criteria. "
             if not instructions
             else ""
         )
@@ -107,6 +108,42 @@ def coaching_context(
     if len(context) > 8000:
         raise Conflict("Profile exceeds the coaching context limit. Shorten it first.")
     return context
+
+
+def activity_grounding(venture: Venture, workspace: dict | None) -> str:
+    """Make saved counts explicit without turning an intake capacity into progress."""
+    focus = (workspace or {}).get("focus_activity")
+    if not focus and (workspace or {}).get("tasks"):
+        task = workspace["tasks"][0]
+        focus = {
+            "planned": task["target_count"],
+            "completed": task["completed_count"],
+            "remaining": task["target_count"] - task["completed_count"],
+        }
+    if focus:
+        counts = (focus["planned"], focus["completed"], focus["remaining"])
+        source = "one approved plan activity; not a total across tasks"
+    elif not workspace and venture.profile.actions:
+        action = venture.profile.actions[0]
+        if action.completed_count > action.target_count:
+            return "Saved legacy activity counts conflict; ask for an explicit correction before computing remaining work. "
+        counts = (
+            action.target_count,
+            action.completed_count,
+            action.target_count - action.completed_count,
+        )
+        source = "saved profile activity (separate from Goal & Plan)"
+    elif (workspace or {}).get("total_tasks", 0):
+        return "Approved activities exist, but numeric details were omitted from this partial context. Do not invent counts or claim no activity is confirmed; ask the founder to open Goal & Plan for the saved details. "
+    else:
+        return "No saved numeric activity is selected. Begin with exactly 'No activity is confirmed yet.' Do not invent planned/completed/remaining counts. A capacity mentioned in chat is only a proposed limit, not a saved plan or remaining work. "
+    planned, completed, remaining = counts
+    return (
+        f"Start with this exact saved snapshot: {planned} planned / {completed} completed / {remaining} remaining ({source}). "
+        "Include all three counts explicitly; never use chat capacity or earlier turns to replace them. "
+        "This activity is saved. For continuing it, stay within its remaining count; a change of method or capacity requires founder approval. "
+        "Counts may measure work items, not people. Completed activity does not prohibit a separate new task. "
+    )
 
 
 class ModelClient(Protocol):

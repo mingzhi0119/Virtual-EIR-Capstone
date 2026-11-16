@@ -54,6 +54,11 @@ def create_app(
     ):
         raise ValueError("EIR_HTTP_PORT must be an integer port from 1 to 65535.")
     port = int(port_text)
+    loopback_hosts = {"127.0.0.1", "localhost", "[::1]"}
+    local_hosts = {f"{host}:{port}" for host in loopback_hosts}
+    if port == 80:
+        local_hosts.update(loopback_hosts)
+    local_origins = {"http://" + host for host in local_hosts}
 
     @app.middleware("http")
     async def local_boundary(
@@ -72,9 +77,21 @@ def create_app(
                 return JSONResponse(
                     {"detail": "Local prototype only."}, status_code=403
                 )
+            host = request.headers.get("host", "").lower()
+            # TestClient has no TCP peer; never accept its synthetic host from
+            # an actual loopback connection. Host checks also cover same-origin
+            # browser reads, which need not carry an Origin header.
+            synthetic_test_host = (
+                request.client is not None
+                and request.client.host == "testclient"
+                and host == "testserver"
+            )
+            if host not in local_hosts and not synthetic_test_host:
+                return JSONResponse(
+                    {"detail": "This local address is not allowed."}, status_code=403
+                )
             origin = request.headers.get("origin")
-            allowed = {f"http://127.0.0.1:{port}", f"http://localhost:{port}"}
-            if origin and origin not in allowed:
+            if origin and origin not in local_origins:
                 return JSONResponse(
                     {"detail": "Cross-origin requests are not allowed."},
                     status_code=403,

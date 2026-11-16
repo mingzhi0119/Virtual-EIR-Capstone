@@ -1,0 +1,18 @@
+{
+  "at": "2026-11-16T18:53:35.735Z",
+  "deploymentId": "dpl_6vooiBswWWNvCRrvRyhtJXtJnnHF",
+  "url": "https://virtual-eir-demo-a3ziqkxlg-mingzhi0119s-projects.vercel.app",
+  "health": "ok",
+  "exactAssets": [
+    "app.js",
+    "workspace.js"
+  ],
+  "originalVentures": 8,
+  "originalSessions": 13,
+  "retainedRecordsHash": "a0c20ddbaa4fdcc2ab1a4e2d682f9fdae449d5c69f7372896d7237e6c7fc7d33",
+  "anonymousDenied": true,
+  "anonymousStatus": 302,
+  "onlineWrites": 0,
+  "paidModelCalls": 0,
+  "manifestHash": "e3a7bfdd25eb306c1206f5fc2056ae9df6746265e8636410896bdfbb1fac5671"
+}

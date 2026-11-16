@@ -16,9 +16,6 @@ from eir.coaching import GoatClient  # noqa: E402
 from eir.store import Store  # noqa: E402
 from test_labs import experiment, decision, pitch, stage  # noqa: E402
 
-out = ROOT / "var/pre-week8-proof"
-out.mkdir(parents=True, exist_ok=True)
-
 
 class RecordedGoat(GoatClient):
     async def reply(self, **kwargs):
@@ -30,12 +27,8 @@ class RecordedGoat(GoatClient):
         return reply
 
 
-client = TestClient(
-    create_app(
-        store=Store(out / "demo.sqlite3"), goat=RecordedGoat("http://127.0.0.1:62606")
-    )
-)
 parser = argparse.ArgumentParser()
+parser.add_argument("--output", default="var/pre-week8-proof")
 parser.add_argument("--model", default="gemma4:26b")
 parser.add_argument("--cases", type=int, default=3, choices=[1, 2, 3])
 parser.add_argument(
@@ -44,6 +37,16 @@ parser.add_argument(
     help="Recheck existing fictional cases after a coaching-prompt change.",
 )
 args = parser.parse_args()
+out = (ROOT / args.output).resolve()
+proof_root = (ROOT / "var").resolve()
+if not out.is_relative_to(proof_root):
+    parser.error("--output must be inside this checkout's ignored var directory.")
+out.mkdir(parents=True, exist_ok=True)
+client = TestClient(
+    create_app(
+        store=Store(out / "demo.sqlite3"), goat=RecordedGoat("http://127.0.0.1:62606")
+    )
+)
 receipt = {"model": args.model, "cases": [], "failures": []}
 
 

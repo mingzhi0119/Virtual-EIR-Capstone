@@ -8,6 +8,7 @@ Updated November 5, 2026. Built for a University of Rochester MSAIB Capstone exp
 
 ## See the work
 
+- [November 20 demonstration preparation](deliverables/2026-11-16/Friday-Readiness.md) and [walkthrough](deliverables/2026-11-16/Friday-Demo-Guide.md): current frontend/backend fixes, fresh verification and release status.
 - [Week 8 integrated evaluation](deliverables/2026-11-05/Week8/Week8-Report.md), [English workflow recording](deliverables/2026-11-05/Week8/Integrated-Workflow.mp4), and [current Persona findings](deliverables/2026-11-05/Week8/Persona-Review.md).
 - [Week 4 presentation](deliverables/2026-10-16/Virtual-EIR-Week4.pptx): ten editable English slides.
 - [Progress report](deliverables/2026-10-16/Week4-Progress-Report.md), [speaker script](deliverables/2026-10-16/Week4-Speaker-Script.md), and [Persona evaluation](deliverables/2026-10-16/Persona-Review.md).

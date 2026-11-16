@@ -1,5 +1,11 @@
 # Current team roadmap
 
+## November 16 presentation preparation
+
+The planned November 20 Ain demonstration uses the delivered Week 8 workflow scope. Current work hardens startup, browser request recovery, local request boundaries and saved-state coaching, with fresh platform, browser and model regression evidence. See the [Friday readiness report](../deliverables/2026-11-16/Friday-Readiness.md) and [demo guide](../deliverables/2026-11-16/Friday-Demo-Guide.md). Technical demonstration readiness does not close independent coaching-quality acceptance, official-material access, Blackboard coordination or actual-founder evaluation. Liza confirms the meeting time; this update assigns no new teammate owners or deadlines.
+
+## November 5 implementation baseline
+
 Updated November 5, 2026. This section supersedes the historical October 19 status below. Week 5–7 implementation is available locally; the [acceptance report](../deliverables/2026-11-05/Pre-Week8-Implementation.md) records checks, model limitations and demonstration steps. The original week windows are sequencing proposals, not revised faculty deadlines.
 
 | Requirement | Available behavior | Boundary |

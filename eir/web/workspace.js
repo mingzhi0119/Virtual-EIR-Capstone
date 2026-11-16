@@ -309,13 +309,23 @@ export function initializeWorkspace({ api, getVenture, getModel, requireSaved, o
     $('workspace-summary').textContent = contextSummary()
     formBaseline = formText(); renderDraft(); draftBaseline = draftText(); renderTasks(); renderHistory(); reviews.render(); labs.render(); updateLocks()
   }
-  async function load(id) {
-    if (hasDraft()) throw Error('You have unsaved Goal & Plan changes. Confirm or discard them before navigating or reloading.')
+  async function load(id, { preserveLocal = false } = {}) {
+    if (hasDraft() && !preserveLocal) throw Error('You have unsaved Goal & Plan changes. Confirm or discard them before navigating or reloading.')
+    const edits = preserveLocal && id === ventureId ? captureLocalEdits() : null
     const ticket = ++loading
     const result = id ? await api(`/ventures/${encodeURIComponent(id)}/workspace`) : null
     if (ticket !== loading) return
+    if (edits && result) {
+      const nextPlans = [...result.plans].sort((a, b) => a.version - b.version)
+      const nextApproved = nextPlans.filter(plan => plan.status === 'approved').at(-1)
+      const nextProposed = nextPlans.filter(plan => plan.status === 'draft' && plan.version > (nextApproved?.version || 0)).at(-1)
+      const nextTasks = new Set((nextApproved?.tasks || []).map(task => task.task_id))
+      if ((edits.draft && edits.draft.planId !== nextProposed?.plan_id) || edits.tasks.some(([taskId]) => !nextTasks.has(taskId))) {
+        throw Error('Saved plans changed and these local draft or task edits cannot be restored to the current plan. Copy the edits you need, then discard the old local edits before recovering saved state again. Your current edits remain on screen.')
+      }
+    }
     ventureId = id || null; workspace = result
-    if (workspace) { render(); say('Saved Goal & Plan workspace loaded.') }
+    if (workspace) { render(); if (edits) restoreLocalEdits(edits); say('Saved Goal & Plan workspace loaded.') }
     else {
       reviews.render()
       labs.render()

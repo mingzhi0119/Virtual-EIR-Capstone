@@ -1,5 +1,7 @@
 # Documentation index
 
+November 16: [Friday readiness](../deliverables/2026-11-16/Friday-Readiness.md) and [presentation walkthrough](../deliverables/2026-11-16/Friday-Demo-Guide.md) cover current fixes, checks, release status and honest Q&A boundaries for the planned November 20 Ain demonstration.
+
 Week 8: [integrated evaluation report](../deliverables/2026-11-05/Week8/Week8-Report.md), [recording guide](../deliverables/2026-11-05/Week8/Demo-Guide.md) and [fresh Persona findings](../deliverables/2026-11-05/Week8/Persona-Review.md). Technical completion and independent coaching approval are tracked separately.
 
 Latest review: [November 5 pre-launch quality checks](../deliverables/2026-11-05/Release-Readiness.md), including fixes, 168 passing tests and the protected-fictional-pilot release boundary.

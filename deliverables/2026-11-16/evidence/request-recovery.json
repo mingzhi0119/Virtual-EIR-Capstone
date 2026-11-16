@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "checks": [
+    "A hanging GET expires and unlocks the interface",
+    "A hanging response body expires and unlocks the interface",
+    "A committed chat with a lost response retains its message and blocks duplicate submission; generation has 210 seconds",
+    "Recovery reads the saved reply, clears only its matching composer, preserves profile/goal/learning drafts and permits subsequent saves",
+    "Uncertain writes block venture/session changes and new ventures without losing drafts; normal navigation resumes after recovery",
+    "An unsaved disconnected chat stays guarded during processing, then permits an explicitly reviewed retry without losing its message",
+    "A JSON 500 after a committed write also requires recovery and never automatically repeats the request",
+    "A committed new venture is added to the list without replacing the current venture or any later profile/goal/learning/composer drafts",
+    "Recovery retains the old interface and lock when confirmed plan changes would erase later draft/task edits; explicit discard allows recovery",
+    "Unconfirmed plan/artifact/profile/venture/session writes stay guarded; AI generation retries only after the processing window and explicit review"
+  ],
+  "errors": [],
+  "at": "2026-11-16T18:49:12.304Z",
+  "isolation": "All requests intercepted; no live database or model calls."
+}

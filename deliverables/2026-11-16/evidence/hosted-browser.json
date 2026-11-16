@@ -1,0 +1,16 @@
+{
+  "hosted": true,
+  "at": "2026-11-16T18:54:02.409Z",
+  "checks": [
+    "Existing invitation opens the deployment; a visitor without it cannot read venture records.",
+    "Ain Center branding and Rochester default; no visible internal identifiers.",
+    "Business profile, founder preferences and earlier observations remain accessible.",
+    "Goals, evidence, weekly check-in and readable plan history expose no JSON or UUIDs.",
+    "Original GOAT theme tokens work across three styles and three modes; System follows device changes.",
+    "Accent, font, contrast, sidebar treatment and dark mode survive reload.",
+    "390px phone layout and all three dialogs fit without horizontal overflow.",
+    "All saved ventures and workspaces remain unchanged; zero browser errors."
+  ],
+  "errors": [],
+  "passed": true
+}
