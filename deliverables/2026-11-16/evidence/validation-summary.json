@@ -37,5 +37,10 @@
     "original_records_unchanged": true
   },
   "lint_build_contracts": "passed",
-  "ci": "Remote rerun not yet requested at receipt creation"
+  "ci": {
+    "application_commit": "ccba4c917236ab82732b6b538f100d94738cd9ce",
+    "application_run": "https://github.com/mingzhi0119/Virtual-EIR-Capstone/actions/runs/43934303220",
+    "latest_checks": "https://github.com/mingzhi0119/Virtual-EIR-Capstone/pull/1/checks",
+    "status": "Consult the live check; local counts above are separate."
+  }
 }

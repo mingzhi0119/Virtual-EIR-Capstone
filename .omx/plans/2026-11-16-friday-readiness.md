@@ -4,7 +4,7 @@ November 16, 2026. Target: the planned Friday afternoon, November 20 Ain present
 
 ## Scope
 
-Build on the implemented R25–R33 workflows and October 22 Roberto requirements. Preserve existing venture data and unrelated local documents. Recheck current behavior rather than reusing November 5 test counts as current proof. Expert approval, official institutional materials and meeting coordination require actual external participants.
+Build on the implemented R25鈥揜33 workflows and October 22 Roberto requirements. Preserve existing venture data and unrelated local documents. Recheck current behavior rather than reusing November 5 test counts as current proof. Expert approval, official institutional materials and meeting coordination require actual external participants.
 
 ## Acceptance sequence
 
@@ -24,3 +24,5 @@ Build on the implemented R25–R33 workflows and October 22 Roberto requirements
 Lead: integration, coaching, CI and final release decision. Frontend agent: request/draft recovery. Backend agent: local request boundary and independent review. Release agent: launcher isolation, release preparation and documentation checks. Platform agent: unchanged GOAT regressions. Agents may write only their assigned narrow files; no unrelated edits or autonomous commits.
 
 Completion evidence: [Friday readiness report](../../deliverables/2026-11-16/Friday-Readiness.md).
+
+Source handoff: application commit `ccba4c917236ab82732b6b538f100d94738cd9ce` is pushed to the existing [draft PR #1](https://github.com/mingzhi0119/Virtual-EIR-Capstone/pull/1); follow the live PR checks for its current remote validation. No merge to `main`.
