@@ -1,0 +1,46 @@
+{
+  "date": "2026-11-16",
+  "scope": "Local Windows checks and real protected deployment; not expert or real-founder acceptance",
+  "eir_python": {
+    "passed": 191,
+    "skipped": 1,
+    "skip_reason": "Separately configured optional PostgreSQL integration"
+  },
+  "goat_python": {
+    "passed": 540,
+    "skipped": 8,
+    "subtests": 10
+  },
+  "goat_frontend": {
+    "files": 50,
+    "passed": 217,
+    "note": "Initial full run had one 1-second lazy-load timeout; focused rerun and full rerun passed without source changes."
+  },
+  "browser_groups": {
+    "full_workflow": 12,
+    "workspace_edges": 10,
+    "request_recovery": 10,
+    "hosted_read_only": 8
+  },
+  "launcher_groups": 5,
+  "local_actual_model": {
+    "provider": "gemma4:26b through local GOAT",
+    "workflows": 3,
+    "final_persona_outputs": 8,
+    "expert_approval": false
+  },
+  "hosted_actual_model": {
+    "provider": "gpt-5.6-luna",
+    "calls": 1,
+    "new_fictional_ventures": 1,
+    "new_sessions": 1,
+    "original_records_unchanged": true
+  },
+  "lint_build_contracts": "passed",
+  "ci": {
+    "application_commit": "ccba4c917236ab82732b6b538f100d94738cd9ce",
+    "application_run": "https://github.com/mingzhi0119/Virtual-EIR-Capstone/actions/runs/43934303220",
+    "latest_checks": "https://github.com/mingzhi0119/Virtual-EIR-Capstone/pull/1/checks",
+    "status": "Consult the live check; local counts above are separate."
+  }
+}

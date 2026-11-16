@@ -1,0 +1,17 @@
+{
+  "baselineFile": "baseline-2026-11-16T18-54-01-430Z.json",
+  "at": "2026-11-16T18:54:01.430Z",
+  "productionId": "dpl_6vooiBswWWNvCRrvRyhtJXtJnnHF",
+  "protection": "all",
+  "rootDirectory": "hosting",
+  "framework": "fastapi",
+  "anonymousDenied": true,
+  "anonymousStatus": 302,
+  "invitationWorks": true,
+  "ventures": 8,
+  "workspaces": 8,
+  "sessions": 13,
+  "recordsHash": "a0c20ddbaa4fdcc2ab1a4e2d682f9fdae449d5c69f7372896d7237e6c7fc7d33",
+  "paidModelCalls": 0,
+  "onlineWrites": 0
+}

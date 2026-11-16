@@ -1,0 +1,21 @@
+{
+  "model": "gemma4:26b",
+  "cases": [
+    {
+      "name": "Campus dinner \u2014 fictional Week 7",
+      "reply": "You have completed 2 of 5 planned interviews (40% of the task); 3 remain.\n\nYour latest observation indicates a sample size of 2, which is a small, biased convenience sample that cannot generalize. The key change in your progress is the distinction between the user (the student eating the dinner) and the buyer (the person approving the payment).\n\nI will challenge the assumption that the student's preference for \"affordable access\" is the primary driver for the purchase decision. If the student is not the budget owner, their preference for low cost may be secondary to the budget owner's requirements for receipting, vendor legitimacy, or reimbursement ease.\n\nTo test this, I propose a small test: In your next interview, ask the identified budget owner what specific documentation or vendor criteria they require to approve a food expense.\n\nPlease save these changes.",
+      "workspace_unchanged": true
+    },
+    {
+      "name": "Music practice \u2014 fictional Week 7",
+      "reply": "You have completed 2 of 5 planned interviews, meaning 40% of your current focus activity is finished; 3 interviews remain.\n\nYour latest observations show a sample size of 2, which is a small, biased convenience sample that cannot generalize. The key change is the emerging distinction between the user (the teacher) and the person who actually approves the payment (the budget owner).\n\nI will challenge the assumption that the teacher's need for feedback is the primary driver for a purchase. While a teacher might want the tool, the person holding the budget may only care about specific institutional outcomes, such as student retention or standardized test scores.\n\nTo test this, I propose a small test: In your next interview, ask a potential budget owner (like a department head) what specific metric or \"win\" they look for before approving a new software subscription.\n\nPlease save these changes to your progress.",
+      "workspace_unchanged": true
+    },
+    {
+      "name": "Window repair \u2014 fictional Week 7",
+      "reply": "You have completed 2 of 5 planned interviews, meaning 40% of your current focus activity is finished; 3 interviews remain.\n\nYour latest observations indicate a distinction between the service user and the person who approves the payment. This small, biased sample of 2 participants cannot generalize, but it suggests the user and the buyer are different roles.\n\nI will challenge the assumption that the building manager you are currently interviewing is the actual budget owner. If the person approving the payment is a different individual (e.g., a property owner or regional director), your current interview strategy may miss the critical decision-making criteria and procurement hurdles.\n\n**Proposed Test:**\nIn your next interview, ask the building manager to identify the specific person who signs the invoices and what specific criteria that person uses to approve or reject a repair vendor.\n\nPlease save these changes to your progress.",
+      "workspace_unchanged": true
+    }
+  ],
+  "failures": []
+}

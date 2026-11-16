@@ -68,6 +68,25 @@ class Reviews:
                 raise WorkspaceInvalid(
                     "Corrections must replace an active evidence record in this venture."
                 )
+            if request.experiment_id:
+                from eir.labs import current_artifacts
+
+                experiment = next(
+                    (
+                        item
+                        for item in current_artifacts(workspace, "experiment")
+                        if item.artifact_id == request.experiment_id
+                    ),
+                    None,
+                )
+                if experiment is None or experiment.plan_id != plan.plan_id:
+                    raise WorkspaceInvalid(
+                        "Link a current confirmed experiment in this plan, never simulated pitch practice."
+                    )
+                if request.task_id and request.task_id != experiment.data.task_id:
+                    raise WorkspaceInvalid(
+                        "The observation task must match its experiment task."
+                    )
             record = EvidenceRecord(
                 **request.model_dump(exclude={"expected_revision"}),
                 evidence_id=str(uuid4()),

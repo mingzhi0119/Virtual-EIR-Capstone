@@ -1,5 +1,21 @@
 # GOAT AI 复用实施清单
 
+## November 5 implementation status
+
+This section supersedes historical pending-feature labels below. See the [current roadmap](TEAM_ROADMAP.md) and [acceptance report](../deliverables/2026-11-05/Pre-Week8-Implementation.md).
+
+- [x] R26 implementation — Milestones, owners/dates, effort and completion/evidence criteria added to the versioned plan workflow; previous evidence review and explicit closure retained.
+- [x] R27 implementation — Confirmed experiments link hypothesis, goal and task without inventing execution.
+- [x] R28 implementation — Source-linked observations include experiment/hypothesis links, stance and immutable correction/unlink history.
+- [x] R29 implementation — Structured check-ins and bounded follow-up context.
+- [x] R31 implementation — Alternatives, retained unknown costs/assumptions, risks, gaps and revision history.
+- [x] R30 implementation — Simulated practice, five feedback dimensions and persistent original/revised pitch.
+- [x] R32 implementation — Compact reviewable brief, explicit Markdown download and one-page A4 print view, with exact counts and selected sources.
+- [x] Roberto follow-up implementation — Provisional ordinary-step assessment with reasons and missing evidence; no institutional or funding approval.
+- [ ] R25 independent coaching-quality acceptance — Prompt improvements and regression evidence are available; EIR review is still needed.
+- [x] S11 / R33 technical integration and archive — 168 tests, 12 browser groups, three fresh complete model workflows, eight fresh Persona outputs and an English recording are archived in the [Week 8 report](../deliverables/2026-11-05/Week8/Week8-Report.md), with failures disclosed.
+- [ ] Independent expert evaluation — Separate from R33 technical completion; actual EIR/faculty assessment and coaching-quality acceptance remain open.
+
 历史与当前状态：下方 2026-10-08/09 的描述与原始勾选保留当时事实；最新 Week 4 实施状态见文末 **October 16 current status**。历史“仅文档”不代表当前仍未实现；本次文档协作不执行提交或外部写入。
 
 负责人：Mingzhi；开始日期：2026-10-08。每一步通过验收后打勾，将证据记入 [实施归档](archive/2026-10-08-goat-reuse.md)，随后提交 Git。未运行的功能不标为完成。

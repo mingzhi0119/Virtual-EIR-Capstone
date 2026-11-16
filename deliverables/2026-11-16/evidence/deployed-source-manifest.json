@@ -1,0 +1,230 @@
+{
+  "prepared_at": "2026-11-16T18:49:10.972Z",
+  "manifest_hash": "e3a7bfdd25eb306c1206f5fc2056ae9df6746265e8636410896bdfbb1fac5671",
+  "deployment_id": "dpl_6vooiBswWWNvCRrvRyhtJXtJnnHF",
+  "protected_url": "https://virtual-eir-demo.vercel.app",
+  "files": [
+    {
+      "source": "eir/__init__.py",
+      "file": "hosting/eir/__init__.py",
+      "sourceHash": "0a4cf7e15614c1de0f0b96d66c9606c883ad7ac82ea3d09e8e0661298ca441ef",
+      "sha256": "0a4cf7e15614c1de0f0b96d66c9606c883ad7ac82ea3d09e8e0661298ca441ef",
+      "bytes": 81
+    },
+    {
+      "source": "eir/app.py",
+      "file": "hosting/eir/app.py",
+      "sourceHash": "ab3337638c736aecc7ac9a1333de0e1f28fd1387250326f05710145ce80dc5f5",
+      "sha256": "ab3337638c736aecc7ac9a1333de0e1f28fd1387250326f05710145ce80dc5f5",
+      "bytes": 7672
+    },
+    {
+      "source": "eir/coaching.py",
+      "file": "hosting/eir/coaching.py",
+      "sourceHash": "dda5d070b6350b5607c71003e2a5df83711d596d0eb61dd2af912f6c337b5c16",
+      "sha256": "dda5d070b6350b5607c71003e2a5df83711d596d0eb61dd2af912f6c337b5c16",
+      "bytes": 13313
+    },
+    {
+      "source": "eir/models.py",
+      "file": "hosting/eir/models.py",
+      "sourceHash": "3c8d3315f70350558952c673c7dd75debd9b371594eee9eb70b998f0988cb773",
+      "sha256": "3c8d3315f70350558952c673c7dd75debd9b371594eee9eb70b998f0988cb773",
+      "bytes": 3012
+    },
+    {
+      "source": "eir/store.py",
+      "file": "hosting/eir/store.py",
+      "sourceHash": "312f9effd986589e747b564277e1da089a4b93c19a33434be72e4c622deec428",
+      "sha256": "312f9effd986589e747b564277e1da089a4b93c19a33434be72e4c622deec428",
+      "bytes": 6554
+    },
+    {
+      "source": "eir/runtime.py",
+      "file": "hosting/eir/runtime.py",
+      "sourceHash": "f55084c124573b7367aeba21b897aae589ae178c046d6312a71a5e236311de72",
+      "sha256": "f55084c124573b7367aeba21b897aae589ae178c046d6312a71a5e236311de72",
+      "bytes": 1775
+    },
+    {
+      "source": "eir/openai_client.py",
+      "file": "hosting/eir/openai_client.py",
+      "sourceHash": "9a0e64f65398bdf4647350e4d71d555c907be72199ddfc9d0ba84a9c4a3b6d81",
+      "sha256": "9a0e64f65398bdf4647350e4d71d555c907be72199ddfc9d0ba84a9c4a3b6d81",
+      "bytes": 5831
+    },
+    {
+      "source": "eir/personas.py",
+      "file": "hosting/eir/personas.py",
+      "sourceHash": "98c0bdae85ee7163b9324a80bb2bc3cec1f2fa2091b6b6a8f76edbd766c03c26",
+      "sha256": "98c0bdae85ee7163b9324a80bb2bc3cec1f2fa2091b6b6a8f76edbd766c03c26",
+      "bytes": 2406
+    },
+    {
+      "source": "eir/feature_models.py",
+      "file": "hosting/eir/feature_models.py",
+      "sourceHash": "d686e0737011408093cbb9610f331278c421fc7366cbf9812ef4a20a0bac3b29",
+      "sha256": "d686e0737011408093cbb9610f331278c421fc7366cbf9812ef4a20a0bac3b29",
+      "bytes": 10805
+    },
+    {
+      "source": "eir/feature_store.py",
+      "file": "hosting/eir/feature_store.py",
+      "sourceHash": "f0ff3856439af3938b34e2edc849593f2a64e804e7148e07dd14cbdf8ecdda64",
+      "sha256": "f0ff3856439af3938b34e2edc849593f2a64e804e7148e07dd14cbdf8ecdda64",
+      "bytes": 11564
+    },
+    {
+      "source": "eir/feature_routes.py",
+      "file": "hosting/eir/feature_routes.py",
+      "sourceHash": "ab4e6b95b663c8b565c97712133124e82d7ed1607599c772764a2037d02ec7e2",
+      "sha256": "ab4e6b95b663c8b565c97712133124e82d7ed1607599c772764a2037d02ec7e2",
+      "bytes": 3538
+    },
+    {
+      "source": "eir/planning.py",
+      "file": "hosting/eir/planning.py",
+      "sourceHash": "9b4eea26465da9c6414a4f5e61bc18a88a052dad661b1c5e2ebcb5098615dc13",
+      "sha256": "9b4eea26465da9c6414a4f5e61bc18a88a052dad661b1c5e2ebcb5098615dc13",
+      "bytes": 20238
+    },
+    {
+      "source": "eir/reviews.py",
+      "file": "hosting/eir/reviews.py",
+      "sourceHash": "331f000dc7b46560c26781b1db821a6e8655e9889e873337f9fcbf92177488be",
+      "sha256": "331f000dc7b46560c26781b1db821a6e8655e9889e873337f9fcbf92177488be",
+      "bytes": 8439
+    },
+    {
+      "source": "eir/lab_models.py",
+      "file": "hosting/eir/lab_models.py",
+      "sourceHash": "d4166e808410bfe1f0c2007949100a692e9900daf69bdcaa3aa8651c6bc3dfb5",
+      "sha256": "d4166e808410bfe1f0c2007949100a692e9900daf69bdcaa3aa8651c6bc3dfb5",
+      "bytes": 4313
+    },
+    {
+      "source": "eir/labs.py",
+      "file": "hosting/eir/labs.py",
+      "sourceHash": "3582ceef6ad3e2c2b224494186dbdd61b40c103be35eef691dc1b3c0fcc4c631",
+      "sha256": "3582ceef6ad3e2c2b224494186dbdd61b40c103be35eef691dc1b3c0fcc4c631",
+      "bytes": 17945
+    },
+    {
+      "source": "eir/postgres_store.py",
+      "file": "hosting/eir/postgres_store.py",
+      "sourceHash": "223ba4008ffc054739dfe620451be09ad3310ea6e74f51a8e34dc5cc58c36e67",
+      "sha256": "223ba4008ffc054739dfe620451be09ad3310ea6e74f51a8e34dc5cc58c36e67",
+      "bytes": 2465
+    },
+    {
+      "source": "eir/hosted.py",
+      "file": "hosting/eir/hosted.py",
+      "sourceHash": "034bc4e9562ce3c67b43bacdd06f5d2027f369829368b577215eade5bfe011a4",
+      "sha256": "034bc4e9562ce3c67b43bacdd06f5d2027f369829368b577215eade5bfe011a4",
+      "bytes": 6548
+    },
+    {
+      "source": "eir/web/index.html",
+      "file": "hosting/eir/web/index.html",
+      "sourceHash": "5b72cada5d95953c8bd9ac1cdcb88b8430fadb21ac77c98d3d6f350bea0c3147",
+      "sha256": "5b72cada5d95953c8bd9ac1cdcb88b8430fadb21ac77c98d3d6f350bea0c3147",
+      "bytes": 12645
+    },
+    {
+      "source": "eir/web/style.css",
+      "file": "hosting/eir/web/style.css",
+      "sourceHash": "dab22fdf3d53daa77876ece9e997c0a05463db151275184cc3b3a62adb58797b",
+      "sha256": "dab22fdf3d53daa77876ece9e997c0a05463db151275184cc3b3a62adb58797b",
+      "bytes": 20961
+    },
+    {
+      "source": "eir/web/app.js",
+      "file": "hosting/eir/web/app.js",
+      "sourceHash": "33ff23955f43e44838e94901399c8fe5e8d5895643884532c72880169bb54248",
+      "sha256": "33ff23955f43e44838e94901399c8fe5e8d5895643884532c72880169bb54248",
+      "bytes": 23834
+    },
+    {
+      "source": "eir/web/workspace.js",
+      "file": "hosting/eir/web/workspace.js",
+      "sourceHash": "f3c00b8a3e2aca0b4d3f6266daec8568931c0a3b74e8a36944c3d25defd5cf4d",
+      "sha256": "f3c00b8a3e2aca0b4d3f6266daec8568931c0a3b74e8a36944c3d25defd5cf4d",
+      "bytes": 29022
+    },
+    {
+      "source": "eir/web/reviews.js",
+      "file": "hosting/eir/web/reviews.js",
+      "sourceHash": "b6a98c5342ce39959ab27815694d3378395874ed7da98f8979fce28c4d762f05",
+      "sha256": "b6a98c5342ce39959ab27815694d3378395874ed7da98f8979fce28c4d762f05",
+      "bytes": 13658
+    },
+    {
+      "source": "eir/web/labs.js",
+      "file": "hosting/eir/web/labs.js",
+      "sourceHash": "d2c6f966b1c3ab7f5bdcc9e0eb556bc037529dbe543101a927ada084ceed03c9",
+      "sha256": "d2c6f966b1c3ab7f5bdcc9e0eb556bc037529dbe543101a927ada084ceed03c9",
+      "bytes": 19679
+    },
+    {
+      "source": "eir/web/generated/appearance.js",
+      "file": "hosting/eir/web/generated/appearance.js",
+      "sourceHash": "84e8286bca661dcb25521a6a3b15460b9b3e873d706c6d5ccb61da881ff0e472",
+      "sha256": "84e8286bca661dcb25521a6a3b15460b9b3e873d706c6d5ccb61da881ff0e472",
+      "bytes": 954718
+    },
+    {
+      "source": "eir/web/generated/appearance.css",
+      "file": "hosting/eir/web/generated/appearance.css",
+      "sourceHash": "aaecc5f401b6a12ad80f63dfc1189ba84b8bfa065c4768c188a288b4edc22fc1",
+      "sha256": "aaecc5f401b6a12ad80f63dfc1189ba84b8bfa065c4768c188a288b4edc22fc1",
+      "bytes": 1458354
+    },
+    {
+      "source": "eir/prompts/coach.txt",
+      "file": "hosting/eir/prompts/coach.txt",
+      "sourceHash": "f867077cb59b7ed453bdc50e586f2e24ccda9c23c3ea3d0443bdcf2368680113",
+      "sha256": "f867077cb59b7ed453bdc50e586f2e24ccda9c23c3ea3d0443bdcf2368680113",
+      "bytes": 2920
+    },
+    {
+      "source": "hosting/main.py",
+      "file": "hosting/main.py",
+      "sourceHash": "eabd413154478ca90c5aaa164a4558197415c7b37999ba918cccd2080d6aa933",
+      "sha256": "eabd413154478ca90c5aaa164a4558197415c7b37999ba918cccd2080d6aa933",
+      "bytes": 967
+    },
+    {
+      "source": "hosting/requirements.txt",
+      "file": "hosting/requirements.txt",
+      "sourceHash": "5b3167909988acc54f89268f86e3d045719d74165a43221cb693634bd9a9595d",
+      "sha256": "5b3167909988acc54f89268f86e3d045719d74165a43221cb693634bd9a9595d",
+      "bytes": 75
+    },
+    {
+      "source": "hosting/pyproject.toml",
+      "file": "hosting/pyproject.toml",
+      "sourceHash": "3e97620f6a676a5173f1f36e6df1d3a84381b2025fde146f0601ea68590bfb63",
+      "sha256": "3e97620f6a676a5173f1f36e6df1d3a84381b2025fde146f0601ea68590bfb63",
+      "bytes": 234
+    },
+    {
+      "source": "hosting/vercel.json",
+      "file": "hosting/vercel.json",
+      "sourceHash": "d08768b64d25f719b95e2fcd1c5ab84532a3a47f79ab06943840672d4987d0be",
+      "sha256": "318faf116fadef4eaa27aac5814809e416078c5941b6dcd848c603fbba450e3b",
+      "bytes": 953
+    },
+    {
+      "source": null,
+      "file": "hosting/.vercelignore",
+      "sha256": "c6a3498a72df2488e8a849b67aac0e3f64035aa33d6be3cadef1d2abc89aa4db",
+      "bytes": 78
+    }
+  ],
+  "excluded": [
+    "credentials",
+    "private invitation",
+    "local databases",
+    "unrelated student documents"
+  ]
+}

@@ -1,0 +1,347 @@
+{
+  "model": "gemma4:26b",
+  "cases": [
+    {
+      "name": "Campus dinner \u2014 fictional Week 7",
+      "checks": [
+        "Real plan approved; 2/5 progress saved",
+        "Real experiment generated and confirmed",
+        "Real decision generated and confirmed",
+        "Real pitch generated and confirmed",
+        "Real stage_review generated and confirmed",
+        "New-session coaching and exact-count brief; no automatic progress mutation"
+      ],
+      "outputs": {
+        "experiment": {
+          "kind": "experiment",
+          "title": "Buyer discovery",
+          "hypothesis": "The user is also the buyer",
+          "task_id": "33a8af5f-e1ef-4219-bc4b-05fbf4d68b1f",
+          "audience": "Evening graduate students (specifically those currently purchasing dinner on campus)",
+          "method": "interview",
+          "capacity": 5,
+          "questions": [
+            "Walk me through your dinner purchase from yesterday or the most recent evening you ate on campus.",
+            "What specific factors (e.g., price, distance, prep time, nutritional content) led you to choose that specific option over others?",
+            "When you decided not to use the campus dining services last week, what was the specific alternative you used instead?",
+            "Who decided on this specific meal choice, and did anyone else (e.g., a roommate or partner) influence the decision or the payment method?"
+          ],
+          "measures": [
+            "Frequency of specific alternative use (e.g., delivery vs. campus dining)",
+            "Recorded primary decision drivers (e.g., cost vs. convenience)",
+            "Identification of the actual payer vs. the consumer"
+          ],
+          "decision_rule": "If the person choosing the meal is consistently the same person paying for it, the 'user is buyer' hypothesis holds for this sample; if a different person pays or a different person decides, the hypothesis is refuted for this sample.",
+          "limitations": "Small, convenience-based sample (n=3 remaining) cannot generalize to all graduate students. Findings are based on retrospective self-reporting, which may be subject to recall bias. Sample is biased toward students already present/active in the evening campus ecosystem.",
+          "status": "planned"
+        },
+        "decision": {
+          "kind": "decision",
+          "title": "Next learning approach",
+          "options": [
+            {
+              "name": "Interview users",
+              "known_cost": "Unknown",
+              "assumptions": [
+                "Students can reach the service"
+              ],
+              "risks": [
+                "Unobserved usage"
+              ],
+              "missing_information": [
+                "Actual cost"
+              ],
+              "next_test": "Observe a small test"
+            },
+            {
+              "name": "Interview purchasing decision-makers",
+              "known_cost": "Unknown",
+              "assumptions": [
+                "Students can reach the service"
+              ],
+              "risks": [
+                "Unobserved usage"
+              ],
+              "missing_information": [
+                "Actual cost"
+              ],
+              "next_test": "Observe a small test"
+            }
+          ],
+          "comparison": "Compare convenience and cost",
+          "recommendation": "Test actual behavior first",
+          "limitations": "Unknown costs"
+        },
+        "pitch": {
+          "kind": "pitch",
+          "title": "Venture practice",
+          "audience": "investor",
+          "pitch": "We are exploring affordable dinner access. We have two exploratory interviews and are still identifying the buyer.",
+          "questions": [
+            "Who is the actual decision-maker for the payment (e.g., student, parent, or department grant)?",
+            "What specific technical or logistical constraints (e.g., delivery window, food temperature, dietary restrictions) are non-negotiable for the user?"
+          ],
+          "clarity": "The pitch lacks a specific value proposition; 'exploring access' is too vague for an investor-style pitch. Define the 'affordable' metric\u2014is it a percentage reduction from current spending or a fixed price point?",
+          "problem_customer": "You have identified a potential split between the user (student) and the payer (unknown); the pitch must address how you will bridge this gap. The current pitch does not specify if the problem is availability, cost, or nutritional quality.",
+          "evidence": "Current evidence is limited to 2 convenience interviews; this is insufficient to identify a pattern in purchasing behavior. The distinction between user and buyer is a hypothesis, not a verified fact.",
+          "differentiation": "The pitch does not mention how this service differs from existing campus dining or local delivery apps. Need to identify if the differentiation is technical (logistics) or economic (pricing model).",
+          "ask": "The ask is well-targeted toward the current stage (interviews, not investment). Refine the ask to request access to specific cohorts (e.g., 'international graduate students') to reduce selection bias.",
+          "revised_pitch": "We are investigating a low-cost dinner delivery model for graduate students. We have completed 2 of 5 behavior interviews to determine if the student or a third party controls the budget. We are seeking introductions to 3 more graduate students to observe their actual food procurement process.",
+          "limitations": "The sample size (n=2) is too small to generalize purchasing power or decision-making logic. Interviews are convenience-based and may not represent the broader graduate student population.",
+          "simulated": true
+        },
+        "stage_review": {
+          "kind": "stage_review",
+          "title": "Customer canvas",
+          "material": "Users: Evening graduate students. Buyer and purchase pathway remain unconfirmed.",
+          "criteria": [
+            "Identify user and buyer"
+          ],
+          "evidence_ids": [
+            "e278e6ff-a9b3-497d-a47f-1a40698f6c79"
+          ],
+          "judgment": "revise",
+          "reasoning": "The distinction between the user (graduate student) and the decision-maker/payer (e.g., a partner, parent, or department) is currently unverified. Identifying the user is insufficient for designing a transaction model or marketing strategy.",
+          "missing": [
+            "Identification of the actual payer (buyer)",
+            "The specific mechanism of the purchase pathway (e.g., reimbursement, direct app payment, or third-party gift card)",
+            "The decision-making criteria used by the buyer"
+          ],
+          "next_step": "Complete the remaining 3 interviews in your plan (3 left of 5) by specifically asking: 'When you last ordered dinner, who physically entered the payment details?' and 'What specific criteria (price, timing, or menu) must be met for that person to approve the expense?'",
+          "limitations": "Provisional assessment; findings are based on a small, biased convenience sample of 2 participants and cannot be generalized to the entire graduate student population."
+        },
+        "followup": "Based on your saved progress and recent observations, here is the technical review of your current venture state.\n\n### Progress Review\nThe primary change in your venture state is a shift in the identified customer profile. While your initial profile focused on \"Evening graduate students\" as a monolithic group, your recent observations have decoupled the **user** (the student eating the meal) from the **buyer/decision-maker** (the person approving the payment).\n\n**Current Interview Status:**\n*   **Target Count:** 5 interviews\n*   **Completed Count:** 2 interviews\n*   **Remaining Count:** 3 interviews\n\n**Note on Data Quality:** Your current findings are based on a small, convenience sample of $n=2$. These results are not statistically significant and cannot be used to generalize the behavior of the entire graduate student population. They serve only to refine your interview guide for the remaining three sessions.\n\n### Technical Challenge\n**Unsupported Assumption:** You are currently assuming that the \"budget owner\" (the person approving payment) can be reached or influenced through the same channels as the \"user\" (the student).\n\n**Rationale:** In procurement and B2B/B2G (Business-to-Government/University) contexts, the person who experiences the pain point (hunger/lack of access) often lacks the agency to change the procurement process or budget allocation. If the budget owner is a department administrator or a faculty lead, your current \"student-centric\" outreach strategy will fail to reach the actual decision-maker.\n\n**Feasible Test:** In your next 3 interviews, specifically ask the users to identify the exact person or department responsible for approving their meal expenses or stipends. Record the specific communication channel they use to interact with that person (e.g., email, a specific university portal, or a physical office). This will determine if your go-to-market strategy requires a B2B approach (targeting administrators) rather than a B2C approach (targeting students).\n\n### Recommendation\nI recommend shifting the focus of your remaining 3 interviews from \"user satisfaction\" to \"procurement pathway.\" \n\n**Next Step:**\nIdentify the specific administrative role or department that manages the funds used by these students.\n\n**Follow-up Question:**\nRegarding the two completed interviews: did the participants mention any specific constraints or \"rules\" imposed by the budget owner that currently limit their dinner options?\n\n***\n\n*Please confirm or save these changes in your profile editor if you agree with this assessment of your progress and the updated focus for your remaining interviews.*",
+        "brief": "# VIRTUAL EIR \u2014 MENTOR BRIEF\nReview before sharing. Founder reports; not independently verified.\nPrepared: 2026-11-05T17:32:21.903401+00:00\nVenture: Campus dinner \u2014 fictional Week 7\nStage: idea\nCustomer: Evening graduate students\nProblem: Affordable dinner access\n\n## CONFIRMED GOAL\nUnderstand the actual buyer and purchase pathway before expanding this venture\nStatus: active\n\n## TASK ACTIVITY (not market validation)\nPlan version: 1\nConduct behavior interviews with graduate students: 5 planned / 2 completed / 3 remaining; in progress\nOwner: Unassigned; milestone: Not set; due: Not set\nResult: Two fictional behavior interviews; the purchasing decision-maker remains unclea\u2026; blocker: None reported\nSynthesize findings and distinguish user vs. buyer: 1 planned / 0 completed / 1 remaining; not started\nOwner: Unassigned; milestone: Interview Synthesis; due: Not set\nResult: Not reported; blocker: None reported\n\n## OBSERVATIONS AND COUNTEREVIDENCE\n2026-11-05 [contradicts]: Both fictional participants use the service, but a different person approves payment.\nSource: Fictional behavior notes A and B; sample: 2; limit: Small convenience sample; no verified market demand.\n\n## LATEST CHECK-IN\nThrough 2026-11-05 (plan v1): Two of five interviews completed; three remain.\nLearning: User and buyer may differ.\nNext priorities: Find actual budget owners\nNext review: 2026-11-12\n\n## LEARNING (recommendations, not new facts)\npitch: Venture practice \u2014 The sample size (n=2) is too small to generalize purchasing power or \u2026\nSIMULATED PRACTICE ONLY \u2014 excluded from observations and task counts.\nstage review: Customer canvas \u2014 Provisional assessment; findings are based on a small, biased conveni\u2026\nProvisional judgment: revise; not institutional approval. The distinction between the user (graduate student) and the decision-maker/payer (e.g., a partner, \u2026\n2 earlier learning artifacts in the workspace.\n\n## QUESTIONS FOR A HUMAN MENTOR\nHow should I identify the real buyer?\n\nNo automatic sending. No accelerator/funding decision is made by this prototype.\nCompact selection: shortened fields use \u2026; full records and additional questions stay in the workspace/editor. Review the full evidence before decisions."
+      },
+      "venture_id": "7c8eb747-32db-4128-9cc4-e2557814f2fa"
+    },
+    {
+      "name": "Music practice \u2014 fictional Week 7",
+      "checks": [
+        "Real plan approved; 2/5 progress saved",
+        "Real experiment generated and confirmed",
+        "Real decision generated and confirmed",
+        "Real pitch generated and confirmed",
+        "Real stage_review generated and confirmed",
+        "New-session coaching and exact-count brief; no automatic progress mutation"
+      ],
+      "outputs": {
+        "experiment": {
+          "kind": "experiment",
+          "title": "Buyer discovery",
+          "hypothesis": "The user is also the buyer",
+          "task_id": "35962889-abbb-4165-939b-ae97f8a6f84e",
+          "audience": "Music teachers and school purchasers",
+          "method": "interview",
+          "capacity": 5,
+          "questions": [
+            "Tell me about the last time you purchased a related product or service.",
+            "Walk me through the steps you took from realizing you needed it to the final payment.",
+            "Who else had to review or approve this purchase before it was finalized?",
+            "What other tools or methods did you consider before deciding on this specific one?"
+          ],
+          "measures": [
+            "Identification of specific roles involved in the approval chain",
+            "Documentation of the actual procurement process used (e.g., credit card, school invoice, grant)",
+            "List of rejected alternatives and the specific reasons why they were not chosen"
+          ],
+          "decision_rule": "Identify if the person using the tool (teacher) is the same person who executes the payment (purchaser) based on recent transaction history; no demand claim.",
+          "limitations": "Small, convenience sample of 3 remaining interviews Inability to generalize findings to all school districts or music institutions Findings represent specific past behaviors, not future market demand",
+          "status": "planned"
+        },
+        "decision": {
+          "kind": "decision",
+          "title": "Next learning approach",
+          "options": [
+            {
+              "name": "Interview users",
+              "known_cost": "Unknown",
+              "assumptions": [
+                "Students can reach the service"
+              ],
+              "risks": [
+                "Unobserved usage"
+              ],
+              "missing_information": [
+                "Actual cost"
+              ],
+              "next_test": "Observe a small test"
+            },
+            {
+              "name": "Interview purchasing decision-makers",
+              "known_cost": "Unknown",
+              "assumptions": [
+                "Students can reach the service"
+              ],
+              "risks": [
+                "Unobserved usage"
+              ],
+              "missing_information": [
+                "Actual cost"
+              ],
+              "next_test": "Observe a small test"
+            }
+          ],
+          "comparison": "Compare convenience and cost",
+          "recommendation": "Test actual behavior first",
+          "limitations": "Unknown costs"
+        },
+        "pitch": {
+          "kind": "pitch",
+          "title": "Venture practice",
+          "audience": "investor",
+          "pitch": "We are exploring teachers need feedback on practice; the budget owner is unknown. We have two exploratory interviews and are still identifying the buyer.",
+          "questions": [
+            "How does the person who approves the budget typically discover new tools?",
+            "What specific procurement steps (e.g., school board approval, department head sign-off) were required for the last music tool purchased?"
+          ],
+          "clarity": "The pitch currently focuses on a problem statement rather than a value proposition; try to describe the specific outcome the feedback provides.",
+          "problem_customer": "You have correctly identified the tension between the user (teacher) and the potential buyer (administrator/purchaser). The next step is to move from 'who pays' to 'how the decision is made'.",
+          "evidence": "You have completed 2 out of 5 planned interviews. Note: These 2 interviews are a small, convenience sample and cannot be used to generalize the purchasing behavior of all music schools.",
+          "differentiation": "The current differentiation is unclear because the competitive landscape (existing feedback methods) hasn't been mapped yet.",
+          "ask": "Request introductions to school administrators or department heads who have recently authorized a software or tool purchase.",
+          "revised_pitch": "We are investigating the procurement process for music education tools to understand how feedback technology can be integrated into school budgets, and we are looking for three more interviews with recent purchasers.",
+          "limitations": "Findings are based on a small, non-representative sample of two individuals. The current data reflects reported behavior, not verified market demand.",
+          "simulated": true
+        },
+        "stage_review": {
+          "kind": "stage_review",
+          "title": "Customer canvas",
+          "material": "Users: Music teachers and school purchasers. Buyer and purchase pathway remain unconfirmed.",
+          "criteria": [
+            "Identify user and buyer"
+          ],
+          "evidence_ids": [
+            "eabf8246-8abb-4818-9e1f-ac17e11c22e0"
+          ],
+          "judgment": "revise",
+          "reasoning": "While you have begun to distinguish between the user (teacher) and the payer (different person), the specific role, authority, and decision-making criteria of the buyer remain unconfirmed.",
+          "missing": [
+            "Specific job title or role of the person who authorizes the budget",
+            "The actual procurement process (e.g., credit card, school invoice, or annual budget cycle)",
+            "Criteria used by the buyer to evaluate a new tool (e.g., cost, curriculum alignment, or ease of administration)"
+          ],
+          "next_step": "In your remaining 3 interviews, specifically ask: 'When you last bought a piece of educational software, what was the exact step-by-step process to get the payment approved, and who had to sign off on it?'",
+          "limitations": "Provisional assessment; findings are based on a small, biased convenience sample of 2 fictional participants and cannot be generalized to the broader market."
+        },
+        "followup": "It looks like you are making steady progress in separating the person who uses the music practice tool from the person who actually signs the checks.\n\n### Progress Review\n\n**What has changed:**\nYour focus has shifted from a general problem (teachers needing feedback) to a specific structural challenge: the \"Budget Owner\" gap. Your latest observations indicate a divergence between the **user** (the teacher) and the **buyer** (the person approving payment). This is a critical distinction that changes your entire go-to-market strategy, as your marketing must now speak to two different sets of motivations.\n\n**Current Interview Status:**\n*   **Target Count:** 5 interviews\n*   **Completed Count:** 2 interviews\n*   **Remaining:** 3 interviews\n\nBecause you have only spoken to two people in a small, convenience-based sample, please remember that these findings are not statistically significant and cannot be generalized to all music schools or teachers. You are currently identifying patterns, not proving market demand.\n\n### Challenging an Assumption\n\n**The Assumption:** You are currently operating under the assumption that the \"Budget Owner\" is a separate, reachable entity that can be identified through the same channels as the teachers.\n\n**The Rationale:** While you have observed that the buyer is different from the user, you haven't yet encountered evidence of *how* a teacher actually initiates a purchase request or *who* the specific gatekeeper is (e.g., a Department Head, a Principal, or a District Procurement Officer). If the budget owner is buried deep within a complex school district hierarchy, the \"pathway\" might be too high-friction for a prototype-stage product to navigate.\n\n**A Feasible Test:** In your next 3 interviews, do not ask if a budget owner *exists*. Instead, ask the teachers to walk you through the **exact steps** they took the last time they requested a new piece of software or equipment. \n*   **What to record:** Did they send an email? Did they fill out a specific form? Did they need a quote from a vendor? Who specifically had to say \"yes\" before the money moved?\n\n### Recommendation\n\nI recommend you continue with your current plan of 3 remaining interviews, but pivot the conversation away from \"features\" and entirely toward \"procurement workflow.\" \n\n**Follow-up Question:**\nAmong the two people you have already interviewed, did they mention any specific \"paperwork\" or \"approval\" hurdles that they personally had to navigate?\n\n***\n\n*Note: Please confirm or update these details in your profile editor if you wish to permanently save this progress.*",
+        "brief": "# VIRTUAL EIR \u2014 MENTOR BRIEF\nReview before sharing. Founder reports; not independently verified.\nPrepared: 2026-11-05T17:34:03.247521+00:00\nVenture: Music practice \u2014 fictional Week 7\nStage: prototype\nCustomer: Music teachers and school purchasers\nProblem: Teachers need feedback on practice; the budget owner is unknown\n\n## CONFIRMED GOAL\nUnderstand the actual buyer and purchase pathway before expanding this venture\nStatus: active\n\n## TASK ACTIVITY (not market validation)\nPlan version: 1\nConduct behavior interviews regarding recent music software\u2026: 5 planned / 2 completed / 3 remaining; in progress\nOwner: Unassigned; milestone: Not set; due: Not set\nResult: Two fictional behavior interviews; the purchasing decision-maker remains unclea\u2026; blocker: None reported\nDraft written review of user vs. buyer distinction and evid\u2026: 1 planned / 0 completed / 1 remaining; not started\nOwner: Unassigned; milestone: Not set; due: Not set\nResult: Not reported; blocker: None reported\n\n## OBSERVATIONS AND COUNTEREVIDENCE\n2026-11-05 [contradicts]: Both fictional participants use the service, but a different person approves payment.\nSource: Fictional behavior notes A and B; sample: 2; limit: Small convenience sample; no verified market demand.\n\n## LATEST CHECK-IN\nThrough 2026-11-05 (plan v1): Two of five interviews completed; three remain.\nLearning: User and buyer may differ.\nNext priorities: Find actual budget owners\nNext review: 2026-11-12\n\n## LEARNING (recommendations, not new facts)\npitch: Venture practice \u2014 Findings are based on a small, non-representative sample of two indiv\u2026\nSIMULATED PRACTICE ONLY \u2014 excluded from observations and task counts.\nstage review: Customer canvas \u2014 Provisional assessment; findings are based on a small, biased conveni\u2026\nProvisional judgment: revise; not institutional approval. While you have begun to distinguish between the user (teacher) and the payer (different person), th\u2026\n2 earlier learning artifacts in the workspace.\n\n## QUESTIONS FOR A HUMAN MENTOR\nHow should I identify the real buyer?\n\nNo automatic sending. No accelerator/funding decision is made by this prototype.\nCompact selection: shortened fields use \u2026; full records and additional questions stay in the workspace/editor. Review the full evidence before decisions."
+      },
+      "venture_id": "afb64cdf-3b6c-453f-9285-0c01d2b8630a"
+    },
+    {
+      "name": "Window repair \u2014 fictional Week 7",
+      "checks": [
+        "Real plan approved; 2/5 progress saved",
+        "Real experiment generated and confirmed",
+        "Real decision generated and confirmed",
+        "Real pitch generated and confirmed",
+        "Real stage_review generated and confirmed",
+        "New-session coaching and exact-count brief; no automatic progress mutation"
+      ],
+      "outputs": {
+        "experiment": {
+          "kind": "experiment",
+          "title": "Buyer discovery",
+          "hypothesis": "The user is also the buyer",
+          "task_id": "8ed2a42e-9b11-4fe6-8bef-f843d5ef0c78",
+          "audience": "Building managers",
+          "method": "interview",
+          "capacity": 5,
+          "questions": [
+            "Walk me through the last time a window repair was required in your building.",
+            "Who was involved in deciding which contractor to use for that specific repair?",
+            "What specific criteria or steps were used to select that provider?",
+            "What other service providers did you consider or contact before making the final choice?"
+          ],
+          "measures": [
+            "Identification of the specific person who signed the work order or invoice",
+            "List of alternative vendors contacted for the same repair",
+            "Observable criteria used in the selection process (e.g., price, response time, existing contract)"
+          ],
+          "decision_rule": "The hypothesis 'The user is also the buyer' is supported only if the interviewee confirms they personally authorized the payment or selection for the last repair, rather than just reporting the damage.",
+          "limitations": "Small, convenience-based sample of 3 remaining interviews; findings cannot be generalized to all building management types or larger-scale commercial operations.",
+          "status": "planned"
+        },
+        "decision": {
+          "kind": "decision",
+          "title": "Next learning approach",
+          "options": [
+            {
+              "name": "Interview users",
+              "known_cost": "Unknown",
+              "assumptions": [
+                "Students can reach the service"
+              ],
+              "risks": [
+                "Unobserved usage"
+              ],
+              "missing_information": [
+                "Actual cost"
+              ],
+              "next_test": "Observe a small test"
+            },
+            {
+              "name": "Interview purchasing decision-makers",
+              "known_cost": "Unknown",
+              "assumptions": [
+                "Students can reach the service"
+              ],
+              "risks": [
+                "Unobserved usage"
+              ],
+              "missing_information": [
+                "Actual cost"
+              ],
+              "next_test": "Observe a small test"
+            }
+          ],
+          "comparison": "Compare convenience and cost",
+          "recommendation": "Test actual behavior first",
+          "limitations": "Unknown costs"
+        },
+        "pitch": {
+          "kind": "pitch",
+          "title": "Venture practice",
+          "audience": "investor",
+          "pitch": "We are exploring existing repair business exploring a new customer segment. We have two exploratory interviews and are still identifying the buyer.",
+          "questions": [
+            "Who is the actual person authorizing the payment versus the person reporting the broken window?"
+          ],
+          "clarity": "The pitch currently describes an internal exploration process rather than a value proposition for the target segment.",
+          "problem_customer": "You have identified a potential split between the user (building manager) and the budget owner; the pitch should focus on the pain point being solved for the organization.",
+          "evidence": "Two completed interviews out of a target of five; note that these two interviews are a small, convenience sample and cannot generalize to all building managers.",
+          "differentiation": "The current differentiation is not stated; you need to identify how your repair process differs from the incumbent's or the 'do-nothing' alternative.",
+          "ask": "Request introductions to building managers who have managed a window repair or maintenance contract in the last six months.",
+          "revised_pitch": "We are investigating how specialized window repair services can reduce maintenance overhead for building managers. We are looking for three more interviews with managers to understand their procurement process.",
+          "limitations": "Findings are based on a small, biased sample of two interviews and do not constitute market validation.",
+          "simulated": true
+        },
+        "stage_review": {
+          "kind": "stage_review",
+          "title": "Customer canvas",
+          "material": "Users: Building managers. Buyer and purchase pathway remain unconfirmed.",
+          "criteria": [
+            "Identify user and buyer"
+          ],
+          "evidence_ids": [
+            "d86e01d6-4763-4e59-9831-45e35a8ac9b1"
+          ],
+          "judgment": "revise",
+          "reasoning": "While you have begun distinguishing between the service user (building manager) and the person approving payment, the specific role, authority, and decision-making criteria of the actual buyer remain unconfirmed.",
+          "missing": [
+            "Identification of the specific buyer role (e.g., owner, procurement officer, or board member)",
+            "The formal purchase pathway (how a request moves from the manager to the payer)",
+            "The criteria used by the buyer to approve or reject a repair expense"
+          ],
+          "next_step": "Complete the remaining 3 interviews in your plan, specifically asking the building managers: 'Once you identify a repair is needed, what is the exact process for getting that specific invoice approved and paid?'",
+          "limitations": "Provisional assessment; findings are based on a small, biased convenience sample of 2 interviews and cannot be generalized to the entire building management market."
+        },
+        "followup": "Based on your saved progress and recent check-in, here is a review of your current venture state.\n\n### Progress Review\n\n**What has changed:**\nYour focus has shifted from a general exploration of a new customer segment to a specific investigation of the **purchasing pathway**. You have moved from a general \"growth\" stage assumption to a specific investigation of the distinction between the **user** (the person experiencing the window issue) and the **buyer** (the person with the authority to approve the expenditure).\n\n**Current Interview Counts:**\n*   **Target Count:** 5 interviews\n*   **Completed Count:** 2 interviews\n*   **Remaining Count:** 3 interviews\n\n*Note: Because these 2 interviews are from a small, convenience sample, these findings are not statistically significant and cannot be used to generalize the behavior of all building managers.*\n\n### Analysis of Observations\n\n**Founder-Reported Observations:**\n*   The person utilizing the repair service is not necessarily the person who approves the payment.\n*   A \"blocker\" has been identified: difficulty accessing the actual budget owners.\n\n**Hypothesis (Derived from observations):**\nTo successfully expand, you must develop a sales approach that targets the budget owner's specific criteria (e.g., cost, vendor reliability, or administrative ease) rather than just the technical needs of the building manager/user.\n\n### Challenging an Assumption\n\n**The Assumption:**\nYou are currently operating under the assumption that **identifying the budget owner is the primary hurdle to expansion.**\n\n**The Rationale:**\nWhile finding the person who signs the check is a necessary logistical step, it does not guarantee a sale. Even if you reach the budget owner, the expansion will fail if your value proposition does not align with their specific decision-making drivers (which may be entirely different from the building manager's drivers, such as quarterly budget constraints, procurement compliance, or long-term maintenance contracts).\n\n**A Feasible Test:**\nIn your remaining 3 interviews, specifically ask the budget owners (if reachable) or the managers about the **criteria used to evaluate a vendor during the last approval process.** \n*   **What to record:** Do they prioritize the lowest quote, the speed of service, or the ability to provide specific insurance/compliance documentation? This will test whether your \"expansion\" requires a change in *who* you talk to or a change in *what* you offer.\n\n***\n\n**Recommendation:**\nI recommend proceeding with the remaining 3 interviews in your plan, but pivot the questioning to focus on the \"criteria for approval\" to bridge the gap between the user and the buyer.\n\n**Follow-up Question:**\nRegarding the \"blocker\" you mentioned: when you attempted to reach the budget owners, did they decline to speak with you, or were you simply unable to find their contact information?\n\n*Please confirm or update these details in your profile editor if they reflect a change in your intended strategy.*",
+        "brief": "# VIRTUAL EIR \u2014 MENTOR BRIEF\nReview before sharing. Founder reports; not independently verified.\nPrepared: 2026-11-05T17:35:44.820397+00:00\nVenture: Window repair \u2014 fictional Week 7\nStage: growth\nCustomer: Building managers\nProblem: Existing repair business exploring a new customer segment\n\n## CONFIRMED GOAL\nUnderstand the actual buyer and purchase pathway before expanding this venture\nStatus: active\n\n## TASK ACTIVITY (not market validation)\nPlan version: 1\nConduct behavior interviews with building managers: 5 planned / 2 completed / 3 remaining; in progress\nOwner: Unassigned; milestone: Not set; due: Not set\nResult: Two fictional behavior interviews; the purchasing decision-maker remains unclea\u2026; blocker: None reported\nSynthesize findings into a buyer vs. user review: 1 planned / 0 completed / 1 remaining; not started\nOwner: Unassigned; milestone: Procurement Mapping Complete; due: Not set\nResult: Not reported; blocker: None reported\n\n## OBSERVATIONS AND COUNTEREVIDENCE\n2026-11-05 [contradicts]: Both fictional participants use the service, but a different person approves payment.\nSource: Fictional behavior notes A and B; sample: 2; limit: Small convenience sample; no verified market demand.\n\n## LATEST CHECK-IN\nThrough 2026-11-05 (plan v1): Two of five interviews completed; three remain.\nLearning: User and buyer may differ.\nNext priorities: Find actual budget owners\nNext review: 2026-11-12\n\n## LEARNING (recommendations, not new facts)\npitch: Venture practice \u2014 Findings are based on a small, biased sample of two interviews and do\u2026\nSIMULATED PRACTICE ONLY \u2014 excluded from observations and task counts.\nstage review: Customer canvas \u2014 Provisional assessment; findings are based on a small, biased conveni\u2026\nProvisional judgment: revise; not institutional approval. While you have begun distinguishing between the service user (building manager) and the person appr\u2026\n2 earlier learning artifacts in the workspace.\n\n## QUESTIONS FOR A HUMAN MENTOR\nHow should I identify the real buyer?\n\nNo automatic sending. No accelerator/funding decision is made by this prototype.\nCompact selection: shortened fields use \u2026; full records and additional questions stay in the workspace/editor. Review the full evidence before decisions."
+      },
+      "venture_id": "fc41aff9-e8ea-47ed-af65-a8e055c6ed0a"
+    }
+  ],
+  "failures": []
+}

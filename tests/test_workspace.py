@@ -121,6 +121,7 @@ def test_migration_restart_and_old_client_preserve(env):
         "evidence": [],
         "reviews": [],
         "checkins": [],
+        "artifacts": [],
     }
     # Migration does not write an empty workspace or touch old profiles/sessions.
     with store.connect() as db:

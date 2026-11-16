@@ -1,0 +1,108 @@
+{
+  "recorded_date": "2026-11-05",
+  "files": [
+    {
+      "file": "Demo-Guide.md",
+      "bytes": 3248,
+      "sha256": "b51c30e9b2ffc7137d0c1accc5f641945f8eed58302590056f1707aa1e28e735"
+    },
+    {
+      "file": "Deployment-Record.md",
+      "bytes": 5795,
+      "sha256": "dfc6a3ee4675bb82a157367139c673d2f89c4e9e47ca1cfdd0871931a4b31d12"
+    },
+    {
+      "file": "evidence/browser.json",
+      "bytes": 1035,
+      "sha256": "fc37458ad6d7d0992e3ba6f5f75736f231c8d62f8df94c89a59a55f51aeea643"
+    },
+    {
+      "file": "evidence/bundle.json",
+      "bytes": 832,
+      "sha256": "3f1d4c87f9c12e15c63a57e9fda2cdb0d16f398762bdc5fe1ee5ea735d29024b"
+    },
+    {
+      "file": "evidence/cloud-check.json",
+      "bytes": 5073,
+      "sha256": "eae2125acfd91d81bfaaf8d6bba3e3e287b437f77030a9591afce0059df2a656"
+    },
+    {
+      "file": "evidence/cloud-desktop.png",
+      "bytes": 149223,
+      "sha256": "9106c226ce8a7b0ae246cfff3041d80c1454313509acc5cd3a4d80216865a7e9"
+    },
+    {
+      "file": "evidence/cloud-mobile.png",
+      "bytes": 70328,
+      "sha256": "d21fdea2dc79ef50c05ccd612dbba2723c172a398484be70a77502bbea2618d7"
+    },
+    {
+      "file": "evidence/cloud-print.png",
+      "bytes": 69286,
+      "sha256": "6c0535e865088299ebc99ce15b2319416a50e2d8a115a72fa74d09379a652238"
+    },
+    {
+      "file": "evidence/deployment.json",
+      "bytes": 328,
+      "sha256": "8b45cf5bab4ae0900b06c4f8e5e8974a3c96fa63a38f6cf6829fd0d7a5a7431e"
+    },
+    {
+      "file": "evidence/desktop-learning.png",
+      "bytes": 151436,
+      "sha256": "411d212046d28962947631ca30864ef5c141480c569514efba95772435d2a61b"
+    },
+    {
+      "file": "evidence/mentor-brief-print.png",
+      "bytes": 78382,
+      "sha256": "76348c5cd3a82f3489aac86b0b0648b79ca75ee83d0e83e532a3f53d35eee9be"
+    },
+    {
+      "file": "evidence/Mentor-Brief.md",
+      "bytes": 1829,
+      "sha256": "a0f4927d23e3ef47a28a91624d18bd9acb20fef9f23cc9a1fb850badc57caba5"
+    },
+    {
+      "file": "evidence/mobile-urochester-dark.png",
+      "bytes": 62317,
+      "sha256": "b1076fbb103db8396e1e2b1083f0c39eebc1eca7876561fcea64f4619f07da15"
+    },
+    {
+      "file": "evidence/personas-before.json",
+      "bytes": 18107,
+      "sha256": "9be72b70a3bbfd369f27955bd1bcc1090e444478793faf80860b5bbc0a046996"
+    },
+    {
+      "file": "evidence/personas-final.json",
+      "bytes": 18397,
+      "sha256": "84823183dd8881e77f7f96af7ece661d8da013f8b8e75b12a7b7375d545b5e0f"
+    },
+    {
+      "file": "evidence/Source-Manifest.json",
+      "bytes": 4936,
+      "sha256": "1c9e9d3c651ae148613bb96bc65a1f006a5e9cac411f712d2612585778c2bc8a"
+    },
+    {
+      "file": "evidence/workflows-final.json",
+      "bytes": 31811,
+      "sha256": "aaf6ce8fdae03f2b89241738d67ef76b0b1068ed402d4b966c8311a50b481696"
+    },
+    {
+      "file": "Integrated-Workflow.mp4",
+      "bytes": 5224617,
+      "sha256": "fc0f5cb0356d95ca0adcd2dbd2971148becb2b6189604530cd51dcf71d069968"
+    },
+    {
+      "file": "Persona-Review.md",
+      "bytes": 4388,
+      "sha256": "e660f757514b3923194cac8af827bc131c68cf0113997d45864b2259bfffbef3"
+    },
+    {
+      "file": "Week8-Report.md",
+      "bytes": 6291,
+      "sha256": "d7ca4ed4eb4dde47a276a7ed822f66392309151b8ea1b97cfe2f91037829947a"
+    }
+  ],
+  "deployment_status": "READY; six live check groups passed",
+  "deployment_id": "dpl_FGsNPgUetixvG76McSbGnE5DMe9F",
+  "expert_review": "pending"
+}

@@ -1,6 +1,6 @@
 # Hosted classroom demo
 
-Updated October 19, 2026. This is the interactive classroom app, separate from the older static `virtual-eir-showcase` website. The local recording app on port 62609 remains available.
+Reviewed November 16, 2026. This is the interactive classroom app, separate from the older static `virtual-eir-showcase` website. The local recording app on port 62609 remains available. The deployment narratives below retain their original October 19 results; later release evidence is in the [November 5 deployment record](../deliverables/2026-11-05/Week8/Deployment-Record.md) and [Friday readiness report](../deliverables/2026-11-16/Friday-Readiness.md).
 
 ## Resources and access
 

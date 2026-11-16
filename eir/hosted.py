@@ -101,6 +101,7 @@ async def protected_request(request: Request, call_next, gate: CallGate, hosts):
     is_ai = request.method == "POST" and (
         request.url.path.endswith("/chat")
         or request.url.path.endswith("/workspace/draft")
+        or request.url.path.endswith("/workspace/artifacts/generate")
     )
     request_id = None
     try:

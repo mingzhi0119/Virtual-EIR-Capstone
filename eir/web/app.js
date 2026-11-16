@@ -3,6 +3,8 @@ import { initializeWorkspace } from './workspace.js'
 
 const $ = id => document.getElementById(id)
 let venture = null, session = null, busy = false, sessionList = []
+let uncertainRequest = null
+const recoveryButtons = []
 const initial = { name: 'Campus dinner delivery (fictional)', customer: 'Students studying on campus in the evening', problem: 'Getting an affordable dinner during evening study may be inconvenient', stage: 'idea', assumptions: ['Students care most about delivery speed; not yet tested'], evidence: [], actions: [] }
 const initialMessage = 'I want to offer dinner delivery to students studying on campus in the evening. This is only an idea; I have not interviewed anyone. I assume speed matters most. I can interview at most five people this week. Ask two useful questions and suggest one concrete validation action for this week.'
 const followupMessage = 'I have saved the interview results. Review them against the previous action plan and suggest how to adjust the next step. Explain the limits of the evidence and do not confuse planned interviews with completed interviews.'
@@ -12,10 +14,36 @@ function status(text, error = false) {
   for (const id of ['status', 'profile-status', 'appearance-status']) { $(id).textContent = text; $(id).classList.toggle('error', error) }
 }
 async function api(path, method = 'GET', body) {
-  const response = await fetch('/api' + path, { method, headers: body ? { 'Content-Type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined })
-  const data = await response.json()
-  if (!response.ok) throw Error(typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail))
-  return data
+  const writes = method !== 'GET' && !path.endsWith('/brief/preview')
+  if (writes && uncertainRequest) throw Error('A previous request may already have saved. Use Recover saved state and compare the saved records before submitting again.')
+  const timeoutMs = /\/chat$|\/artifacts\/generate$/.test(path) || (method === 'POST' && path.endsWith('/draft')) ? 210000 : 30000
+  const snapshot = writes ? { path, method, body, timeoutMs, startedAt: Date.now(), ventureId: venture?.venture_id, sessionId: session?.session_id, turnCount: session?.turns.length || 0, ventureIds: [...$('ventures').options].map(option => option.value), sessionIds: sessionList.map(item => item.session_id) } : null
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), timeoutMs)
+  const failed = message => {
+    if (writes) {
+      uncertainRequest = snapshot
+      for (const button of recoveryButtons) button.hidden = false
+      return Error(`${message} The save outcome is unknown; it may already be saved. Use Recover saved state before submitting again. Your entered work is retained.`)
+    }
+    return Error(message)
+  }
+  try {
+    let response
+    try { response = await fetch('/api' + path, { method, headers: body ? { 'Content-Type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined, signal: controller.signal }) }
+    catch { throw failed(controller.signal.aborted ? 'The service took too long to respond.' : 'Unable to reach the service. Check your connection, then retry.') }
+    let data
+    try { data = await response.json() }
+    catch { throw failed(controller.signal.aborted ? 'The service took too long to respond.' : 'The service returned an unreadable response. It may be waking up or require sign-in. Retry after checking access.') }
+    if (!response.ok) {
+      const detail = typeof data.detail === 'string' ? data.detail : Array.isArray(data.detail) ? data.detail.slice(0, 3).map(item => `${item.loc?.filter(part => !['body', 'data'].includes(part)).join(' ').replaceAll('_', ' ') || 'Input'}: ${item.msg}`).join('; ') : 'The request could not be completed. Retry or reload the saved workspace.'
+      if (response.status >= 500) throw failed(detail)
+      throw Error(detail)
+    }
+    return data
+  } finally {
+    clearTimeout(timeout)
+  }
 }
 function option(value, text) { const node = document.createElement('option'); node.value = value; node.textContent = text; return node }
 const modelLabels = { 'gpt-5.6-luna': 'GPT-5.6 Luna', 'gpt-5.6-terra': 'GPT-5.6 Terra', 'gpt-5.6-sol': 'GPT-5.6 Sol', 'gpt-4.1-mini': 'GPT-4.1 mini' }
@@ -34,7 +62,7 @@ function normalized(value) {
 function dirty() { return !!venture && JSON.stringify(normalized(editable())) !== JSON.stringify(normalized(venture.profile)) }
 function markDraft() { try { $('draft-dot').hidden = !dirty() } catch { $('draft-dot').hidden = false } }
 function requireSaved() { if (dirty()) throw Error('You have unsaved profile changes. Confirm and save them first.') }
-function requireSwitchReady() { requireSaved(); if (workspaceUI.hasDraft()) throw Error('Confirm or discard unsaved Goal & Plan changes before navigating.'); if ($('message').value.trim()) throw Error('You have an unsent message. Send it or clear it before changing venture or session.') }
+function requireSwitchReady() { if (uncertainRequest) throw Error('Recover saved state for the previous request before changing venture or session.'); requireSaved(); if (workspaceUI.hasDraft()) throw Error('Confirm or discard unsaved Goal & Plan changes before navigating.'); if ($('message').value.trim()) throw Error('You have an unsent message. Send it or clear it before changing venture or session.') }
 function renderMemory(profile) {
   const action = profile.actions?.[0]
   $('action-summary').textContent = action ? `${action.description}\n\nPlanned: ${action.target_count} · Completed: ${action.completed_count} · Remaining: ${Math.max(0, action.target_count - action.completed_count)}\n${action.result || 'No results reported yet.'}` : 'No confirmed action yet.'
@@ -92,11 +120,17 @@ function retainSession(created) {
   renderSessionNavigation(); renderTurns()
 }
 async function refreshSessions(selected) { setSessions(await api(`/ventures/${venture.venture_id}/sessions`), selected) }
-async function load(id) {
+async function load(id, { preserveLocal = false, selectedSession } = {}) {
   try {
+    const profileDraft = preserveLocal && venture?.venture_id === id ? $('profile').value : null
     const next = await api(`/ventures/${id}`); const list = await api(`/ventures/${id}/sessions`)
-    await workspaceUI.load(id)
-    venture = next; remember('eir-selected-venture', id); setSessions(list, stored(`eir-session-${id}`)); render()
+    await workspaceUI.load(id, { preserveLocal })
+    venture = next; remember('eir-selected-venture', id); setSessions(list, selectedSession || stored(`eir-session-${id}`)); render()
+    if (profileDraft !== null) {
+      $('profile').value = profileDraft
+      try { renderFields(editable()) } catch { /* Retain invalid profile edits for correction. */ }
+      markDraft()
+    }
     status('Restored the confirmed venture profile and conversation history.')
   } catch (error) { if (venture) $('ventures').value = venture.venture_id; throw error }
 }
@@ -118,6 +152,55 @@ function disabled(value) {
 }
 async function run(task) { if (busy) return; disabled(true); try { await task() } catch (error) { status(error.message, true) } finally { disabled(false) } }
 const workspaceUI = initializeWorkspace({ api, getVenture: () => venture, getModel: () => $('models').value, requireSaved, onStatus: status, run })
+async function recoverSavedState() {
+  const request = uncertainRequest
+  if (!request) return
+  const report = (message, error = false) => {
+    status(message, error); $('workspace-status').textContent = message; $('workspace-status').classList.toggle('error', error)
+  }
+  const list = await api('/ventures')
+  const created = request.path === '/ventures' ? list.filter(item => !request.ventureIds.includes(item.venture_id)) : []
+  const id = created.length === 1 ? created[0].venture_id : request.ventureId
+  let saved = request.path === '/ventures' && created.length === 1
+  let keepCurrent = false
+  if (id && id !== venture?.venture_id) {
+    let profileDraft = false
+    try { profileDraft = dirty() } catch { profileDraft = true }
+    keepCurrent = profileDraft || workspaceUI.hasDraft() || !!$('message').value.trim()
+  }
+  if (!keepCurrent && id && list.some(item => item.venture_id === id)) {
+    const sessions = await api(`/ventures/${id}/sessions`)
+    const newSessions = request.path.endsWith('/sessions') ? sessions.filter(item => !request.sessionIds.includes(item.session_id)) : []
+    const recoveredSession = newSessions.length === 1 ? newSessions[0].session_id : request.sessionId
+    await load(id, { preserveLocal: true, selectedSession: recoveredSession })
+    if (request.path.endsWith('/sessions')) saved = newSessions.length === 1
+    else if (request.path.includes('/workspace/')) saved = (await api(`/ventures/${id}/workspace`)).revision > request.body.expected_revision
+    else if (request.path === `/ventures/${id}` && request.method === 'PUT') saved = venture.revision > request.body.expected_revision
+    if (request.path.endsWith('/chat')) {
+      const turns = sessions.find(item => item.session_id === request.sessionId)?.turns.slice(request.turnCount)
+      saved = !!turns?.some((turn, index) => turn.role === 'user' && turn.content === request.body.message && turns[index + 1]?.role === 'assistant')
+      if (saved && $('message').value.trim() === request.body.message) $('message').value = ''
+    }
+  }
+  if (!saved && (Date.now() - request.startedAt < request.timeoutMs || !window.confirm('No matching saved change appears after the processing window. The original request could still finish. Allow a new submission after reviewing the saved records? This may produce a duplicate record or reply.'))) {
+    report(`${request.path.endsWith('/chat') ? 'The saved reply' : 'The saved change'} is not visible yet. The original request may still be processing. Use Recover saved state again before submitting; your entered work is retained.`, true)
+    return
+  }
+  $('ventures').replaceChildren(...list.map(item => option(item.venture_id, item.profile.name)))
+  if (keepCurrent) $('ventures').value = venture.venture_id
+  else if (id) $('ventures').value = id
+  uncertainRequest = null
+  for (const button of recoveryButtons) button.hidden = true
+  report(keepCurrent ? 'The created venture was recovered in the venture list. Your current venture and local edits were retained. Save or discard those edits, then select the new venture.' : 'Saved records recovered. Compare them with your retained local edits before continuing. Requests were not automatically repeated.')
+}
+for (const [index, target] of ['status', 'workspace-status', 'profile-status'].entries()) {
+  const button = document.createElement('button'); button.type = 'button'; button.id = index ? `request-recover-${target}` : 'request-recover'
+  button.className = 'secondary'; button.textContent = 'Recover saved state'; button.hidden = true
+  button.onclick = () => run(async () => {
+    try { await recoverSavedState() }
+    catch (error) { $('workspace-status').textContent = error.message; $('workspace-status').classList.add('error'); throw error }
+  }); $(target).after(button); recoveryButtons.push(button)
+}
 async function selectSession(id) {
   const previous = session
   try { requireSwitchReady(); retainSession(await api(`/ventures/${venture.venture_id}/sessions/${id}`)); status('Opened the saved session. The same confirmed venture context is available.') }
@@ -198,7 +281,7 @@ for (const name of ['profile', 'appearance']) {
   $(`open-${name}`).onclick = () => $(`${name}-panel`).showModal()
   $(`close-${name}`).onclick = () => $(`${name}-panel`).close()
 }
-window.addEventListener('beforeunload', event => { try { if (dirty() || $('message').value.trim()) { event.preventDefault(); event.returnValue = '' } } catch { event.preventDefault(); event.returnValue = '' } })
+window.addEventListener('beforeunload', event => { try { if (uncertainRequest || dirty() || $('message').value.trim()) { event.preventDefault(); event.returnValue = '' } } catch { event.preventDefault(); event.returnValue = '' } })
 async function discoverModels() {
   const list = (await api('/models')).models; $('models').replaceChildren(...list.map(model => option(model, modelLabels[model] || model)))
   if (list.includes('gemma4:26b')) $('models').value = 'gemma4:26b'

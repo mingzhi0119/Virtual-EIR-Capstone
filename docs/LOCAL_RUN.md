@@ -1,6 +1,6 @@
 # Local setup and verification
 
-Updated October 16, 2026. Run commands from the repository root. Older dated archives describe earlier snapshots, not today's feature acceptance.
+Updated November 5, 2026. Run commands from the repository root. Older dated archives describe earlier snapshots, not today's feature acceptance.
 
 For the optional official OpenAI recording mode, follow [OpenAI demo setup](OPENAI_DEMO.md). That mode uses the existing runtime without starting GOAT/Ollama. The local-model instructions below remain the default.
 
@@ -45,18 +45,24 @@ Add `-Service eir` to stop only EIR. Scripts identify this checkout's processes;
 
 Stopping preserves data and does not stop Ollama. Backend/prompt edits require restarting the relevant service, not just refreshing the browser. Startup sets the GOAT English prompt and disables sandbox/workbench features for this demo. English policy is not an infallible filter; historical Chinese conversations are not translated.
 
+The local launcher explicitly selects GOAT/Ollama and browser port 62607, even after an isolated or OpenAI rehearsal in the same terminal. Its service settings are scoped to child processes and the caller's settings are restored on success or failure. It requires at least one installed Ollama model, checks the browser's origin and verifies local model discovery before reporting success. If an existing service advertises a different provider, stop this checkout's services and restart; an occupied unrelated port is never stopped. Model discovery still requires a fictional generation check before presenting.
+
 ## Demonstrate the foundation
 
 1. Create a fictional venture. Open **Venture profile**, enter background/preference, review and confirm the save.
 2. Open Goal/Plan, enter objective, success criteria and constraints; generate a draft.
 3. Review/edit and explicitly approve it. Generation must not overwrite confirmed state.
 4. Report fictional actual progress. Five planned and two completed means three remaining, not market validation.
-5. Start a follow-up session and review saved progress. This is not the dedicated future Weekly Check-in feature.
+5. Save a structured Weekly Check-in, then start a follow-up session to review saved results and counts.
 6. Use **Revise approved plan · retain reports** for a report-preserving new version. A fresh **Generate AI plan** proposes zero-count work instead; inspect the warning and history.
 
-Profile actions and workspace tasks are separate, not automatically synchronized. Supported goal achievement remains blocked pending evidence review. See the [report](../deliverables/2026-10-16/Week4-Progress-Report.md) and [Persona review](../deliverables/2026-10-16/Persona-Review.md) for quality limitations.
+Profile actions and workspace tasks are separate, not automatically synchronized. Goal achievement requires an evidence-linked review plus explicit founder confirmation. Open **Learn, practice & prepare** for Experiment Designer, Decision Lab, Pitch Practice, Step Readiness and Mentor Brief. Save or generate a draft, inspect it, then confirm; use **Edit a new version** to preserve history. Link actual observations to confirmed experiments in Evidence & sources. Never record simulated pitch feedback as an actual interview.
+
+The [November 5 acceptance report](../deliverables/2026-11-05/Pre-Week8-Implementation.md) contains demonstration steps and isolated validation commands. New backend code requires restarting EIR. Existing cloud demonstrations do not update until explicitly deployed.
 
 ## Deterministic checks
+
+Week 8 adds optional UI recording: set `EIR_UI_RECORD=1` before running `node scripts/verify-pre-week8-ui.mjs` against the isolated port 62618 instance, then clear it. See the [demo guide](../deliverables/2026-11-05/Week8/Demo-Guide.md). The [deployment record](../deliverables/2026-11-05/Week8/Deployment-Record.md) describes the protected cloud release separately; do not treat a local pass as cloud verification.
 
 After installation, without live inference:
 
@@ -66,7 +72,10 @@ apps/goat/.venv/Scripts/python.exe -m ruff check eir tests scripts/verify-demo.p
 apps/goat/.venv/Scripts/python.exe -m ruff format --check eir tests scripts/verify-demo.py scripts/verify-english.py scripts/verify-week4-personas.py
 node apps/goat/frontend/node_modules/typescript/bin/tsc -p eir/frontend/tsconfig.json
 node scripts/build-eir-ui.mjs
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify-local-launcher.ps1
 ```
+
+The launcher verifier uses temporary fixtures and mocked service boundaries. It starts no background service, makes no model request and leaves saved demo records unchanged; it checks provider/port isolation, caller-setting recovery and failed preflights.
 
 The [CI workflow](../.github/workflows/prototype-checks.yml) contains exact ESLint and GOAT regression commands. The mock-network browser edge suite requires installed Microsoft Edge and frontend Playwright:
 
@@ -113,6 +122,6 @@ Git does not synchronize these paths, `.venv`, `node_modules`, model weights, cr
 
 ## Safety and deployment
 
-Only local, single-user, fictional demonstrations are supported. Project IDs prevent accidental association, not unauthorized multi-user access. No public/LAN binding, tunnel or real founder data. Existing dependency findings require separate remediation; no fresh clean security audit is claimed.
+This launcher supports a local, single-user, fictional demonstration. Its backend accepts only the configured loopback address and browser origin. Project IDs prevent accidental association, not unauthorized multi-user access. Do not expose the local services through a public/LAN binding or tunnel or use real founder data. No fresh comprehensive security audit is claimed.
 
-Public source is not a hosted application. The [Vercel showcase](https://virtual-eir-showcase.vercel.app) is an older read-only recording with no live model/write API. Portable runtime handoff needs its own deployment/security slice; Docker and hosted application delivery are not claimed.
+The separate [protected classroom demo](VERCEL_DEMO.md) uses hosted PostgreSQL and server-side OpenAI, with shared fictional records among admitted visitors. See the [November 5 release record](../deliverables/2026-11-05/Week8/Deployment-Record.md) and [current Friday readiness](../deliverables/2026-11-16/Friday-Readiness.md) for dated deployment evidence. The [Vercel showcase](https://virtual-eir-showcase.vercel.app) remains an older read-only recording with no live model/write API. An independent successor's full deployment and maintenance handoff is still unvalidated.

@@ -1,0 +1,161 @@
+{
+  "files": [
+    {
+      "file": ".vercelignore",
+      "bytes": 78,
+      "sha256": "c6a3498a72df2488e8a849b67aac0e3f64035aa33d6be3cadef1d2abc89aa4db"
+    },
+    {
+      "file": "eir/__init__.py",
+      "bytes": 81,
+      "sha256": "0a4cf7e15614c1de0f0b96d66c9606c883ad7ac82ea3d09e8e0661298ca441ef"
+    },
+    {
+      "file": "eir/app.py",
+      "bytes": 6797,
+      "sha256": "2f18ab636d5001e3b1ea56e7844124cb601dba6f04b3d5f869c996aabaa3a4de"
+    },
+    {
+      "file": "eir/coaching.py",
+      "bytes": 11462,
+      "sha256": "34f54a75f5dfb485385d1dacb98af2f17080c956ff9cee6707e76944b1ba3d13"
+    },
+    {
+      "file": "eir/feature_models.py",
+      "bytes": 10805,
+      "sha256": "d686e0737011408093cbb9610f331278c421fc7366cbf9812ef4a20a0bac3b29"
+    },
+    {
+      "file": "eir/feature_routes.py",
+      "bytes": 3538,
+      "sha256": "ab4e6b95b663c8b565c97712133124e82d7ed1607599c772764a2037d02ec7e2"
+    },
+    {
+      "file": "eir/feature_store.py",
+      "bytes": 11564,
+      "sha256": "f0ff3856439af3938b34e2edc849593f2a64e804e7148e07dd14cbdf8ecdda64"
+    },
+    {
+      "file": "eir/hosted.py",
+      "bytes": 6548,
+      "sha256": "034bc4e9562ce3c67b43bacdd06f5d2027f369829368b577215eade5bfe011a4"
+    },
+    {
+      "file": "eir/lab_models.py",
+      "bytes": 4313,
+      "sha256": "d4166e808410bfe1f0c2007949100a692e9900daf69bdcaa3aa8651c6bc3dfb5"
+    },
+    {
+      "file": "eir/labs.py",
+      "bytes": 17945,
+      "sha256": "3582ceef6ad3e2c2b224494186dbdd61b40c103be35eef691dc1b3c0fcc4c631"
+    },
+    {
+      "file": "eir/models.py",
+      "bytes": 3012,
+      "sha256": "3c8d3315f70350558952c673c7dd75debd9b371594eee9eb70b998f0988cb773"
+    },
+    {
+      "file": "eir/openai_client.py",
+      "bytes": 5831,
+      "sha256": "9a0e64f65398bdf4647350e4d71d555c907be72199ddfc9d0ba84a9c4a3b6d81"
+    },
+    {
+      "file": "eir/personas.py",
+      "bytes": 2406,
+      "sha256": "98c0bdae85ee7163b9324a80bb2bc3cec1f2fa2091b6b6a8f76edbd766c03c26"
+    },
+    {
+      "file": "eir/planning.py",
+      "bytes": 20238,
+      "sha256": "9b4eea26465da9c6414a4f5e61bc18a88a052dad661b1c5e2ebcb5098615dc13"
+    },
+    {
+      "file": "eir/postgres_store.py",
+      "bytes": 2465,
+      "sha256": "223ba4008ffc054739dfe620451be09ad3310ea6e74f51a8e34dc5cc58c36e67"
+    },
+    {
+      "file": "eir/prompts/coach.txt",
+      "bytes": 2478,
+      "sha256": "1425de79c4535ca7247d6bce5cd6a3d10dc2b33f3fc76aba469451be6a3bde78"
+    },
+    {
+      "file": "eir/reviews.py",
+      "bytes": 8439,
+      "sha256": "331f000dc7b46560c26781b1db821a6e8655e9889e873337f9fcbf92177488be"
+    },
+    {
+      "file": "eir/runtime.py",
+      "bytes": 1775,
+      "sha256": "f55084c124573b7367aeba21b897aae589ae178c046d6312a71a5e236311de72"
+    },
+    {
+      "file": "eir/store.py",
+      "bytes": 6554,
+      "sha256": "312f9effd986589e747b564277e1da089a4b93c19a33434be72e4c622deec428"
+    },
+    {
+      "file": "eir/web/app.js",
+      "bytes": 17914,
+      "sha256": "cb12c713a03f20e50ada1ef4e51a2c8346222067c741ffe16e850582ed030fd8"
+    },
+    {
+      "file": "eir/web/generated/appearance.css",
+      "bytes": 1458354,
+      "sha256": "aaecc5f401b6a12ad80f63dfc1189ba84b8bfa065c4768c188a288b4edc22fc1"
+    },
+    {
+      "file": "eir/web/generated/appearance.js",
+      "bytes": 954718,
+      "sha256": "84e8286bca661dcb25521a6a3b15460b9b3e873d706c6d5ccb61da881ff0e472"
+    },
+    {
+      "file": "eir/web/index.html",
+      "bytes": 12645,
+      "sha256": "5b72cada5d95953c8bd9ac1cdcb88b8430fadb21ac77c98d3d6f350bea0c3147"
+    },
+    {
+      "file": "eir/web/labs.js",
+      "bytes": 19679,
+      "sha256": "d2c6f966b1c3ab7f5bdcc9e0eb556bc037529dbe543101a927ada084ceed03c9"
+    },
+    {
+      "file": "eir/web/reviews.js",
+      "bytes": 13658,
+      "sha256": "b6a98c5342ce39959ab27815694d3378395874ed7da98f8979fce28c4d762f05"
+    },
+    {
+      "file": "eir/web/style.css",
+      "bytes": 20961,
+      "sha256": "dab22fdf3d53daa77876ece9e997c0a05463db151275184cc3b3a62adb58797b"
+    },
+    {
+      "file": "eir/web/workspace.js",
+      "bytes": 28034,
+      "sha256": "908ea26dc2768b5400e28f54a381c96a80b5f7252b9621216e02356ddb1adcef"
+    },
+    {
+      "file": "main.py",
+      "bytes": 967,
+      "sha256": "eabd413154478ca90c5aaa164a4558197415c7b37999ba918cccd2080d6aa933"
+    },
+    {
+      "file": "pyproject.toml",
+      "bytes": 234,
+      "sha256": "3e97620f6a676a5173f1f36e6df1d3a84381b2025fde146f0601ea68590bfb63"
+    },
+    {
+      "file": "requirements.txt",
+      "bytes": 75,
+      "sha256": "5b3167909988acc54f89268f86e3d045719d74165a43221cb693634bd9a9595d"
+    },
+    {
+      "file": "vercel.json",
+      "bytes": 953,
+      "sha256": "318faf116fadef4eaa27aac5814809e416078c5941b6dcd848c603fbba450e3b"
+    }
+  ],
+  "credentials": false,
+  "localDatabases": false
+}

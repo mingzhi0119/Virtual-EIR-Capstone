@@ -1,0 +1,9 @@
+{
+  "projectId": "prj_FMBYZuAH7p81Iw4HSWxeqM4kiWMo",
+  "name": "virtual-eir-demo",
+  "rootDirectory": "hosting",
+  "framework": "fastapi",
+  "protection": "all",
+  "productionId": "dpl_6vooiBswWWNvCRrvRyhtJXtJnnHF",
+  "productionState": "READY"
+}
